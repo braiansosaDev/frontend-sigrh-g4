@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "nombre": "Braian Sosa",
+    "anios_experiencia": 5,
+    "nivel_educativo": "Universitario",
+    "habilidades": "Python, Java, SQL",
+    "expectativa_salarial": 3000000,
+    "email": "braianorlandososa@gmail.com"
+  },
+  {
+    "id": 2,
+    "nombre": "Lucía Fernández",
+    "anios_experiencia": 8,
+    "nivel_educativo": "Postgrado",
+    "habilidades": "React, Node.js, MongoDB",
+    "expectativa_salarial": 4500000,
+    "email": "lucia.fernandez@gmail.com"
+  },
+  {
+    "id": 3,
+    "nombre": "Carlos Martínez",
+    "anios_experiencia": 3,
+    "nivel_educativo": "Técnico",
+    "habilidades": "PHP, Laravel, MySQL",
+    "expectativa_salarial": 2500000,
+    "email": "carlos.martinez@yahoo.com"
+  },
+  {
+    "id": 4,
+    "nombre": "Ana Gómez",
+    "anios_experiencia": 6,
+    "nivel_educativo": "Universitario",
+    "habilidades": "C++, C#, .NET",
+    "expectativa_salarial": 4000000,
+    "email": "ana.gomez@hotmail.com"
+  },
+  {
+    "id": 5,
+    "nombre": "Pedro Rodríguez",
+    "anios_experiencia": 2,
+    "nivel_educativo": "Universitario",
+    "habilidades": "JavaScript, TypeScript, Angular",
+    "expectativa_salarial": 2800000,
+    "email": "pedro.rodriguez@gmail.com"
+  }
+]

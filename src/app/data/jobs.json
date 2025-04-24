@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "title": "Desarrollador Python Backend",
+    "company": "Tech Solutions",
+    "location": "Remoto",
+    "description": "En Tech Solutions, buscamos un Desarrollador Backend en Python con experiencia en FastAPI y PostgreSQL. La persona seleccionada trabajará en la creación de APIs eficientes y escalables, optimización de bases de datos y desarrollo de microservicios.",
+    "responsibilities": [
+      "Diseñar, desarrollar y mantener APIs RESTful con FastAPI.",
+      "Optimizar consultas y estructura de datos en PostgreSQL.",
+      "Implementar pruebas unitarias y de integración.",
+      "Colaborar con equipos de frontend para la integración de servicios.",
+      "Asegurar la calidad del código y el rendimiento del sistema."
+    ],
+    "requirements": [
+      "Experiencia comprobada en Python y FastAPI.",
+      "Conocimientos avanzados en PostgreSQL y optimización de consultas SQL.",
+      "Experiencia en desarrollo basado en contenedores (Docker).",
+      "Familiaridad con Git, metodologías ágiles y CI/CD.",
+      "Conocimientos en Redis o RabbitMQ (deseable)."
+    ],
+    "benefits": [
+      "Trabajo 100% remoto.",
+      "Horario flexible.",
+      "Oportunidades de crecimiento profesional."
+    ],
+    "active": true
+  },
+  {
+    "id": 2,
+    "title": "Ingeniero de Datos con Python",
+    "company": "DataCorp",
+    "location": "Madrid, España",
+    "description": "En DataCorp, buscamos un Ingeniero de Datos para diseñar y optimizar soluciones de almacenamiento y procesamiento de datos a gran escala. Se requiere experiencia en Python, Pandas, SQL y arquitecturas escalables para manejar grandes volúmenes de información.",
+    "responsibilities": [
+      "Diseñar y desarrollar pipelines de datos eficientes.",
+      "Optimizar consultas y estructuras en bases de datos SQL.",
+      "Implementar soluciones escalables para la ingesta, transformación y almacenamiento de datos.",
+      "Trabajar con herramientas de procesamiento de datos en la nube.",
+      "Colaborar con equipos de ciencia de datos y desarrollo para mejorar el rendimiento del sistema."
+    ],
+    "requirements": [
+      "Experiencia sólida en Python y manipulación de datos con Pandas.",
+      "Dominio de SQL y bases de datos relacionales.",
+      "Conocimientos en arquitecturas de datos distribuidas (Apache Spark, Airflow, etc.).",
+      "Experiencia en herramientas de cloud computing (AWS, GCP o Azure).",
+      "Conocimientos en modelado de datos y optimización de rendimiento."
+    ],
+    "benefits": [
+      "Oportunidad de trabajar en proyectos innovadores.",
+      "Ambiente colaborativo y dinámico.",
+      "Beneficios adicionales según desempeño."
+    ],
+    "active": false
+  },
+  {
+    "id": 3,
+    "title": "Desarrollador Fullstack Python/Django",
+    "company": "Web Innovators",
+    "location": "Ciudad de México, México",
+    "description": "En Web Innovators, buscamos un Desarrollador Fullstack con habilidades en Python/Django y React para construir aplicaciones web modernas y escalables. El candidato ideal tendrá experiencia en backend con Django y frontend con React.",
+    "responsibilities": [
+      "Desarrollar y mantener aplicaciones web utilizando Django en el backend.",
+      "Crear interfaces de usuario interactivas con React.",
+      "Diseñar y optimizar modelos de bases de datos.",
+      "Implementar autenticación, autorización y seguridad en aplicaciones web.",
+      "Trabajar en equipo bajo metodologías ágiles."
+    ],
+    "requirements": [
+      "Experiencia comprobada en Django y desarrollo de APIs RESTful.",
+      "Conocimiento en React y desarrollo frontend moderno.",
+      "Experiencia con bases de datos relacionales (PostgreSQL o MySQL).",
+      "Familiaridad con herramientas de despliegue y DevOps (Docker, CI/CD).",
+      "Capacidad de resolver problemas de forma autónoma y en equipo."
+    ],
+    "benefits": [
+      "Ambiente dinámico e innovador.",
+      "Oportunidad de crecimiento en una empresa en expansión.",
+      "Proyectos desafiantes con tecnologías modernas."
+    ],
+    "active": false
+  }
+]
