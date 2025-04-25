@@ -12,11 +12,6 @@
   }
 }
 
-table {
-  background-color: white; /* Ajusta el color según sea necesario */
-}
-
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
