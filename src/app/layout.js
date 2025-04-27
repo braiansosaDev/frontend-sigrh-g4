@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "App RRHH",
-  description: "Aplicación de recursos humanos con IA",
+  title: "Ofertas de empleo",
+  description: "Ofertas de empleo",
 };
 
 export default function RootLayout({ children }) {

@@ -1,6 +1,6 @@
 import WorkInProgress from "@/components/WorkInProgress";
 
-export default function Home() {
+export default function EmployeeIdPage () {
   return (
     <WorkInProgress />
   );
