@@ -1,7 +1,9 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import EmployeeContainer from "@/components/employee/employeeContainer";
 
-export default function EmployeeIdPage () {
+export default function EmployeeIdPage({ params }) {
+  const { id } = params;
+
   return (
-    <WorkInProgress />
+    <EmployeeContainer id={id} />
   );
 }

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import axios from "axios";
+import config from "@/config";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,17 +15,15 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-    //   const res = await fetch("/api/login", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ legajo, password }),
-    //   });
+      const res = axios.post(
+        `${config.API_URL}/auth/login`,
+        {username: parseInt(legajo), password}
+      )
 
-    //   if (!res.ok) throw new Error("Login fallido");
+      if (!res.status === 200) throw new Error("Login fallido");
 
-    //   const data = await res.json();
-    //     Cookies.set("token", data.token, { expires: 1 });
-      Cookies.set("token", "test");
+      const data = await res.data;
+      Cookies.set("token", data.access_token, { expires: 1 });
       router.push("/sigrh");
     } catch (error) {
       console.error(error);
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 Legajo
               </label>
               <input
-                type="text"
+                type="number"
                 value={legajo}
                 onChange={(e) => setLegajo(e.target.value)}
                 placeholder="Ingrese su legajo"

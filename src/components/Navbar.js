@@ -1,9 +1,7 @@
 "use client";
 
-import { FaBars, FaSignOutAlt } from "react-icons/fa";
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import { FaBars } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const routeTitles = {
   "/sigrh/employees": "Empleados",
@@ -14,13 +12,11 @@ const routeTitles = {
 
 export default function Navbar({ onToggleSidebar }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const pageTitle = routeTitles[pathname] || "SIGRH+";
 
   return (
-    <nav className="flex items-center bg-white p-4 fixed top-0 left-0 w-full z-20">
+    <nav className="flex items-center bg-white p-4 fixed top-0 left-0 w-full z-20 border-b border-gray-100">
       {/* Botón Hamburguesa solo en mobile */}
       <div className="flex items-center space-x-2">
         <button

@@ -1,7 +1,5 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import EmployeesTable from "@/components/employee/employeesTable";
 
 export default function EmployeesPage() {
-  return (
-    <WorkInProgress />
-  );
+  return <EmployeesTable />;
 }
