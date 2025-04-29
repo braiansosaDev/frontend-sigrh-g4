@@ -15,12 +15,12 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = axios.post(
-        `${config.API_URL}/auth/login`,
-        {username: parseInt(legajo), password}
+      const res = await axios.post(
+        `${config.API_URL}/employees/login`,
+        {username: legajo, password}
       )
 
-      if (!res.status === 200) throw new Error("Login fallido");
+      if (res.status != 200) throw new Error("Login fallido");
 
       const data = await res.data;
       Cookies.set("token", data.access_token, { expires: 1 });

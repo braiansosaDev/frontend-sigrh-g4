@@ -1,26 +1,32 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { useRouter } from "next/navigation"; // Importamos useRouter de Next.js
+import config from "@/config";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function EmployeesTable() {
-  // Datos de ejemplo (en un proyecto real los obtendrías de una API)
-  const employees = [
-    { id: 1, name: "Juan Pérez", position: "Gerente", hireDate: "2020-01-15" },
-    {
-      id: 2,
-      name: "Ana Gómez",
-      position: "Desarrolladora",
-      hireDate: "2021-03-22",
-    },
-    {
-      id: 3,
-      name: "Carlos Ruiz",
-      position: "Marketing",
-      hireDate: "2019-11-05",
-    },
-    // Puedes agregar más empleados aquí...
-  ];
+  const [employees, setEmployees] = useState([]);
+  const token = Cookies.get("token");
+
+  const fetchEmployees = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/employees`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los empleados");
+
+      setEmployees(res.data);
+    } catch (e) {
+      alert("Ocurrió un error al traer los empleados");
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   const router = useRouter(); // Hook de Next.js para navegación
 
@@ -58,10 +64,13 @@ export default function EmployeesTable() {
           <thead className="bg-gray-100">
             <tr>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+                Legajo ID
+              </th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
                 Nombre
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
-                Cargo
+                Puesto
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
                 Fecha de Contratación
@@ -76,13 +85,16 @@ export default function EmployeesTable() {
                 onClick={() => handleRowClick(employee.id)} // Llamamos a la función al hacer clic
               >
                 <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.name}
+                  {employee.id}
                 </td>
                 <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.position}
+                  {employee.full_name}
                 </td>
                 <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.hireDate}
+                  {employee.job_title}
+                </td>
+                <td className="py-2 px-4 text-sm text-gray-700">
+                  {employee.hire_date}
                 </td>
               </tr>
             ))}

@@ -1,61 +1,53 @@
 "use client";
 import EmployeeForm from "@/components/employee/employeeForm";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import EmployeeWorkHistory from "./employeeWorkHistory";
 import EmployeeDocuments from "./employeeDocuments";
+import Cookies from "js-cookie";
+import config from "@/config";
+import axios from "axios";
 
 export default function EmployeeContainer({ id }) {
+  const [employeeData, setEmployeeData] = useState({});
+  const [activeTab, setActiveTab] = useState(0);
+  const tabs = ["Datos Personales", "Historial Laboral", "Documentos"];
+
+  const token = Cookies.get("token");
   const router = useRouter();
 
-  const employeeData = {
-    full_name: "Braian Sosa",
-    password: "asd123",
-    dni: "43022672",
-    phone: "1125277961",
-    email: "braianorlandososa@gmail.com",
-    department: "Desarrollo",
-    nationality: "Argentina",
-    address: "Monteagudo 4977, José C. Paz",
-    job_title: "Desarrollador Full Stack",
-    salary: "150",
-    birth_date: "20-10-2024",
-    hire_date: "20-10-2024",
-    photo: "asd123",
-    facial_register: "asd123123123",
-    work_history: [
-      {
-        work_history_id: 1,
-        job_title: "Desarrollador Full Stack",
-        from_date: "20-03-2022",
-        to_date: "20-04-2024",
-        company_name: "UNGS",
-        notes: "Experiencia",
-      },
-      {
-        work_history_id: 2,
-        job_title: "Desarrollador Full Stack",
-        from_date: "20-05-2025",
-        to_date: "20-06-2026",
-        company_name: "IT SOLUTIONS",
-        notes: "Experiencia",
-      },
-    ],
-    documents: [
-      {
-        document_id: 1,
-        name: "CV",
-        extension: ".pdf",
-        creation_date: "20-04-2025",
-        file: "asdadadsad123123123",
-      },
-    ],
+  const fetchEmployeeData = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/employees/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los empleados");
+
+      setEmployeeData(res.data);
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al traer los datos del empleado");
+    }
   };
 
-  const [activeTab, setActiveTab] = useState(0);
+  useEffect(() => {
+    fetchEmployeeData();
+  }, []);
 
-  const tabs = ["Datos Personales", "Historial Laboral", "Documentos"];
+  const handleSaveEmployeeForm = async (employeeChangedData) => {
+    try {
+      const res = await axios.patch(`${config.API_URL}/employees/${id}`, employeeChangedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al guardar cambios");
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al guardar los datos del empleado");
+    }
+  }
 
   return (
     <div className="p-6">
@@ -84,7 +76,7 @@ export default function EmployeeContainer({ id }) {
           ))}
         </div>
 
-        {activeTab === 0 && <EmployeeForm employeeData={employeeData} />}
+        {activeTab === 0 && <EmployeeForm employeeData={employeeData} onSaveChanges={handleSaveEmployeeForm} />}
 
         {/* Historial Laboral */}
         {activeTab === 1 && <EmployeeWorkHistory employeeData={employeeData} />}

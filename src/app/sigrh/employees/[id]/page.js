@@ -1,6 +1,6 @@
 import EmployeeContainer from "@/components/employee/employeeContainer";
 
-export default function EmployeeIdPage({ params }) {
+export default async function EmployeeIdPage({ params }) {
   const { id } = params;
 
   return (

@@ -12,7 +12,7 @@ export default function EmployeeWorkHistory({ employeeData }) {
           </tr>
         </thead>
         <tbody>
-          {employeeData.work_history.map((history) => (
+          {employeeData?.work_history?.map((history) => (
             <tr key={history.work_history_id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
               <td className="px-4 py-2">{history.job_title}</td>
               <td className="px-4 py-2">{history.company_name}</td>
