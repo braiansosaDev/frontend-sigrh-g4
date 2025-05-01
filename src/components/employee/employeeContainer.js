@@ -38,16 +38,20 @@ export default function EmployeeContainer({ id }) {
 
   const handleSaveEmployeeForm = async (employeeChangedData) => {
     try {
-      const res = await axios.patch(`${config.API_URL}/employees/${id}`, employeeChangedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.patch(
+        `${config.API_URL}/employees/${id}`,
+        employeeChangedData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res.status != 200) throw new Error("Error al guardar cambios");
     } catch (e) {
       console.error(e);
       alert("Ocurrió un error al guardar los datos del empleado");
     }
-  }
+  };
 
   return (
     <div className="p-6">
@@ -76,7 +80,12 @@ export default function EmployeeContainer({ id }) {
           ))}
         </div>
 
-        {activeTab === 0 && <EmployeeForm employeeData={employeeData} onSaveChanges={handleSaveEmployeeForm} />}
+        {activeTab === 0 && (
+          <EmployeeForm
+            employeeData={employeeData}
+            onSaveChanges={handleSaveEmployeeForm}
+          />
+        )}
 
         {/* Historial Laboral */}
         {activeTab === 1 && <EmployeeWorkHistory employeeData={employeeData} />}

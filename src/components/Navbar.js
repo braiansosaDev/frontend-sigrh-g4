@@ -25,11 +25,15 @@ export default function Navbar({ onToggleSidebar }) {
         >
           <FaBars />
         </button>
-        <span className="font-bold text-emerald-500 text-xl hidden md:inline">SIGRH+</span>
+        <span className="font-bold text-emerald-500 text-xl hidden md:inline">
+          SIGRH+
+        </span>
       </div>
 
       {/* Título dinámico */}
-      <h1 className="md:hidden font-bold text-emerald-500 text-xl">{pageTitle}</h1>
+      <h1 className="md:hidden font-bold text-emerald-500 text-xl">
+        {pageTitle}
+      </h1>
     </nav>
   );
 }
