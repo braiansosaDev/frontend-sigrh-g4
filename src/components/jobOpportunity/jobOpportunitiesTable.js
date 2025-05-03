@@ -1,59 +1,79 @@
 "use client";
 
 import { FaFilter } from "react-icons/fa";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import JobOpportunityCard from "./jobOpportunityCard";
 import JobOpportunityOptions from "./jobOpportunityOptions";
+import config from "@/config";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function JobOpportunityTable() {
   const [searchTerm, setSearchTerm] = useState(""); // Para guardar lo que se escribe en el buscador
   const [currentPage, setCurrentPage] = useState(0); // Indica la página actual
   const [isAdding, setIsAdding] = useState(false); // Para abrir y cerrar la pantalla de agregar una nueva convocatoria
   const [isEditing, setIsEditing] = useState(false); // Para abrir y cerrar la pantalla de editar una convocatoria
+  const [selectedJobOpportunityTitle, setSelectedJobOpportunityTitle] =
+    useState(""); // Para guardar el título de la convocatoria seleccionada
+  const token = Cookies.get("token");
 
-  // Vancantes hardcodeadas para mostrar en la tabla, después hay que cambiarlas por las que vienen de la API
-  // Los datos elegidos por tarjeta no son definitivos, solo son para mostrar como cada card
   const jobOpportunities = [
     {
       title: "Ingeniero en sistemas",
-      department: "Área de Sistemas",
+      description: "Buscamos un ingeniero ....",
       postDate: "2025-04-01",
-      lastPostDate: "2025-04-10",
+      country: "Argentina",
+      region: "Buenos Aires",
       state: "Activa",
+      work_mode: "Remoto",
+      tags: ["Java", "React", "Node.js"],
     },
     {
       title: "Analista de datos",
-      department: "Área de Análisis",
+      description: "Buescamos un analista ....",
       postDate: "2025-04-02",
-      lastPostDate: "2025-04-11",
+      country: "España",
+      region: "Madrid",
       state: "Inactiva",
+      work_mode: "Híbrido",
+      tags: ["Python", "SQL", "Excel"],
     },
     {
       title: "Diseñador UX/UI",
-      department: "Área de Diseño",
+      description: "Buscamos un diseñador ....",
       postDate: "2025-04-03",
-      lastPostDate: "2025-04-20",
+      country: "Brasil",
+      region: "Sao Paulo",
       state: "Activa",
+      work_mode: "Presencial",
+      tags: ["Figma", "Sketch", "Adobe XD"],
     },
     {
       title: "Gerente de proyectos",
-      department: "Área de Gestión",
+      description: "Buscamos un gerente ....",
       postDate: "2025-04-04",
-      lastPostDate: "2025-04-18",
+      country: "España",
+      region: "Barcelona",
       state: "Inactiva",
+      work_mode: "Remoto",
+      tags: ["Scrum", "Agile", "Gestión de equipos"],
     },
     {
       title: "Especialista en ciberseguridad",
-      department: "Área de Seguridad",
+      description: "Buscamos un especialista ....",
       postDate: "2025-04-05",
-      lastPostDate: "2025-05-01",
+      country: "Argentina",
+      region: "Córdoba",
       state: "Activa",
+      work_mode: "Híbrido",
+      tags: ["Seguridad", "Redes", "Firewall"],
     },
   ];
   const [filteredjobOportunity, setFilteredjobOportunity] =
     useState(jobOpportunities); // Para guardar las convocatorias que quedaron después de filtrar
 
   function onModifyjobOpportunity(jobOpportunity) {
+    setSelectedJobOpportunityTitle(jobOpportunity.title);
     setIsEditing(true); // Abre la pantalla de editar convocatoria
   }
 
@@ -91,6 +111,42 @@ export default function JobOpportunityTable() {
     }
   };
 
+  const fetchJobOpportunities = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/job_opportunities`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200)
+        throw new Error("Error al traer las convocatorias");
+
+      setEmployees(res.data);
+    } catch (e) {
+      alert("No se pudieron obtener las convocatorias");
+    }
+  };
+
+  useEffect(() => {
+    fetchJobOpportunities();
+  }, []);
+
+  const handleSaveJobOpportunityForm = async (jobOpportunityNewData) => {
+    try {
+      const res = await axios.patch(
+        `${config.API_URL}/job_opportunities/${id}`, // Revisar que pasarle en lugar del id
+        jobOpportunityNewData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.status != 200) throw new Error("Error al guardar cambios");
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al guardar los datos de la convocatoria");
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
@@ -125,12 +181,8 @@ export default function JobOpportunityTable() {
         {currentjobOportunity.map((jobOpportunity, index) => (
           <JobOpportunityCard
             key={index}
-            title={jobOpportunity.title}
-            department={jobOpportunity.department}
-            postDate={jobOpportunity.postDate}
-            lastUpdateDate={jobOpportunity.lastPostDate}
-            state={jobOpportunity.state}
-            onModify={onModifyjobOpportunity}
+            jobOpportunity={jobOpportunity}
+            onModify={() => onModifyjobOpportunity(jobOpportunity)} // Envolver en una función anónima
           />
         ))}
       </div>
@@ -175,11 +227,15 @@ export default function JobOpportunityTable() {
 
         {isEditing && (
           <JobOpportunityOptions
-            isAdding={isAdding}
+            isAdding={false}
             onClose={() => setIsEditing(false)}
             onSave={() => {
               setIsEditing(false);
+              handleSaveJobOpportunityForm;
             }}
+            jobOpportunity={currentjobOportunity.find(
+              (job) => job.title === selectedJobOpportunityTitle
+            )}
           />
         )}
       </div>
