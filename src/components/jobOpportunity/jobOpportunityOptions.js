@@ -61,8 +61,20 @@ export default function JobOpportunityOptions({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Verifica si el botón "Guardar" fue el que disparó el evento
+    if (e.nativeEvent.submitter?.name !== "saveButton") {
+      return;
+    }
+
     if (formData.tags.length === 0) {
       return alert("Debes agregar al menos una etiqueta.");
+    }
+    if (formData.title.length > 75) {
+      return alert("El título no puede tener más de 75 caracteres.");
+    }
+    if (formData.description.length > 1000) {
+      return alert("La descripción no puede tener más de 1000 caracteres.");
     }
 
     onSave(formData);
@@ -194,6 +206,7 @@ export default function JobOpportunityOptions({
             </button>
             <button
               type="submit"
+              name="saveButton"
               className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
             >
               Guardar

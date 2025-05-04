@@ -31,7 +31,6 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
           !tags.includes(tag)
         ) {
           filteredSuggestions.push(tag);
-          console.log(tag);
         }
         if (filteredSuggestions.length === 2) {
           break; // A las 2 sugerencias, sale del bucle
@@ -46,6 +45,14 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
   const handleAddTag = (tag) => {
     if (tags.length >= 15) {
       alert("No puedes agregar más de 15 etiquetas.");
+      return;
+    }
+    if (
+      tags.some(
+        (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
+      )
+    ) {
+      alert("La etiqueta " + inputValue + " ya existe.");
       return;
     }
 
@@ -63,9 +70,16 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
       alert("No puedes agregar más de 15 etiquetas.");
       return;
     }
-
     if (inputValue.length >= 50) {
       alert("La etiqueta no puede tener más de 50 caracteres.");
+      return;
+    }
+    if (
+      tags.some(
+        (existingTag) => existingTag.toLowerCase() === inputValue.toLowerCase()
+      )
+    ) {
+      alert("La etiqueta " + inputValue + " ya existe.");
       return;
     }
 

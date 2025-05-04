@@ -169,6 +169,9 @@ export default function JobOpportunityTable() {
       console.error(e);
       alert("Ocurrió un error al guardar los datos de la convocatoria");
     }
+
+    setIsEditing(false);
+    setIsAdding(false);
   };
 
   return (
@@ -247,9 +250,7 @@ export default function JobOpportunityTable() {
           <JobOpportunityOptions
             isAdding={isAdding}
             onClose={() => setIsAdding(false)}
-            onSave={() => {
-              setIsAdding(false);
-            }}
+            onSave={handleSaveJobOpportunityForm}
           />
         )}
 
@@ -257,10 +258,7 @@ export default function JobOpportunityTable() {
           <JobOpportunityOptions
             isAdding={false}
             onClose={() => setIsEditing(false)}
-            onSave={() => {
-              setIsEditing(false);
-              handleSaveJobOpportunityForm;
-            }}
+            onSave={handleSaveJobOpportunityForm}
             jobOpportunity={currentjobOportunity.find(
               (job) => job.title === selectedJobOpportunityTitle
             )}
