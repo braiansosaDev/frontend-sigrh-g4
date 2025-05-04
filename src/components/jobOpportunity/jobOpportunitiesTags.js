@@ -19,7 +19,7 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
   const [suggestions, setSuggestions] = useState([]);
 
   const handleInputChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setInputValue(value);
 
     if (value) {
