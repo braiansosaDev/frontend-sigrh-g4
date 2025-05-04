@@ -4,6 +4,7 @@ import { FaFilter } from "react-icons/fa";
 import React, { useState, useEffect } from "react";
 import JobOpportunityCard from "./jobOpportunityCard";
 import JobOpportunityOptions from "./jobOpportunityOptions";
+import JobOpportunitiesFilter from "./jobOpportunitiesFilter";
 import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -13,9 +14,14 @@ export default function JobOpportunityTable() {
   const [currentPage, setCurrentPage] = useState(0); // Indica la página actual
   const [isAdding, setIsAdding] = useState(false); // Para abrir y cerrar la pantalla de agregar una nueva convocatoria
   const [isEditing, setIsEditing] = useState(false); // Para abrir y cerrar la pantalla de editar una convocatoria
+  const [isFiltering, setIsFiltering] = useState(false); // Para abrir y cerrar la pantalla de filtros
   const [selectedJobOpportunityTitle, setSelectedJobOpportunityTitle] =
     useState(""); // Para guardar el título de la convocatoria seleccionada
   const token = Cookies.get("token");
+  const [workModeFilter, setWorkModeFilter] = useState(""); // Para guardar el filtro de modalidad
+  const [countryFilter, setCountryFilter] = useState(""); // Para guardar el filtro de país
+  const [stateFilter, setStateFilter] = useState(""); // Para guardar el filtro de estado
+  const [searchedWord, setSearchedWord] = useState(""); // Para guardar la palabra que se busca en el buscador
 
   const jobOpportunities = [
     {
@@ -30,7 +36,7 @@ export default function JobOpportunityTable() {
     },
     {
       title: "Analista de datos",
-      description: "Buescamos un analista ....",
+      description: "Buscamos un analista ....",
       postDate: "2025-04-02",
       country: "España",
       region: "Madrid",
@@ -54,7 +60,7 @@ export default function JobOpportunityTable() {
       postDate: "2025-04-04",
       country: "España",
       region: "Barcelona",
-      state: "Inactiva",
+      state: "Activa",
       work_mode: "Remoto",
       tags: ["Scrum", "Agile", "Gestión de equipos"],
     },
@@ -64,7 +70,7 @@ export default function JobOpportunityTable() {
       postDate: "2025-04-05",
       country: "Argentina",
       region: "Córdoba",
-      state: "Activa",
+      state: "Inactiva",
       work_mode: "Híbrido",
       tags: ["Seguridad", "Redes", "Firewall"],
     },
@@ -86,19 +92,6 @@ export default function JobOpportunityTable() {
     currentPage * itemsPerPage + itemsPerPage
   );
 
-  const handleSearchChange = (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    setSearchTerm(searchTerm);
-
-    const filtered = jobOpportunities.filter((jobOpportunity) =>
-      jobOpportunity.title.toLowerCase().includes(searchTerm)
-    );
-
-    setCurrentPage(0); // Para evitar problemas con paginas, volvemos a la primera.
-
-    setFilteredjobOportunity(filtered);
-  };
-
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
@@ -110,6 +103,37 @@ export default function JobOpportunityTable() {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const handleSearchChange = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
+  };
+
+  const handleFilter = (filters) => {
+    setCountryFilter(filters.country || "");
+    setWorkModeFilter(filters.modality || "");
+    setStateFilter(filters.state || "");
+
+    setIsFiltering(false); // Cierra el modal de filtros
+  };
+
+  const showResults = () => {
+    const filtered = jobOpportunities.filter(
+      (jobOpportunity) =>
+        jobOpportunity.title.toLowerCase().includes(searchTerm) &&
+        (workModeFilter === "" ||
+          jobOpportunity.work_mode === workModeFilter) &&
+        (countryFilter === "" || jobOpportunity.country === countryFilter) &&
+        (stateFilter === "" || jobOpportunity.state === stateFilter)
+    );
+
+    setFilteredjobOportunity(filtered);
+    setCurrentPage(0); // Reinicia la paginación al aplicar filtros o búsqueda
+  };
+
+  useEffect(() => {
+    showResults();
+  }, [searchTerm, workModeFilter, countryFilter, stateFilter]);
 
   const fetchJobOpportunities = async () => {
     try {
@@ -170,7 +194,10 @@ export default function JobOpportunityTable() {
           placeholder="🔍︎ Buscar por nombre..."
         />
 
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 border-2 border-emerald-500 font-semibold">
+        <button
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 border-2 border-emerald-500 font-semibold"
+          onClick={() => setIsFiltering(true)}
+        >
           <FaFilter />
           Filtros
         </button>
@@ -201,13 +228,14 @@ export default function JobOpportunityTable() {
           Anterior
         </button>
         <span className="text-sm text-gray-600">
-          Página {currentPage + 1} de {totalPages}
+          Página {totalPages != 0 ? currentPage + 1 : currentPage} de{" "}
+          {totalPages}
         </span>
         <button
           onClick={handleNextPage}
           disabled={currentPage === totalPages - 1}
           className={`px-4 py-2 rounded-md ${
-            currentPage === totalPages - 1
+            currentPage === totalPages - 1 || totalPages === 0
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-emerald-500 text-white hover:bg-emerald-600"
           }`}
@@ -237,6 +265,12 @@ export default function JobOpportunityTable() {
               (job) => job.title === selectedJobOpportunityTitle
             )}
           />
+        )}
+
+        {isFiltering && (
+          <div className="mb-4">
+            <JobOpportunitiesFilter onFilter={handleFilter} />
+          </div>
         )}
       </div>
     </div>

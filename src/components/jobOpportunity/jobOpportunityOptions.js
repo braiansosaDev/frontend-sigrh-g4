@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import JobOpportunitiesTags from "./jobOpportunitiesTags";
 
 export default function JobOpportunityOptions({
   isAdding,
@@ -58,37 +59,12 @@ export default function JobOpportunityOptions({
     }
   };
 
-  const addTag = (e) => {
-    if (e.key === "Enter" && e.target.value.trim()) {
-      e.preventDefault();
-      const newTag = e.target.value.trim();
-
-      // Limitar el número de etiquetas a 15
-      if (formData.tags.length >= 15) {
-        alert("No puedes agregar más de 15 etiquetas.");
-        return;
-      }
-
-      if (!formData.tags.includes(newTag)) {
-        setFormData((prev) => ({
-          ...prev,
-          tags: [...prev.tags, newTag],
-        }));
-      }
-
-      e.target.value = "";
-    }
-  };
-
-  const removeTag = (tagToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (formData.tags.length === 0) {
+      return alert("Debes agregar al menos una etiqueta.");
+    }
+
     onSave(formData);
     onClose();
   };
@@ -96,18 +72,18 @@ export default function JobOpportunityOptions({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white rounded-lg shadow-lg w-96 p-6 border border-gray-300 z-10">
+      <div className="relative bg-white rounded-lg shadow-lg w-2/3 h-auto overflow-y-auto p-8 border border-gray-300 z-10">
         <h2 className="text-xl font-bold mb-4">
           {isAdding
             ? "Generar nueva convocatoria 💼"
-            : "Editar convocatoria 🧾"}
+            : "Editar convocatoria 💼"}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-2 gap-12">
             <div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Título de la convocatoria
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  📂 Título convocatoria
                 </label>
                 <input
                   type="text"
@@ -120,8 +96,8 @@ export default function JobOpportunityOptions({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Modalidad
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  🌐 Modalidad
                 </label>
                 <select
                   name="work_mode"
@@ -136,8 +112,8 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  País
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  🗺️ País
                 </label>
                 <select
                   name="country"
@@ -152,8 +128,8 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Región
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  🗻 Región
                 </label>
                 <select
                   name="region"
@@ -175,8 +151,8 @@ export default function JobOpportunityOptions({
             </div>
             <div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Estado
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  🛑 Estado
                 </label>
                 <select
                   name="state"
@@ -190,47 +166,23 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Descripción
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  📃 Descripción
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={checkRegion}
-                  className="mt-1 block w-full h-40 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm resize-none "
+                  className="mt-1 block w-full h-47 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm resize-none "
                   required
                 />
               </div>
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Habilidades requeridas (Etiquetas)
-            </label>
-            <div className="mt-1 flex flex-wrap gap-2">
-              {formData.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="flex items-center bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-sm"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))}
-            </div>
-            <input
-              type="text"
-              placeholder="Presione Enter para agregar una etiqueta"
-              onKeyDown={addTag}
-              className="mt-2 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-            />
-          </div>
+          <JobOpportunitiesTags
+            tags={formData.tags}
+            setFormData={setFormData}
+          />
 
           <div className="flex justify-end space-x-4">
             <button
