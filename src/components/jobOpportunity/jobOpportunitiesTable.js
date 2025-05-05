@@ -217,6 +217,12 @@ export default function JobOpportunityTable() {
         ))}
       </div>
 
+      {filteredjobOportunity.length === 0 && (
+        <div className="flex justify-center items-center mt-8 text-gray-500 text-lg">
+          No se encontraron convocatorias que coincidan con tu búsqueda.
+        </div>
+      )}
+
       {/* Botones para elegir la pagina actual */}
       <div className="flex justify-center items-center mt-4 gap-4">
         <button
@@ -267,7 +273,10 @@ export default function JobOpportunityTable() {
 
         {isFiltering && (
           <div className="mb-4">
-            <JobOpportunitiesFilter onFilter={handleFilter} />
+            <JobOpportunitiesFilter
+              onFilter={handleFilter}
+              showStateFilter={true}
+            />
           </div>
         )}
       </div>

@@ -14,7 +14,11 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
       </h2>
       <p className="text-sm text-gray-600">
         Descripción:{" "}
-        <span className="font-semibold">{jobOpportunity.description}</span>
+        <span className="font-semibold">
+          {jobOpportunity.description.length > 100
+            ? jobOpportunity.description.substring(0, 300) + "..."
+            : jobOpportunity.description}
+        </span>
       </p>
       <p className="text-sm text-gray-600">
         Zona:{" "}

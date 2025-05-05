@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-export default function JobOpportunitiesFilter({ onFilter }) {
+export default function JobOpportunitiesFilter({
+  onFilter,
+  showStateFilter = true,
+}) {
   const [filters, setFilters] = useState({
     modality: "",
     country: "",
@@ -65,21 +68,23 @@ export default function JobOpportunitiesFilter({ onFilter }) {
               <option value="España">España</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              🛑 Estado
-            </label>
-            <select
-              name="state"
-              value={filters.state}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-            >
-              <option value="">Todas</option>
-              <option value="Activa">Activas</option>
-              <option value="Inactiva">Inactivas</option>
-            </select>
-          </div>
+          {showStateFilter && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                🛑 Estado
+              </label>
+              <select
+                name="state"
+                value={filters.state}
+                onChange={handleChange}
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+              >
+                <option value="">Todas</option>
+                <option value="Activa">Activas</option>
+                <option value="Inactiva">Inactivas</option>
+              </select>
+            </div>
+          )}
           <div className="flex justify-end">
             <button
               type="submit"

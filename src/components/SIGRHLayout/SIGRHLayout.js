@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import Image from "next/image";
 
 export default function SIGRHLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,9 +26,7 @@ export default function SIGRHLayout({ children }) {
         <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
 
         {/* Contenido principal */}
-        <main className="flex-1 ml-0 md:ml-64">
-          {children}
-        </main>
+        <main className="flex-1 ml-0 md:ml-64">{children}</main>
       </div>
     </div>
   );
