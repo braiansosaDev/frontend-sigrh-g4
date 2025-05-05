@@ -8,17 +8,17 @@ import config from "@/config";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [legajo, setLegajo] = useState("");
+  const [usuarioId, setUsuarioId] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        `${config.API_URL}/employees/login`,
-        {username: legajo, password}
-      )
+      const res = await axios.post(`${config.API_URL}/employees/login`, {
+        user_id: usuarioId,
+        password,
+      });
 
       if (res.status != 200) throw new Error("Login fallido");
 
@@ -53,13 +53,13 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Legajo
+                Usuario
               </label>
               <input
-                type="number"
-                value={legajo}
-                onChange={(e) => setLegajo(e.target.value)}
-                placeholder="Ingrese su legajo"
+                type="text"
+                value={usuarioId}
+                onChange={(e) => setUsuarioId(e.target.value)}
+                placeholder="Ingrese su usuario"
                 className="w-full rounded-full border border-gray-300 p-3 focus:border-emerald-500 focus:outline-none focus:ring"
               />
             </div>

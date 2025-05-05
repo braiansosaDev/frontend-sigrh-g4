@@ -1,18 +1,25 @@
 "use client";
-import EmployeeForm from "@/components/employee/employeeForm";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import EmployeeWorkHistory from "./employeeWorkHistory";
-import EmployeeDocuments from "./employeeDocuments";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
+import EmployeeForm from "./employeeForm";
+import EmployeeWorkHistory from "./employeeWorkHistory";
+import EmployeeDocuments from "./employeeDocuments";
+import EmployeeUser from "./EmployeeUser";
+import SelectActiveChip from "./SelectActiveChip";
 
 export default function EmployeeContainer({ id }) {
   const [employeeData, setEmployeeData] = useState({});
   const [activeTab, setActiveTab] = useState(0);
-  const tabs = ["Datos Personales", "Historial Laboral", "Documentos"];
+  const tabs = [
+    "Datos Personales",
+    "Historial Laboral",
+    "Documentos",
+    "Usuario",
+  ];
 
   const token = Cookies.get("token");
   const router = useRouter();
@@ -33,21 +40,27 @@ export default function EmployeeContainer({ id }) {
   };
 
   useEffect(() => {
-    fetchEmployeeData();
+    if (id != "new") {
+      fetchEmployeeData();
+    }
   }, []);
 
   const handleSaveEmployeeForm = async (employeeChangedData) => {
     try {
-      const res = await axios.patch(`${config.API_URL}/employees/${id}`, employeeChangedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.patch(
+        `${config.API_URL}/employees/${id}`,
+        employeeChangedData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (res.status != 200) throw new Error("Error al guardar cambios");
     } catch (e) {
       console.error(e);
       alert("Ocurrió un error al guardar los datos del empleado");
     }
-  }
+  };
 
   return (
     <div className="p-6">
@@ -56,7 +69,9 @@ export default function EmployeeContainer({ id }) {
           onClick={() => router.back()}
           className="cursor-pointer text-black"
         />
-        <h1 className="text-2xl font-semibold">Empleado / #{id}</h1>
+        <h1 className="text-2xl font-semibold">
+          Empleado / {id == "new" ? "Nuevo" : `# ${id}`}
+        </h1>
       </div>
 
       <div className="mt-4">
@@ -76,13 +91,21 @@ export default function EmployeeContainer({ id }) {
           ))}
         </div>
 
-        {activeTab === 0 && <EmployeeForm employeeData={employeeData} onSaveChanges={handleSaveEmployeeForm} />}
+        {activeTab === 0 && (
+          <EmployeeForm
+            employeeData={employeeData}
+            onSaveChanges={handleSaveEmployeeForm}
+          />
+        )}
 
         {/* Historial Laboral */}
         {activeTab === 1 && <EmployeeWorkHistory employeeData={employeeData} />}
 
         {/* Documentos */}
         {activeTab === 2 && <EmployeeDocuments employeeData={employeeData} />}
+
+        {/* Usuario */}
+        {activeTab === 3 && <EmployeeUser employeeData={employeeData} />}
       </div>
     </div>
   );

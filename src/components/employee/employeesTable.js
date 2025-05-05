@@ -40,7 +40,10 @@ export default function EmployeesTable() {
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2 items-center">
           <h1 className="text-2xl font-semibold">Empleados</h1>
-          <button className="px-4 py-2 bg-emerald-500 rounded-full font-semibold text-white mt-2">
+          <button 
+            onClick={() => {router.push("employees/new")}}
+            className="px-4 py-2 bg-emerald-500 rounded-full font-semibold cursor-pointer text-white mt-2"
+          >
             + Agregar
           </button>
         </div>
