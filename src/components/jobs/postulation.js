@@ -26,6 +26,10 @@ export default function PostulationModal({ onClose, jobTitle }) {
       alert("El archivo debe ser un .doc, .docx o .pdf.");
       return false;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("El archivo no debe exceder los 5 MB.");
+      return false;
+    }
     return true;
   };
 
@@ -153,16 +157,17 @@ export default function PostulationModal({ onClose, jobTitle }) {
             <p className="text-sm text-gray-600 mb-4">
               Nos pondremos en contacto contigo pronto.
             </p>
-            <div className="flex justify-center items-center mb-4">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-              >
-                Cerrar
-              </button>
-            </div>
           </div>
         )}
+
+        <div className="flex justify-center items-center mb-4 mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Volver
+          </button>
+        </div>
       </div>
     </div>
   );
