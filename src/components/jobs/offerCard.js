@@ -10,7 +10,7 @@ export default function OfferCard({ jobOpportunity, onApply }) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 border border-gray-200 hover:shadow-lg transition-shadow">
+    <div className="bg-white shadow-md rounded-lg p-4 border border-gray-200 hover:shadow-xl hover:scale-102 transition-transform transition-shadow">
       <h3 className="text-lg font-semibold text-emerald-600 mb-2">
         {jobOpportunity.title}
       </h3>

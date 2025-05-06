@@ -16,7 +16,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         Descripción:{" "}
         <span className="font-semibold">
           {jobOpportunity.description.length > 100
-            ? jobOpportunity.description.substring(0, 300) + "..."
+            ? jobOpportunity.description.substring(0, 200) + "..."
             : jobOpportunity.description}
         </span>
       </p>
