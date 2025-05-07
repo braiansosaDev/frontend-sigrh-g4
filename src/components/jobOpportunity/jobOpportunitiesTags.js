@@ -1,22 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import config from "@/config";
 
 export default function JobOpportunitiesTags({ tags, setFormData }) {
-  // Etiquetas momentaneas
-  const availableTags = [
-    "JavaScript",
-    "React",
-    "Node.js",
-    "Python",
-    "SQL",
-    "Java",
-    "C#",
-    "AWS",
-    "Docker",
-    "Kubernetes",
-  ];
-
+  const [availableTags, setAvailableTags] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const token = Cookies.get("token");
+
+  const fetchAvailableTags = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/abilities/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer las habilidades");
+
+      setAvailableTags(res.data);
+    } catch (e) {
+      alert("No se pudieron obtener las habilidades");
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableTags();
+  }, []);
+
+  const create_ability = async (ability) => {
+    try {
+      const res = await axios.post(
+        `${config.API_URL}/abilities/create`,
+        { name: ability, description: "" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.status !== 201) throw new Error("Error al crear la habilidad");
+
+      return res.data; // Devuelve el objeto creado
+    } catch (e) {
+      alert("No se pudo crear la habilidad");
+      return null; // Devuelve null en caso de error
+    }
+  };
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -25,10 +52,12 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
     if (value) {
       const filteredSuggestions = [];
       for (const tag of availableTags) {
-        //Usé un for para poder controlar el número de sugerencias
         if (
-          tag.toLowerCase().includes(value.toLowerCase()) &&
-          !tags.includes(tag)
+          tag.name.toLowerCase().includes(value.toLowerCase()) &&
+          !tags.some(
+            (existingTag) =>
+              existingTag.name.toLowerCase() === tag.name.toLowerCase()
+          )
         ) {
           filteredSuggestions.push(tag);
         }
@@ -49,23 +78,24 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
     }
     if (
       tags.some(
-        (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
+        (existingTag) =>
+          existingTag.name.toLowerCase() === tag.name.toLowerCase()
       )
     ) {
-      alert("La etiqueta " + inputValue + " ya existe.");
+      alert("La etiqueta ya existe.");
       return;
     }
 
     setFormData((prev) => ({
       ...prev,
-      tags: [...prev.tags, tag],
+      job_opportunity_abilities: [...prev.job_opportunity_abilities, tag],
     }));
 
-    setInputValue(""); //Limpiamos el valor del input
-    setSuggestions([]); //Limpiamos las sugerencias
+    setInputValue(""); // Limpiar el valor del input
+    setSuggestions([]); // Limpiar las sugerencias
   };
 
-  const handleCreateTag = () => {
+  const handleCreateTag = async () => {
     if (tags.length >= 15) {
       alert("No puedes agregar más de 15 etiquetas.");
       return;
@@ -76,26 +106,34 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
     }
     if (
       tags.some(
-        (existingTag) => existingTag.toLowerCase() === inputValue.toLowerCase()
+        (existingTag) =>
+          existingTag.name.toLowerCase() === inputValue.toLowerCase()
       )
     ) {
       alert("La etiqueta " + inputValue + " ya existe.");
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      tags: [...prev.tags, inputValue],
-    }));
+    const newTag = await create_ability(inputValue); // Espera el objeto creado
+    if (newTag) {
+      setFormData((prev) => ({
+        ...prev,
+        job_opportunity_abilities: [
+          ...prev.job_opportunity_abilities,
+          { id: newTag.id, name: newTag.name, description: newTag.description },
+        ],
+      }));
+    }
 
     setInputValue("");
     setSuggestions([]);
   };
-
   const handleRemoveTag = (tagToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+      job_opportunity_abilities: prev.job_opportunity_abilities.filter(
+        (tag) => tag.id !== tagToRemove.id
+      ),
     }));
   };
 
@@ -110,7 +148,7 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
             key={index}
             className="flex items-center bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm"
           >
-            {tag}
+            {tag.name}
             <button
               type="button"
               onClick={() => handleRemoveTag(tag)}
@@ -137,7 +175,7 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
                 onClick={() => handleAddTag(suggestion)}
                 className="px-4 py-2 cursor-pointer hover:bg-emerald-100"
               >
-                {suggestion}
+                {suggestion.name}
               </li>
             ))}
           </ul>

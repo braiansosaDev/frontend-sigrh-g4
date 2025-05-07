@@ -342,7 +342,7 @@ export default function OffersTable() {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages - 1}
-            className={`px-4 py-2 rounded-md hover:scale-105 transtion-transform ${
+            className={`px-4 py-2 rounded-md hover:scale-105 transition-transform ${
               currentPage === totalPages - 1 || totalPages === 0
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-emerald-500 text-white hover:bg-emerald-600"

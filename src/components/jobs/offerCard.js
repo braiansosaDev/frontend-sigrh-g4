@@ -11,10 +11,10 @@ export default function OfferCard({ jobOpportunity, onApply }) {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 border border-gray-200 hover:shadow-xl hover:scale-102 transition-transform transition-shadow">
-      <h3 className="text-lg font-semibold text-emerald-600 mb-2">
+      <h3 className="text-lg font-semibold text-emerald-600 mb-2 cursor-default">
         {jobOpportunity.title}
       </h3>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-gray-600 mb-4 cursor-default">
         {showFullDescription
           ? jobOpportunity.description
           : jobOpportunity.description.length > 250
@@ -29,15 +29,15 @@ export default function OfferCard({ jobOpportunity, onApply }) {
           </button>
         )}
       </p>
-      <p className="text-sm text-gray-600 mb-2 mt-2">
+      <p className="text-sm text-gray-600 mb-2 mt-2 cursor-default">
         🌍 {jobOpportunity.country}/{jobOpportunity.region}
       </p>
-      <p className="text-sm text-gray-600 mb-2 mt-2">
+      <p className="text-sm text-gray-600 mb-2 mt-2 cursor-default">
         💻 {jobOpportunity.work_mode}
       </p>
       <button
         onClick={() => onApply(jobOpportunity.title)}
-        className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors mt-2"
+        className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors mt-2 cursor-pointer"
       >
         Postularme
       </button>

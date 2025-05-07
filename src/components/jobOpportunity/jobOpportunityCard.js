@@ -1,4 +1,46 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import config from "@/config";
+
 export default function JobOpportunityCard({ jobOpportunity, onModify }) {
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const token = Cookies.get("token");
+
+  const fetchCountries = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/countries/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los países");
+
+      setCountries(res.data);
+    } catch (e) {
+      alert("Ocurrió un error al traer los países");
+    }
+  };
+
+  const fetchStates = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/states/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los estados");
+
+      setStates(res.data);
+    } catch (e) {
+      alert("Ocurrió un error al traer los estados");
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+    fetchStates();
+  }, []);
+
   return (
     <div className="bg-white shadow-md rounded-lg p-4 flex flex-col gap-2 relative border border-gray-300">
       {/* Botón Modificar en la esquina superior derecha */}
@@ -23,7 +65,16 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
       <p className="text-sm text-gray-600">
         Zona:{" "}
         <span className="font-semibold">
-          {jobOpportunity.country}/{jobOpportunity.region}
+          {states[jobOpportunity.state_id]
+            ? `${
+                countries.find(
+                  (country) =>
+                    country.id === states[jobOpportunity.state_id].country_id
+                )?.name || "País desconocido"
+              }/${
+                states[jobOpportunity.state_id]?.name || "Estado desconocido"
+              }`
+            : "Zona desconocida"}
         </span>
       </p>
       <p className="text-sm text-gray-600">
@@ -39,7 +90,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
               : "text-green-600"
           }`}
         >
-          {jobOpportunity.state}
+          {jobOpportunity.status}
         </span>{" "}
       </p>
       <button

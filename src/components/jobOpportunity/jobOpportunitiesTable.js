@@ -21,166 +21,7 @@ export default function JobOpportunityTable() {
   const [workModeFilter, setWorkModeFilter] = useState(""); // Para guardar el filtro de modalidad
   const [countryFilter, setCountryFilter] = useState(""); // Para guardar el filtro de país
   const [stateFilter, setStateFilter] = useState(""); // Para guardar el filtro de estado
-  const [searchedWord, setSearchedWord] = useState(""); // Para guardar la palabra que se busca en el buscador
-
-  const jobOpportunities = [
-    {
-      title: "Ingeniero en sistemas",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-01",
-      country: "Argentina",
-      region: "Buenos Aires",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Java", "React", "Node.js"],
-      postulations_count: 1000,
-    },
-    {
-      title: "Analista de datos",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-02",
-      country: "España",
-      region: "Madrid",
-      state: "Inactiva",
-      work_mode: "Híbrido",
-      tags: ["Python", "SQL", "Excel"],
-      postulations_count: 500,
-    },
-    {
-      title: "Diseñador UX/UI",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-03",
-      country: "Brasil",
-      region: "Sao Paulo",
-      state: "Activa",
-      work_mode: "Presencial",
-      tags: ["Figma", "Sketch", "Adobe XD"],
-      postulations_count: 200,
-    },
-    {
-      title: "Gerente de proyectos",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-04",
-      country: "España",
-      region: "Barcelona",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Scrum", "Agile", "Gestión de equipos"],
-      postulations_count: 300,
-    },
-    {
-      title: "Especialista en ciberseguridad",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-05",
-      country: "Argentina",
-      region: "Córdoba",
-      state: "Inactiva",
-      work_mode: "Híbrido",
-      tags: ["Seguridad", "Redes", "Firewall"],
-      postulations_count: 150,
-    },
-    {
-      title: "Desarrollador Frontend",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-06",
-      country: "Argentina",
-      region: "Buenos Aires",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["JavaScript", "React", "CSS"],
-      postulations_count: 400,
-    },
-    {
-      title: "Desarrollador Backend",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-07",
-      country: "Brasil",
-      region: "Rio de Janeiro",
-      state: "Activa",
-      work_mode: "Híbrido",
-      tags: ["Node.js", "Express", "MongoDB"],
-      postulations_count: 600,
-    },
-    {
-      title: "Ingeniero de datos",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-08",
-      country: "España",
-      region: "Madrid",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Python", "Spark", "Hadoop"],
-      postulations_count: 700,
-    },
-    {
-      title: "Arquitecto de software",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-09",
-      country: "España",
-      region: "Valencia",
-      state: "Activa",
-      work_mode: "Híbrido",
-      tags: ["Java", "Microservicios", "Arquitectura"],
-      postulations_count: 800,
-    },
-    {
-      title: "Tester de software",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-10",
-      country: "Argentina",
-      region: "Formosa",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Pruebas", "Automatización", "Selenium"],
-      postulations_count: 900,
-    },
-    {
-      title: "Ingeniero en sistemas",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-11",
-      country: "España",
-      region: "Barcelona",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Linux", "Windows", "Redes"],
-      postulations_count: 400,
-    },
-    {
-      title: "Diseñador UX/UI",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-12",
-      country: "Brasil",
-      region: "Bahía",
-      state: "Activa",
-      work_mode: "Híbrido",
-      tags: ["Figma", "Sketch", "Adobe XD"],
-      postulations_count: 200,
-    },
-    {
-      title: "Diseñador UX/UI",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula ex eu ante scelerisque, eu gravida neque sollicitudin. Duis sagittis sem eu lacus fringilla, non pellentesque nisl ultrices. Aenean lacinia, magna eget porttitor efficitur, nisi ligula aliquet nunc, at aliquet purus erat in erat. Fusce fermentum, mauris at finibus porttitor, metus ipsum malesuada libero, ut consequat mi massa ut justo. Nulla facilisi. Morbi venenatis tortor sed tellus mollis, at varius est blandit. Etiam tempus, dui non varius scelerisque, libero ligula accumsan odio, ac auctor eros elit id est. Quisque eget est id metus maximus convallis. Nam pharetra nisl eget sem consectetur, nec elementum magna congue. Suspendisse potenti. Integer nec sem eget lorem lacinia suscipit. Curabitur ut aliquet nulla. Duis et bibendum lacus. Maecenas sed purus risus. Donec euismod libero nec mi sollicitudin, vel vulputate libem aliquet ut yer bademtur sed lorem dolor neque giuja gretta purus erat binola ferramen.",
-      postDate: "2025-04-13",
-      country: "Argentina",
-      region: "Mendoza",
-      state: "Activa",
-      work_mode: "Remoto",
-      tags: ["Java", "React", "Node.js"],
-      postulations_count: 700,
-    },
-  ];
+  const [jobOpportunities, setJobOpportunities] = useState([]); // Para guardar las convocatorias que se traen de la API
   const [filteredjobOportunity, setFilteredjobOportunity] =
     useState(jobOpportunities); // Para guardar las convocatorias que quedaron después de filtrar
 
@@ -241,30 +82,101 @@ export default function JobOpportunityTable() {
     showResults();
   }, [searchTerm, workModeFilter, countryFilter, stateFilter]);
 
+  useEffect(() => {
+    setFilteredjobOportunity(jobOpportunities); // Sincroniza los estados
+  }, [jobOpportunities]);
+
   const fetchJobOpportunities = async () => {
     try {
-      const res = await axios.get(`${config.API_URL}/job_opportunities`, {
+      const res = await axios.get(`${config.API_URL}/opportunities`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.status != 200)
         throw new Error("Error al traer las convocatorias");
 
-      setEmployees(res.data);
+      setJobOpportunities(res.data);
     } catch (e) {
       alert("No se pudieron obtener las convocatorias");
     }
+
+    console.log(jobOpportunities);
   };
 
   useEffect(() => {
     fetchJobOpportunities();
   }, []);
 
+  const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
+    try {
+      const payload = {
+        owner_employee_id: jobOpportunityNewData.owner_employee_id || 0,
+        status: jobOpportunityNewData.status || "activo",
+        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
+        title: jobOpportunityNewData.title || "", //
+        description: jobOpportunityNewData.description || "",
+        budget: jobOpportunityNewData.budget || 1,
+        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
+        state_id: jobOpportunityNewData.state_id || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        job_opportunity_abilities: (
+          jobOpportunityNewData.job_opportunity_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+      };
+
+      console.log(JSON.stringify(payload));
+
+      const res = await axios.post(
+        `${config.API_URL}/opportunities/create`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status != 201) throw new Error("Error al crear la convocatoria");
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al crear la convocatoria");
+    }
+
+    setIsAdding(false);
+    fetchJobOpportunities(); // Refresca la lista de convocatorias después de crear una nueva
+  };
+
   const handleSaveJobOpportunityForm = async (jobOpportunityNewData) => {
     try {
+      const payload = {
+        owner_employee_id: jobOpportunityNewData.owner_employee_id || 0,
+        status: jobOpportunityNewData.status || "activo",
+        work_mode: jobOpportunityNewData.work_mode || "remoto",
+        title: jobOpportunityNewData.title || "", //
+        description: jobOpportunityNewData.description || "",
+        budget: jobOpportunityNewData.budget || 1,
+        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
+        state_id: jobOpportunityNewData.state_id || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        job_opportunity_abilities: (
+          jobOpportunityNewData.job_opportunity_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+      };
+
       const res = await axios.patch(
-        `${config.API_URL}/job_opportunities/${id}`, // Revisar que pasarle en lugar del id
-        jobOpportunityNewData,
+        `${config.API_URL}/opportunities/${id}`, // Revisar que pasarle en lugar del id
+        payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -277,7 +189,6 @@ export default function JobOpportunityTable() {
     }
 
     setIsEditing(false);
-    setIsAdding(false);
   };
 
   return (
@@ -362,7 +273,7 @@ export default function JobOpportunityTable() {
           <JobOpportunityOptions
             isAdding={isAdding}
             onClose={() => setIsAdding(false)}
-            onSave={handleSaveJobOpportunityForm}
+            onSave={handleCreateJobOpportunityForm}
           />
         )}
 

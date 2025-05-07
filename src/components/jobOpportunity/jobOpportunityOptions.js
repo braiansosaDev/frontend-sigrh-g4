@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import JobOpportunitiesTags from "./jobOpportunitiesTags";
+import Cookies from "js-cookie";
+import config from "@/config";
+import axios from "axios";
 
 export default function JobOpportunityOptions({
   isAdding,
@@ -7,39 +10,84 @@ export default function JobOpportunityOptions({
   onSave,
   jobOpportunity,
 }) {
+  const token = Cookies.get("token");
+
   const [formData, setFormData] = useState({
+    status: "",
+    work_mode: "",
     title: "",
-    department: "",
-    postDate: "",
-    state: "Activa",
-    work_mode: "Remoto",
-    country: "Argentina",
-    region: "",
     description: "",
-    tags: [],
+    country_id: "",
+    state_id: "",
+    job_opportunity_abilities: [],
   });
 
-  // Regiones para los países (momentaneamente para probar el front)
-  const regionsByCountry = {
-    Argentina: ["Buenos Aires", "Córdoba", "Mendoza", "Formosa"],
-    Brasil: ["Sao Paulo", "Río de Janeiro", "Bahía"],
-    España: ["Madrid", "Barcelona", "Valencia"],
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+
+  const fetchCountries = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/countries/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los países");
+
+      setCountries(res.data);
+    } catch (e) {
+      alert("Ocurrió un error al traer los países");
+    }
+  };
+
+  const fetchStates = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/states/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los estados");
+
+      const groupedStates = mapStatesToCountries(res.data);
+      setStates(groupedStates);
+    } catch (e) {
+      alert("Ocurrió un error al traer los estados");
+    }
+  };
+
+  const mapStatesToCountries = (states) => {
+    const groupedStates = {};
+
+    states.forEach((state) => {
+      const countryId = state.country_id;
+      if (!groupedStates[countryId]) {
+        groupedStates[countryId] = [];
+      }
+      groupedStates[countryId].push(state);
+    });
+
+    return groupedStates;
   };
 
   // Actualiza el estado inicial con los valores de jobOpportunity si está disponible
   useEffect(() => {
     if (jobOpportunity) {
       setFormData({
+        status: jobOpportunity.status || "activo",
+        work_mode: jobOpportunity.work_mode || "remoto",
         title: jobOpportunity.title || "",
-        country: jobOpportunity.country || "Argentina",
-        region: jobOpportunity.region || "",
-        work_mode: jobOpportunity.work_mode || "Remoto",
         description: jobOpportunity.description || "",
-        state: jobOpportunity.state || "Activa",
-        tags: jobOpportunity.tags || [],
+        country_id: jobOpportunity.country_id || "",
+        state_id: jobOpportunity.state_id || "",
+        job_opportunity_abilities:
+          jobOpportunity.job_opportunity_abilities || [],
       });
     }
   }, [jobOpportunity]);
+
+  useEffect(() => {
+    fetchCountries();
+    fetchStates();
+  }, [countries]);
 
   const checkRegion = (e) => {
     const { name, value } = e.target;
@@ -49,7 +97,7 @@ export default function JobOpportunityOptions({
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        region: "",
+        state: "",
       }));
     } else {
       setFormData((prev) => ({
@@ -67,7 +115,7 @@ export default function JobOpportunityOptions({
       return;
     }
 
-    if (formData.tags.length === 0) {
+    if (formData.job_opportunity_abilities.length === 0) {
       return alert("Debes agregar al menos una etiqueta.");
     }
     if (formData.title.length > 75) {
@@ -118,9 +166,9 @@ export default function JobOpportunityOptions({
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
                 >
-                  <option value="Remoto">Remoto</option>
-                  <option value="Presencial">Presencial</option>
-                  <option value="Híbrido">Híbrido</option>
+                  <option value="remoto">Remoto</option>
+                  <option value="presencial">Presencial</option>
+                  <option value="hibrido">Híbrido</option>
                 </select>
               </div>
               <div>
@@ -134,9 +182,14 @@ export default function JobOpportunityOptions({
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
                 >
-                  <option value="Argentina">Argentina</option>
-                  <option value="Brasil">Brasil</option>
-                  <option value="España">España</option>
+                  <option value="" disabled>
+                    Seleccione un país
+                  </option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -153,9 +206,9 @@ export default function JobOpportunityOptions({
                   <option value="" disabled>
                     Seleccione una región
                   </option>
-                  {regionsByCountry[formData.country]?.map((region) => (
-                    <option key={region} value={region}>
-                      {region}
+                  {states[formData.country]?.map((state) => (
+                    <option key={state.id} value={state.name}>
+                      {state.name}
                     </option>
                   ))}
                 </select>
@@ -173,8 +226,8 @@ export default function JobOpportunityOptions({
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
                 >
-                  <option value="Activa">Activa</option>
-                  <option value="Inactiva">Inactiva</option>
+                  <option value="activo">Activa</option>
+                  <option value="no_activo">Inactiva</option>
                 </select>
               </div>
               <div>
@@ -192,7 +245,7 @@ export default function JobOpportunityOptions({
             </div>
           </div>
           <JobOpportunitiesTags
-            tags={formData.tags}
+            tags={formData.job_opportunity_abilities}
             setFormData={setFormData}
           />
 
