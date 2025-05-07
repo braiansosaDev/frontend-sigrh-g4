@@ -2,11 +2,11 @@ const SelectActiveChip = ({ value, onChange }) => {
     const getColorClass = (val) => {
       switch (val) {
         case "activo":
-          return "bg-green-100 text-green-800 border-green-300";
+          return "flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-green-200 text-green-600";
         case "inactivo":
-          return "bg-red-100 text-red-800 border-red-300";
+          return "flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-red-200 text-red-600";
         default:
-          return "bg-gray-100 text-gray-800 border-gray-300";
+          return "flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-gray-200 text-gray-600";
       }
     };
   

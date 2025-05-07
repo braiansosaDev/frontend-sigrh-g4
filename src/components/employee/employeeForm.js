@@ -6,21 +6,10 @@ import HasPermission from "../HasPermission";
 import { PERMISSIONS } from "@/constants/permissions";
 import RelationalInput from "../RelationalInput";
 import SelectActiveChip from "./SelectActiveChip";
+import { defaultEmployeeForm } from "@/constants/defaultEmployeeForm";
 
 export default function EmployeeForm({ employeeData, onSaveChanges }) {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    job_id: null,
-    job_title: "",
-    job_sector_name: "",
-    dni: "",
-    type_dni: "",
-    personal_email: "",
-    phone: "",
-    address: "",
-    birth_date: "",
-  });
+  const [formData, setFormData] = useState(defaultEmployeeForm);
   const [editing, setEditing] = useState(false);
 
   function handleChange(e) {
@@ -82,6 +71,18 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
             </div>
+            <div className="flex flex-col">
+              <label className="text-sm text-gray-500">Estado</label>
+              <SelectActiveChip
+                value={employeeData.active ? "activo" : "inactivo"}
+                onChange={(newState) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    active: newState === "active",
+                  }))
+                }
+              />
+            </div>
           </div>
           <div className="flex gap-2">
             <div className="flex flex-col w-full">
@@ -127,31 +128,6 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
         </div>
 
         <div className="flex justify-between gap-2">
-          <div className="flex flex-col">
-            <div className="flex flex-col">
-              <label className="text-sm text-gray-500">Estado</label>
-              <SelectActiveChip
-                value={employeeData.active}
-                onChange={(newState) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    active: newState === "active",
-                  }))
-                }
-              />
-            </div>
-
-            <div className="flex flex-col w-full">
-              <label className="text-sm text-gray-500">Email personal</label>
-              <input
-                name="personal_email"
-                type="personal_email"
-                value={formData.personal_email}
-                onChange={handleChange}
-                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-              />
-            </div>
-          </div>
           <Image
             src="/imagen-oficina.png"
             alt="Foto del empleado"
@@ -160,32 +136,107 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
             className="rounded-md object-cover"
           />
         </div>
+        <div className="flex ">
+          <div className="flex gap-2">
+            <div className="flex flex-col">
+              <label className="text-sm text-gray-500">DNI</label>
+              <input
+                name="dni"
+                type="text"
+                value={formData.dni}
+                onChange={handleChange}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+            </div>
 
-        <div className="flex gap-2">
-          <div className="flex flex-col">
-            <label className="text-sm text-gray-500">DNI</label>
+            <div className="flex flex-col">
+              <label className="text-sm whitespace-nowrap text-gray-500">
+                Tipo DNI
+              </label>
+              <select
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+                value={formData.type_dni}
+                onChange={handleChange}
+              >
+                <option value="lc">LC</option>
+                <option value="le">LE</option>
+                <option value="du">DU</option>
+                <option value="li">LI</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-center w-full">
+            <div className="flex flex-col ">
+              <label className="text-sm text-gray-500">
+                Fecha de Nacimiento
+              </label>
+              <input
+                name="birth_date"
+                type="date"
+                value={formData.birth_date}
+                onChange={handleChange}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col w-full">
+          <label className="text-sm text-gray-500">Email personal</label>
+          <input
+            name="personal_email"
+            type="personal_email"
+            value={formData.personal_email}
+            onChange={handleChange}
+            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm text-gray-500">Dirección</label>
+          <div className="flex gap-2">
             <input
-              name="dni"
+              name="address_street"
               type="text"
-              value={formData.dni}
+              placeholder="Calle"
+              value={formData.address_street}
+              onChange={handleChange}
+              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+            />
+            <input
+              name="address_city"
+              type="text"
+              placeholder="Ciudad"
+              value={formData.address_city}
+              onChange={handleChange}
+              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+            />
+            <input
+              name="address_cp"
+              type="text"
+              placeholder="CP"
+              value={formData.address_cp}
               onChange={handleChange}
               className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
             />
           </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-gray-500">Tipo DNI</label>
-            <select
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-              value={formData.type_dni}
-              onChange={handleChange}
-            >
-              <option value="lc">LC</option>
-              <option value="le">LE</option>
-              <option value="du">DU</option>
-              <option value="li">LI</option>
-            </select>
-          </div>
+          <input
+            name="adress_state_id"
+            type="text"
+            placeholder="Estado"
+            value={formData.address_state_id}
+            onChange={handleChange}
+            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+          />
+          <input
+            name="adress_country_id"
+            type="text"
+            placeholder="Pais"
+            value={formData.address_country_id}
+            onChange={handleChange}
+            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+          />
         </div>
 
         <div className="flex flex-col">
@@ -199,66 +250,9 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
           />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm text-gray-500">Dirección</label>
-          <div className="flex gap-2">
-          <input
-            name="adress_calle"
-            type="text"
-            placeholder="Calle"
-            value={formData.adress_calle}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-          <input
-            name="adress_ciudad"
-            type="text"
-            placeholder="Ciudad"
-            value={formData.adress_ciudad}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-          <input
-            name="adress_cp"
-            type="text"
-            placeholder="CP"
-            value={formData.adress_cp}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-          </div>
-          <input
-            name="adress_state_id"
-            type="text"
-            placeholder="Estado"
-            value={formData.adress_state_id}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-          <input
-            name="adress_country_id"
-            type="text"
-            placeholder="Pais"
-            value={formData.adress_country_id}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
+        <div className="flex gap-2 justify-between">
           <div className="flex flex-col">
-            <label className="text-sm text-gray-500">Fecha de Nacimiento</label>
-            <input
-              name="birth_date"
-              type="date"
-              value={formData.birth_date}
-              onChange={handleChange}
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-gray-500">
+            <label className="text-sm whitespace-nowrap text-gray-500">
               Fecha de Contratación
             </label>
             <input
@@ -269,20 +263,20 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
               className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
             />
           </div>
-        </div>
 
-        <HasPermission permission={PERMISSIONS.VIEW_SALARY}>
-          <div className="flex flex-col">
-            <label className="text-sm text-gray-500">Salario</label>
-            <input
-              name="salary"
-              type="text"
-              value={formData.salary}
-              onChange={handleChange}
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-            />
-          </div>
-        </HasPermission>
+          <HasPermission permission={PERMISSIONS.VIEW_SALARY}>
+            <div className="flex flex-col justify-center ">
+              <label className="text-sm text-gray-500">Salario</label>
+              <input
+                name="salary"
+                type="text"
+                value={formData.salary}
+                onChange={handleChange}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+            </div>
+          </HasPermission>
+        </div>
       </div>
 
       {editing && (

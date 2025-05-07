@@ -15,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`${config.API_URL}/employees/login`, {
+      const res = await axios.post(`${config.API_URL}/auth/login`, {
         user_id: usuarioId,
         password,
       });

@@ -5,11 +5,10 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
-import EmployeeForm from "./employeeForm";
-import EmployeeWorkHistory from "./employeeWorkHistory";
-import EmployeeDocuments from "./employeeDocuments";
+import EmployeeForm from "./EmployeeForm";
+import EmployeeWorkHistory from "./EmployeeWorkHistory";
+import EmployeeDocuments from "./EmployeeDocuments";
 import EmployeeUser from "./EmployeeUser";
-import SelectActiveChip from "./SelectActiveChip";
 
 export default function EmployeeContainer({ id }) {
   const [employeeData, setEmployeeData] = useState({});
