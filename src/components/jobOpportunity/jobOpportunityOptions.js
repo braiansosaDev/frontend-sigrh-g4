@@ -45,7 +45,7 @@ export default function JobOpportunityOptions({
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.status != 200) throw new Error("Error al traer los estados");
+      if (res.status !== 200) throw new Error("Error al traer los estados");
 
       const groupedStates = mapStatesToCountries(res.data);
       setStates(groupedStates);
@@ -87,17 +87,16 @@ export default function JobOpportunityOptions({
   useEffect(() => {
     fetchCountries();
     fetchStates();
-  }, [countries]);
+  }, []); // Cambia la dependencia a un array vacío
 
   const checkRegion = (e) => {
     const { name, value } = e.target;
 
-    // Revisa si el país ha cambiado y limpia la región
-    if (name === "country") {
+    if (name === "country_id") {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        state: "",
+        state_id: "",
       }));
     } else {
       setFormData((prev) => ({
@@ -176,8 +175,8 @@ export default function JobOpportunityOptions({
                   🗺️ País
                 </label>
                 <select
-                  name="country"
-                  value={formData.country}
+                  name="country_id"
+                  value={formData.country_id}
                   onChange={checkRegion}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
@@ -197,8 +196,8 @@ export default function JobOpportunityOptions({
                   🗻 Región
                 </label>
                 <select
-                  name="region"
-                  value={formData.region}
+                  name="state_id"
+                  value={formData.state_id}
                   onChange={checkRegion}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
@@ -206,8 +205,8 @@ export default function JobOpportunityOptions({
                   <option value="" disabled>
                     Seleccione una región
                   </option>
-                  {states[formData.country]?.map((state) => (
-                    <option key={state.id} value={state.name}>
+                  {states[formData.country_id]?.map((state) => (
+                    <option key={state.id} value={state.id}>
                       {state.name}
                     </option>
                   ))}
@@ -220,8 +219,8 @@ export default function JobOpportunityOptions({
                   🛑 Estado
                 </label>
                 <select
-                  name="state"
-                  value={formData.state}
+                  name="status"
+                  value={formData.status}
                   onChange={checkRegion}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required

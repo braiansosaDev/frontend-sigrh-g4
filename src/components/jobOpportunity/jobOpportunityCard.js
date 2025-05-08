@@ -65,16 +65,20 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
       <p className="text-sm text-gray-600">
         Zona:{" "}
         <span className="font-semibold">
-          {states[jobOpportunity.state_id]
-            ? `${
-                countries.find(
-                  (country) =>
-                    country.id === states[jobOpportunity.state_id].country_id
-                )?.name || "País desconocido"
-              }/${
-                states[jobOpportunity.state_id]?.name || "Estado desconocido"
-              }`
-            : "Zona desconocida"}
+          {(() => {
+            const state = states.find(
+              (state) => state.id === jobOpportunity.state_id
+            );
+            if (state) {
+              const country = countries.find(
+                (country) => country.id === state.country_id
+              );
+              return `${state?.name || "País desconocido"}, ${
+                country.name || "Estado desconocido"
+              }`;
+            }
+            return "Zona desconocida";
+          })()}
         </span>
       </p>
       <p className="text-sm text-gray-600">
@@ -85,12 +89,12 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         Estado:{" "}
         <span
           className={`text-sm font-semibold ${
-            jobOpportunity.state === "Inactiva"
+            jobOpportunity.status === "no_activo"
               ? "text-red-600"
               : "text-green-600"
           }`}
         >
-          {jobOpportunity.status}
+          {jobOpportunity.status === "no_activo" ? "Inactiva" : "Activa"}
         </span>{" "}
       </p>
       <button
