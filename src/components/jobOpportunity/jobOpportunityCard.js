@@ -74,7 +74,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
                 (country) => country.id === state.country_id
               );
               return `${state?.name || "País desconocido"}, ${
-                country.name || "Estado desconocido"
+                country?.name || "Estado desconocido"
               }`;
             }
             return "Zona desconocida";

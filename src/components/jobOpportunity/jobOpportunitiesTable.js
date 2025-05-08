@@ -24,6 +24,7 @@ export default function JobOpportunityTable() {
   const [jobOpportunities, setJobOpportunities] = useState([]); // Para guardar las convocatorias que se traen de la API
   const [filteredjobOportunity, setFilteredjobOportunity] =
     useState(jobOpportunities); // Para guardar las convocatorias que quedaron después de filtrar
+  const [states, setStates] = useState([]); // Guardar los estados obtenidos de la API
 
   function onModifyjobOpportunity(jobOpportunity) {
     setSelectedJobOpportunityTitle(jobOpportunity.title);
@@ -65,14 +66,20 @@ export default function JobOpportunityTable() {
   };
 
   const showResults = () => {
-    const filtered = jobOpportunities.filter(
-      (jobOpportunity) =>
+    const filtered = jobOpportunities.filter((jobOpportunity) => {
+      const jobCountryId = states.find(
+        (state) => state.id === jobOpportunity.state_id
+      )?.country_id;
+
+      return (
         jobOpportunity.title.toLowerCase().includes(searchTerm) &&
         (workModeFilter === "" ||
-          jobOpportunity.work_mode === workModeFilter) &&
-        (countryFilter === "" || jobOpportunity.country === countryFilter) &&
-        (stateFilter === "" || jobOpportunity.state === stateFilter)
-    );
+          jobOpportunity.work_mode.toLowerCase() ===
+            workModeFilter.toLowerCase()) &&
+        (countryFilter === "" || jobCountryId === parseInt(countryFilter)) &&
+        (stateFilter === "" || jobOpportunity.status === stateFilter)
+      );
+    });
 
     setFilteredjobOportunity(filtered);
     setCurrentPage(0); // Reinicia la paginación al aplicar filtros o búsqueda
@@ -103,8 +110,23 @@ export default function JobOpportunityTable() {
     console.log(jobOpportunities);
   };
 
+  const fetchStates = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/states`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status !== 200) throw new Error("Error al traer los estados");
+
+      setStates(res.data);
+    } catch (e) {
+      alert("No se pudieron obtener los estados");
+    }
+  };
+
   useEffect(() => {
     fetchJobOpportunities();
+    fetchStates();
   }, []);
 
   const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
@@ -128,8 +150,6 @@ export default function JobOpportunityTable() {
           id: ability.id || 0,
         })),
       };
-
-      console.log(JSON.stringify(payload));
 
       const res = await axios.post(
         `${config.API_URL}/opportunities/create`,
@@ -292,7 +312,7 @@ export default function JobOpportunityTable() {
           <div className="mb-4">
             <JobOpportunitiesFilter
               onFilter={handleFilter}
-              showStateFilter={true}
+              showStatusFilter={true}
             />
           </div>
         )}

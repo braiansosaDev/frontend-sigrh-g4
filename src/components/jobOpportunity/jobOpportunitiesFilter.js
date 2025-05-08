@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import config from "@/config";
 
 export default function JobOpportunitiesFilter({
   onFilter,
-  showStateFilter = true,
+  showStatusFilter = true,
 }) {
   const [filters, setFilters] = useState({
     modality: "",
@@ -13,7 +16,7 @@ export default function JobOpportunitiesFilter({
   useEffect(() => {
     const savedFilters = localStorage.getItem("jobFilters");
     if (savedFilters) {
-      setFilters(JSON.parse(savedFilters)); // Restaura los filtros guardados
+      setFilters(JSON.parse(savedFilters));
     }
   }, []);
 
@@ -31,6 +34,27 @@ export default function JobOpportunitiesFilter({
     onFilter(filters); // Envía los filtros al componente padre
   };
 
+  const token = Cookies.get("token");
+  const [countries, setCountries] = useState([]);
+
+  const fetchCountries = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/countries/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status != 200) throw new Error("Error al traer los países");
+
+      setCountries(res.data);
+    } catch (e) {
+      alert("Ocurrió un error al traer los países");
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -47,9 +71,9 @@ export default function JobOpportunitiesFilter({
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
             >
               <option value="">Todas</option>
-              <option value="Remoto">Remoto</option>
-              <option value="Presencial">Presencial</option>
-              <option value="Híbrido">Híbrido</option>
+              <option value="remoto">Remoto</option>
+              <option value="presencial">Presencial</option>
+              <option value="hibrido">Híbrido</option>
             </select>
           </div>
           <div>
@@ -63,12 +87,14 @@ export default function JobOpportunitiesFilter({
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
             >
               <option value="">Todos</option>
-              <option value="Argentina">Argentina</option>
-              <option value="Brasil">Brasil</option>
-              <option value="España">España</option>
+              {countries.map((country) => (
+                <option key={country.id} value={country.id}>
+                  {country.name}
+                </option>
+              ))}
             </select>
           </div>
-          {showStateFilter && (
+          {showStatusFilter && (
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 🛑 Estado
@@ -80,8 +106,8 @@ export default function JobOpportunitiesFilter({
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
               >
                 <option value="">Todas</option>
-                <option value="Activa">Activas</option>
-                <option value="Inactiva">Inactivas</option>
+                <option value="activo">Activas</option>
+                <option value="no_activo">Inactivas</option>
               </select>
             </div>
           )}
