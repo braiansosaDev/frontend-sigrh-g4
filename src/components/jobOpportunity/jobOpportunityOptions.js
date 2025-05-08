@@ -24,6 +24,7 @@ export default function JobOpportunityOptions({
 
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
+  const [statesAreLoaded, setStatesAreLoaded] = useState(false);
 
   const fetchCountries = async () => {
     try {
@@ -49,6 +50,7 @@ export default function JobOpportunityOptions({
 
       const groupedStates = mapStatesToCountries(res.data);
       setStates(groupedStates);
+      setStatesAreLoaded(true);
     } catch (e) {
       alert("Ocurrió un error al traer los estados");
     }
@@ -68,21 +70,30 @@ export default function JobOpportunityOptions({
     return groupedStates;
   };
 
-  // Actualiza el estado inicial con los valores de jobOpportunity si está disponible
   useEffect(() => {
     if (jobOpportunity) {
+      var countryId = "";
+      if (statesAreLoaded) {
+        const state = Object.values(states)
+          .flat()
+          .find((state) => state.id === jobOpportunity.state_id);
+        countryId = state ? state.country_id : "";
+      } else {
+        console.log("No hay estados disponibles para asignar el país.");
+      }
+
       setFormData({
         status: jobOpportunity.status || "activo",
         work_mode: jobOpportunity.work_mode || "remoto",
         title: jobOpportunity.title || "",
         description: jobOpportunity.description || "",
-        country_id: jobOpportunity.country_id || "",
+        country_id: countryId ? countryId : "",
         state_id: jobOpportunity.state_id || "",
         job_opportunity_abilities:
           jobOpportunity.job_opportunity_abilities || [],
       });
     }
-  }, [jobOpportunity]);
+  }, [jobOpportunity, states]);
 
   useEffect(() => {
     fetchCountries();
@@ -124,7 +135,12 @@ export default function JobOpportunityOptions({
       return alert("La descripción no puede tener más de 1000 caracteres.");
     }
 
-    onSave(formData);
+    if (isAdding) {
+      onSave(formData);
+    } else {
+      onSave(formData, jobOpportunity.id);
+    }
+
     onClose();
   };
 

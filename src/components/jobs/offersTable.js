@@ -20,6 +20,7 @@ export default function OffersTable() {
     useState(""); // Título de la oferta seleccionada
   const [isFiltering, setIsFiltering] = useState(false); // Estado para mostrar el modal de filtros
   const [isPostulating, setIsPostulating] = useState(false); // Estado para mostrar el modal de postulación
+  const [filteredOffers, setFilteredjobOportunity] = useState([]);
 
   const [workModeFilter, setWorkModeFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
@@ -79,15 +80,29 @@ export default function OffersTable() {
     };
   }, []);
 
-  // Filtrar las ofertas según el término de búsqueda y los filtros
-  const filteredOffers = jobOpportunities.filter(
-    (job) =>
-      job.status !== "no_activo" &&
-      //job.postulations_count < 1000 &&
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (workModeFilter === "" || job.work_mode === workModeFilter) &&
-      (countryFilter === "" || job.country_id === countryFilter)
-  );
+  function showResults() {
+    const filtered = jobOpportunities.filter((jobOpportunity) => {
+      const jobCountryId = states.find(
+        (state) => state.id === jobOpportunity.state_id
+      )?.country_id;
+
+      return (
+        jobOpportunity.title.toLowerCase().includes(searchTerm) &&
+        (workModeFilter === "" ||
+          jobOpportunity.work_mode.toLowerCase() ===
+            workModeFilter.toLowerCase()) &&
+        (countryFilter === "" || jobCountryId === parseInt(countryFilter)) &&
+        (jobOpportunity.status === "activo" || jobOpportunity.status === "")
+      );
+    });
+
+    setFilteredjobOportunity(filtered);
+    setCurrentPage(0);
+  }
+
+  useEffect(() => {
+    showResults();
+  }, [searchTerm, workModeFilter, countryFilter, states, jobOpportunities]);
 
   const totalPages = Math.ceil(filteredOffers.length / itemsPerPage); // Total de páginas
 
@@ -116,7 +131,7 @@ export default function OffersTable() {
 
   const handleFilter = (filters) => {
     setWorkModeFilter(filters.modality || "");
-    setCountryFilter(filters.country_id || "");
+    setCountryFilter(filters.country || "");
     setIsFiltering(false); // Cierra el modal de filtros
   };
 

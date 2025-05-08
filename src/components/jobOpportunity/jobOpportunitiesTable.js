@@ -172,12 +172,12 @@ export default function JobOpportunityTable() {
     fetchJobOpportunities(); // Refresca la lista de convocatorias después de crear una nueva
   };
 
-  const handleSaveJobOpportunityForm = async (jobOpportunityNewData) => {
+  const handleSaveJobOpportunityForm = async (jobOpportunityNewData, id) => {
     try {
       const payload = {
         owner_employee_id: jobOpportunityNewData.owner_employee_id || 0,
         status: jobOpportunityNewData.status || "activo",
-        work_mode: jobOpportunityNewData.work_mode || "remoto",
+        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
         title: jobOpportunityNewData.title || "", //
         description: jobOpportunityNewData.description || "",
         budget: jobOpportunityNewData.budget || 1,
@@ -195,20 +195,25 @@ export default function JobOpportunityTable() {
       };
 
       const res = await axios.patch(
-        `${config.API_URL}/opportunities/${id}`, // Revisar que pasarle en lugar del id
-        payload,
+        `${config.API_URL}/opportunities/${id}`,
+        JSON.stringify(payload),
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
-      if (res.status != 200) throw new Error("Error al guardar cambios");
+      if (res.status != 200)
+        throw new Error("Error al modificar la convocatoria");
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al guardar los datos de la convocatoria");
+      alert("Ocurrió un error al modificar la convocatoria");
     }
 
-    setIsEditing(false);
+    setIsAdding(false);
+    fetchJobOpportunities(); // Refresca la lista de convocatorias después de crear una nueva
   };
 
   return (
