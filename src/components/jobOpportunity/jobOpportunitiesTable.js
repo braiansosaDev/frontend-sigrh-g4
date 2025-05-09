@@ -72,7 +72,9 @@ export default function JobOpportunityTable() {
       )?.country_id;
 
       return (
-        jobOpportunity.title.toLowerCase().includes(searchTerm) &&
+        jobOpportunity.title
+          .toLowerCase()
+          .includes(searchTerm.toLocaleLowerCase()) &&
         (workModeFilter === "" ||
           jobOpportunity.work_mode.toLowerCase() ===
             workModeFilter.toLowerCase()) &&

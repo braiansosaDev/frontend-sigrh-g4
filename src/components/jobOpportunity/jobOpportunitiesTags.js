@@ -8,6 +8,7 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const token = Cookies.get("token");
+  const maxSuggestions = 1; // Número máximo de sugerencias a mostrar
 
   const fetchAvailableTags = async () => {
     try {
@@ -25,7 +26,7 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
 
   useEffect(() => {
     fetchAvailableTags();
-  }, []);
+  }, [tags]);
 
   const create_ability = async (ability) => {
     try {
@@ -61,8 +62,8 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
         ) {
           filteredSuggestions.push(tag);
         }
-        if (filteredSuggestions.length === 2) {
-          break; // A las 2 sugerencias, sale del bucle
+        if (filteredSuggestions.length === maxSuggestions) {
+          break; // Al tener ua sola sugerencia, salimos del bucle
         }
       }
       setSuggestions(filteredSuggestions);
@@ -128,7 +129,7 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
       return;
     }
     if (
-      tags.some(
+      availableTags.some(
         (existingTag) =>
           existingTag.name.toLowerCase() === inputValue.toLowerCase()
       )
@@ -195,11 +196,15 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
           ? "📋 Habilidades requeridas"
           : "📋 Habilidades deseables"}
       </label>
-      <div className="mt-1 flex gap-2 overflow-x-auto whitespace-nowrap p-3 border border-gray-300 rounded-md">
+      <div className="mt-1 flex gap-2 overflow-x-auto whitespace-nowrap rounded-md">
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="flex items-center bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm"
+            className={`flex items-center ${
+              type === "required_abilities"
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-gray-100 text-gray-700"
+            } px-3 py-1 rounded-full font-semibold text-sm`}
           >
             {tag.name}
             <button
@@ -224,29 +229,52 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
           }
           className="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
         />
-        {suggestions.length > 0 && (
-          <ul className="absolute z-10 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-40 overflow-y-auto w-full">
-            {suggestions.map((suggestion, index) => (
-              <li
-                key={index}
-                onClick={() => handleAddTag(suggestion)}
-                className="px-4 py-2 cursor-pointer hover:bg-emerald-100"
-              >
-                {suggestion.name}
-              </li>
-            ))}
-          </ul>
-        )}
-        {inputValue && suggestions.length === 0 && (
-          <div className="absolute z-10 bg-white border border-gray-300 rounded-md shadow-lg mt-1 w-full">
-            <button
-              onClick={handleCreateTag}
-              className="w-full px-4 py-2 text-left cursor-pointer hover:bg-emerald-100"
-            >
-              Crear etiqueta: <strong>{inputValue}</strong>
-            </button>
-          </div>
-        )}
+        <div className="absolute z-10 bg-white rounded-md shadow-lg mt-1 max-h-40 overflow-y-auto w-full">
+          {/* Mostrar sugerencias */}
+          {suggestions.length > 0 && (
+            <ul>
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleAddTag(suggestion)}
+                  className="px-4 py-2 cursor-pointer hover:bg-emerald-100"
+                >
+                  {suggestion.name}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Mostrar siempre la opción de crear etiqueta */}
+          {inputValue &&
+            !availableTags.some(
+              (existingTag) =>
+                existingTag.name.toLowerCase() === inputValue.toLowerCase()
+            ) && (
+              <div>
+                <button
+                  onClick={handleCreateTag}
+                  className="w-full px-4 py-2 text-left cursor-pointer hover:bg-emerald-100"
+                >
+                  Crear etiqueta: <strong>{inputValue}</strong>
+                </button>
+              </div>
+            )}
+
+          {
+            /* Mostrar mensaje si no hay sugerencias */
+            suggestions.length === 0 &&
+              availableTags.some(
+                (existingTag) =>
+                  existingTag.name.toLowerCase() === inputValue.toLowerCase()
+              ) &&
+              inputValue && (
+                <div className="px-4 py-2 text-gray-500">
+                  Ya agregaste "{inputValue}"
+                </div>
+              )
+          }
+        </div>
       </div>
     </div>
   );

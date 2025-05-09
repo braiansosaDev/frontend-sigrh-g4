@@ -1,42 +1,115 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import config from "@/config";
 
 export default function PostulationModal({ onClose, jobTitle }) {
   const [step, setStep] = useState(1); // Controla la etapa del proceso
   const [email, setEmail] = useState(""); // Almacena el correo del postulante
+  const [name, setName] = useState(""); // Almacena el nombre del postulante
+  const [surname, setSurname] = useState(""); // Almacena el apellido del postulante
+  const [phone, setPhone] = useState(""); // Almacena el teléfono del postulante
+  const [countryId, setCountryId] = useState(""); // País seleccionado
+  const [stateId, setStateId] = useState(""); // Provincia seleccionada
+  const [language, setLanguage] = useState(""); // Idioma del CV
+  const [countries, setCountries] = useState([]); // Lista de países
+  const [states, setStates] = useState([]); // Lista de provincias
   const [cvFile, setCvFile] = useState(null); // Almacena el archivo del CV
 
-  const validateEmail = async (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar email
-    if (!emailRegex.test(email)) {
-      alert("Por favor, ingresa un correo electrónico válido.");
-      return false;
+  const fetchCountries = async () => {
+    try {
+      const res = await fetch(`${config.API_URL}/countries/`);
+      if (!res.ok) throw new Error("Error al obtener los países");
+      const data = await res.json();
+      setCountries(data);
+    } catch (error) {
+      console.error("Error al obtener los países:", error);
     }
-
-    // Falta la validación del email con el backend
-
-    return true;
   };
 
-  const validateCv = (file) => {
-    const allowedExtensions = ["doc", "docx", "pdf"];
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-    if (!allowedExtensions.includes(fileExtension)) {
-      alert("El archivo debe ser un .doc, .docx o .pdf.");
+  const fetchStates = async () => {
+    try {
+      const res = await fetch(`${config.API_URL}/states/`);
+      if (!res.ok) throw new Error("Error al obtener las provincias");
+      const data = await res.json();
+      setStates(data);
+    } catch (error) {
+      console.error("Error al obtener las provincias:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+    fetchStates();
+  }, []);
+
+  const handleCountryChange = (e) => {
+    setCountryId(e.target.value);
+    setStateId(""); // Reinicia la provincia seleccionada
+  };
+
+  const handleStateChange = (e) => {
+    setStateId(e.target.value);
+  };
+
+  const validateStep1 = () => {
+    // Validar que los campos no estén vacíos
+    if (!email || !name || !surname || !phone || !countryId || !stateId) {
+      alert("Por favor, completa todos los campos.");
       return false;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("El archivo no debe exceder los 5 MB.");
+
+    // Validar formato del email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Por favor, ingresa un email válido.");
       return false;
     }
+
+    // Validar longitud del nombre
+    if (name.length > 50) {
+      alert("El nombre no puede tener más de 50 caracteres.");
+      return false;
+    }
+
+    // Validar longitud del apellido
+    if (surname.length > 50) {
+      alert("El apellido no puede tener más de 50 caracteres.");
+      return false;
+    }
+
+    // Validar formato del número de teléfono (E.164 estándar global)
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(phone)) {
+      alert(
+        "Por favor, ingresa un número de teléfono válido en formato internacional (ejemplo: +541112345678)."
+      );
+      return false;
+    }
+
+    // Validar que el país seleccionado exista en la lista de países
+    const countryExists = countries.some(
+      (country) => country.id === parseInt(countryId)
+    );
+    if (!countryExists) {
+      alert("El país seleccionado no es válido.");
+      return false;
+    }
+
+    // Validar que la provincia seleccionada exista en la lista de provincias
+    const stateExists = states.some((state) => state.id === parseInt(stateId));
+    if (!stateExists) {
+      alert("La provincia seleccionada no es válida.");
+      return false;
+    }
+
+    // Si todas las validaciones pasan
     return true;
   };
 
   const handleNext = async () => {
     if (step === 1) {
-      const isValid = await validateEmail(email);
-      if (!isValid) {
+      if (!validateStep1()) {
         return;
       }
       setStep(2);
@@ -44,9 +117,8 @@ export default function PostulationModal({ onClose, jobTitle }) {
       if (!cvFile) {
         alert("Por favor, sube tu CV antes de continuar.");
         return;
-      }
-      const isValid = validateCv(cvFile);
-      if (!isValid) {
+      } else if (!language) {
+        alert("Por favor, selecciona el idioma de tu CV.");
         return;
       }
       setStep(3);
@@ -67,18 +139,99 @@ export default function PostulationModal({ onClose, jobTitle }) {
         {step === 1 && (
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Postularse a: {jobTitle}
+              Postulación a: {jobTitle}
             </h2>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ingresa tu correo electrónico
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="ejemplo@correo.com"
-            />
+            <h3>Ingresa tus datos</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Nombre"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                  Apellido
+                </label>
+                <input
+                  type="text"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Apellido"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="ejemplo@correo.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Teléfono
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="+541112345678"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  País
+                </label>
+                <select
+                  value={countryId}
+                  onChange={handleCountryChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                >
+                  <option value="" disabled>
+                    Selecciona un país
+                  </option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Provincia
+                </label>
+                <select
+                  value={stateId}
+                  onChange={handleStateChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                >
+                  <option value="" disabled>
+                    Selecciona una provincia
+                  </option>
+                  {states
+                    .filter((state) => state.country_id === parseInt(countryId))
+                    .map((state) => (
+                      <option key={state.id} value={state.id}>
+                        {state.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
             <button
               onClick={handleNext}
               className="mt-4 w-full px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
@@ -93,6 +246,18 @@ export default function PostulationModal({ onClose, jobTitle }) {
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               Sube tu CV
             </h2>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md
+              focus:ring-emerald-500 focus:border-emerald-500 mb-4"
+            >
+              <option value="" disabled>
+                Selecciona el idioma de tu CV
+              </option>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+            </select>
             <div
               className="w-full h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center text-gray-500 cursor-pointer"
               onDrop={(e) => {

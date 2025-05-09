@@ -89,9 +89,54 @@ export default function OfferCard({ jobOpportunity, onApply }) {
           })()}
         </span>
       </p>
-      <p className="text-sm text-gray-600 mb-2 mt-2 cursor-default">
+      <p className="text-sm text-gray-600 font-semibold mb-2 mt-2 cursor-default">
         💻 {jobOpportunity.work_mode}
       </p>
+
+      {/* Habilidades requeridas */}
+      <div className="mb-2 mt-2">
+        <p className="text-sm font-semibold text-gray-600 mb-1">
+          Habilidades excluyentes:
+        </p>
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-2 rounded-md">
+          {jobOpportunity.required_abilities &&
+          jobOpportunity.required_abilities.length > 0 ? (
+            jobOpportunity.required_abilities.map((ability, index) => (
+              <span
+                key={index}
+                className="bg-emerald-100 text-emerald-700 font-semibold px-3 py-1 rounded-full text-sm whitespace-nowrap"
+              >
+                {ability.name}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500 text-sm">No especificadas</span>
+          )}
+        </div>
+      </div>
+
+      {/* Habilidades deseables */}
+      <div className="mb-2 mt-2">
+        <p className="text-sm font-semibold text-gray-600 mb-1">
+          Habilidades deseables:
+        </p>
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-2 rounded-md">
+          {jobOpportunity.desirable_abilities &&
+          jobOpportunity.desirable_abilities.length > 0 ? (
+            jobOpportunity.desirable_abilities.map((ability, index) => (
+              <span
+                key={index}
+                className="bg-gray-100 text-gray-700 px-3 py-1 font-semibold rounded-full text-sm whitespace-nowrap"
+              >
+                {ability.name}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500 text-sm">No especificadas</span>
+          )}
+        </div>
+      </div>
+
       <button
         onClick={() => onApply(jobOpportunity.title)}
         className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors mt-2 cursor-pointer"

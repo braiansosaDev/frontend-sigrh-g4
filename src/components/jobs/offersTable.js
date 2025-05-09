@@ -64,9 +64,9 @@ export default function OffersTable() {
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth >= 1024) {
-        setItemsPerPage(6);
+        setItemsPerPage(3);
       } else if (window.innerWidth >= 640) {
-        setItemsPerPage(4);
+        setItemsPerPage(3);
       } else {
         setItemsPerPage(2);
       }
@@ -87,7 +87,7 @@ export default function OffersTable() {
       )?.country_id;
 
       return (
-        jobOpportunity.title.toLowerCase().includes(searchTerm) &&
+        jobOpportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (workModeFilter === "" ||
           jobOpportunity.work_mode.toLowerCase() ===
             workModeFilter.toLowerCase()) &&
