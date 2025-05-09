@@ -19,7 +19,8 @@ export default function JobOpportunityOptions({
     description: "",
     country_id: "",
     state_id: "",
-    job_opportunity_abilities: [],
+    required_abilities: [],
+    desirable_abilities: [],
   });
 
   const [countries, setCountries] = useState([]);
@@ -89,8 +90,8 @@ export default function JobOpportunityOptions({
         description: jobOpportunity.description || "",
         country_id: countryId ? countryId : "",
         state_id: jobOpportunity.state_id || "",
-        job_opportunity_abilities:
-          jobOpportunity.job_opportunity_abilities || [],
+        required_abilities: jobOpportunity.required_abilities || [],
+        desirable_abilities: jobOpportunity.desirable_abilities || [],
       });
     }
   }, [jobOpportunity, states]);
@@ -125,7 +126,7 @@ export default function JobOpportunityOptions({
       return;
     }
 
-    if (formData.job_opportunity_abilities.length === 0) {
+    if (formData.required_abilities.length === 0) {
       return alert("Debes agregar al menos una etiqueta.");
     }
     if (formData.title.length > 75) {
@@ -147,17 +148,17 @@ export default function JobOpportunityOptions({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white rounded-lg shadow-lg w-2/3 h-auto overflow-y-auto p-8 border border-gray-300 z-10">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="relative bg-white rounded-lg shadow-lg w-2/3 h-auto overflow-y-auto p-6 border border-gray-300 z-10">
+        <h2 className="text-xl font-bold mb-2">
           {isAdding
             ? "Generar nueva convocatoria 💼"
             : "Editar convocatoria 💼"}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div className="grid grid-cols-2 gap-12">
             <div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   📂 Título convocatoria
                 </label>
                 <input
@@ -171,7 +172,7 @@ export default function JobOpportunityOptions({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🌐 Modalidad
                 </label>
                 <select
@@ -187,7 +188,7 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🗺️ País
                 </label>
                 <select
@@ -208,7 +209,7 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🗻 Región
                 </label>
                 <select
@@ -231,7 +232,7 @@ export default function JobOpportunityOptions({
             </div>
             <div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🛑 Estado
                 </label>
                 <select
@@ -246,22 +247,28 @@ export default function JobOpportunityOptions({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   📃 Descripción
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={checkRegion}
-                  className="mt-1 block w-full h-47 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm resize-none "
+                  className="mt-1 block w-full h-43 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm resize-none "
                   required
                 />
               </div>
             </div>
           </div>
           <JobOpportunitiesTags
-            tags={formData.job_opportunity_abilities}
+            tags={formData.required_abilities}
             setFormData={setFormData}
+            type="required_abilities"
+          />
+          <JobOpportunitiesTags
+            tags={formData.desirable_abilities}
+            setFormData={setFormData}
+            type="desirable_abilities"
           />
 
           <div className="flex justify-end space-x-4">
@@ -277,7 +284,7 @@ export default function JobOpportunityOptions({
               name="saveButton"
               className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
             >
-              Guardar
+              {isAdding ? "Crear" : "Guardar"}
             </button>
           </div>
         </form>

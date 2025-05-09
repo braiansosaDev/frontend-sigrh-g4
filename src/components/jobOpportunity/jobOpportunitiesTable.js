@@ -142,14 +142,23 @@ export default function JobOpportunityTable() {
         state_id: jobOpportunityNewData.state_id || 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        job_opportunity_abilities: (
-          jobOpportunityNewData.job_opportunity_abilities || []
+        required_abilities: (
+          jobOpportunityNewData.required_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+        desirable_abilities: (
+          jobOpportunityNewData.desirable_abilities || []
         ).map((ability) => ({
           name: ability.name || "",
           description: ability.description || "",
           id: ability.id || 0,
         })),
       };
+
+      console.log(JSON.stringify(payload));
 
       const res = await axios.post(
         `${config.API_URL}/opportunities/create`,
@@ -185,8 +194,15 @@ export default function JobOpportunityTable() {
         state_id: jobOpportunityNewData.state_id || 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        job_opportunity_abilities: (
-          jobOpportunityNewData.job_opportunity_abilities || []
+        required_abilities: (
+          jobOpportunityNewData.required_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+        desirable_abilities: (
+          jobOpportunityNewData.desirable_abilities || []
         ).map((ability) => ({
           name: ability.name || "",
           description: ability.description || "",

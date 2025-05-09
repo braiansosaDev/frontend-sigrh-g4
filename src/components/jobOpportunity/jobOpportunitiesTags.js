@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 
-export default function JobOpportunitiesTags({ tags, setFormData }) {
+export default function JobOpportunitiesTags({ tags, setFormData, type }) {
   const [availableTags, setAvailableTags] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -15,7 +15,7 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.status != 200) throw new Error("Error al traer las habilidades");
+      if (res.status !== 200) throw new Error("Error al traer las habilidades");
 
       setAvailableTags(res.data);
     } catch (e) {
@@ -76,23 +76,46 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
       alert("No puedes agregar más de 15 etiquetas.");
       return;
     }
-    if (
-      tags.some(
+
+    // Verificar si la etiqueta ya existe en required_abilities o desirable_abilities
+    let alreadyExists = false;
+
+    setFormData((prev) => {
+      const isTagInRequired = prev.required_abilities.some(
         (existingTag) =>
           existingTag.name.toLowerCase() === tag.name.toLowerCase()
-      )
-    ) {
-      alert("La etiqueta ya existe.");
-      return;
+      );
+      const isTagInDesirable = prev.desirable_abilities.some(
+        (existingTag) =>
+          existingTag.name.toLowerCase() === tag.name.toLowerCase()
+      );
+
+      if (isTagInRequired || isTagInDesirable) {
+        alreadyExists = true; // Marcar que la etiqueta ya existe
+        return prev; // No realizar cambios si ya existe
+      }
+
+      const updatedFormData = { ...prev };
+
+      if (type === "required_abilities") {
+        updatedFormData.required_abilities = [...prev.required_abilities, tag];
+      } else if (type === "desirable_abilities") {
+        updatedFormData.desirable_abilities = [
+          ...prev.desirable_abilities,
+          tag,
+        ];
+      }
+
+      return updatedFormData;
+    });
+
+    // Mostrar el mensaje de alerta solo si la etiqueta ya existía
+    if (alreadyExists) {
+      alert("La etiqueta ya existe en alguna de las listas.");
+    } else {
+      setInputValue(""); // Limpiar el valor del input
+      setSuggestions([]); // Limpiar las sugerencias
     }
-
-    setFormData((prev) => ({
-      ...prev,
-      job_opportunity_abilities: [...prev.job_opportunity_abilities, tag],
-    }));
-
-    setInputValue(""); // Limpiar el valor del input
-    setSuggestions([]); // Limpiar las sugerencias
   };
 
   const handleCreateTag = async () => {
@@ -116,31 +139,61 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
 
     const newTag = await create_ability(inputValue); // Espera el objeto creado
     if (newTag) {
-      setFormData((prev) => ({
-        ...prev,
-        job_opportunity_abilities: [
-          ...prev.job_opportunity_abilities,
-          { id: newTag.id, name: newTag.name, description: newTag.description },
-        ],
-      }));
+      setFormData((prev) => {
+        const updatedFormData = { ...prev };
+
+        if (type === "required_abilities") {
+          updatedFormData.required_abilities = [
+            ...prev.required_abilities,
+            {
+              id: newTag.id,
+              name: newTag.name,
+              description: newTag.description,
+            },
+          ];
+        } else if (type === "desirable_abilities") {
+          updatedFormData.desirable_abilities = [
+            ...prev.desirable_abilities,
+            {
+              id: newTag.id,
+              name: newTag.name,
+              description: newTag.description,
+            },
+          ];
+        }
+
+        return updatedFormData;
+      });
     }
 
     setInputValue("");
     setSuggestions([]);
   };
+
   const handleRemoveTag = (tagToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      job_opportunity_abilities: prev.job_opportunity_abilities.filter(
-        (tag) => tag.id !== tagToRemove.id
-      ),
-    }));
+    setFormData((prev) => {
+      const updatedFormData = { ...prev };
+
+      if (type === "required_abilities") {
+        updatedFormData.required_abilities = prev.required_abilities.filter(
+          (tag) => tag.id !== tagToRemove.id
+        );
+      } else if (type === "desirable_abilities") {
+        updatedFormData.desirable_abilities = prev.desirable_abilities.filter(
+          (tag) => tag.id !== tagToRemove.id
+        );
+      }
+
+      return updatedFormData;
+    });
   };
 
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2 mt-2">
-        📋 Habilidades requeridas (Etiquetas)
+        {type === "required_abilities"
+          ? "📋 Habilidades requeridas"
+          : "📋 Habilidades deseables"}
       </label>
       <div className="mt-1 flex gap-2 overflow-x-auto whitespace-nowrap p-3 border border-gray-300 rounded-md">
         {tags.map((tag, index) => (
@@ -164,7 +217,11 @@ export default function JobOpportunitiesTags({ tags, setFormData }) {
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          placeholder="Escribe para buscar o crear una etiqueta"
+          placeholder={
+            type === "required_abilities"
+              ? "Escribe para buscar o crear una etiqueta de habilidad excluyente"
+              : "Escribe para buscar o crear una etiqueta de habilidad deseable"
+          }
           className="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
         />
         {suggestions.length > 0 && (
