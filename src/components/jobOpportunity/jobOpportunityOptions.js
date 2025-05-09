@@ -171,7 +171,6 @@ export default function JobOpportunityOptions({
                   onChange={checkRegion}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                   required
-                  disabled={!isAdding}
                 />
               </div>
               <div>
