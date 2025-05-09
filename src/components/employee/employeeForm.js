@@ -1,16 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import HasPermission from "../HasPermission";
 import { PERMISSIONS } from "@/constants/permissions";
 import RelationalInput from "../RelationalInput";
 import SelectActiveChip from "./SelectActiveChip";
 import { defaultEmployeeForm } from "@/constants/defaultEmployeeForm";
+import { useCountries } from "@/hooks/useCountries";
+import { useJob } from "@/hooks/useJob";
+import { parseOptionsToRelationalInput } from "@/utils/parseOptions";
+import { useStatesCountry } from "@/hooks/useStatesCountry";
+import EmployeePhoto from "./EmployeePhoto";
 
 export default function EmployeeForm({ employeeData, onSaveChanges }) {
   const [formData, setFormData] = useState(defaultEmployeeForm);
   const [editing, setEditing] = useState(false);
+  const {
+    countries,
+    loading: loadingCountries,
+    error: errorCountries,
+  } = useCountries();
+  const {
+    states,
+    loading: loadingStatesCountry,
+    error: errorStatesCountry,
+  } = useStatesCountry();
+  const { jobs, loading: loadingJobs, error: errorJobs } = useJob();
+
+  const jobsParsed = parseOptionsToRelationalInput(jobs);
+  const countriesParsed = parseOptionsToRelationalInput(countries);
+  const statesParsed = parseOptionsToRelationalInput(states);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -34,17 +53,6 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
   useEffect(() => {
     setFormData(employeeData);
   }, [employeeData]);
-
-  const cargos = [
-    { job_id: 1, sector_id: 1, name: "Desarrollador Full Stack" },
-    { job_id: 2, sector_id: 1, name: "Desarrollador Frontend" },
-    { job_id: 3, sector_id: 1, name: "Desarrollador Backend" },
-    { job_id: 4, sector_id: 1, name: "Desarrollador Python" },
-  ].map((cargo) => ({
-    ...cargo,
-    label: cargo.name,
-    value: cargo.job_id,
-  }));
 
   return (
     <div className="mt-4 space-y-4">
@@ -90,19 +98,21 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
 
               <RelationalInput
                 label={"Cargo"}
-                options={cargos}
-                value={cargos.find((c) => c.job_id === formData.job_id) || null}
+                options={jobsParsed}
+                value={
+                  jobsParsed.find((c) => c.value === formData.job_id) || null
+                }
                 onChange={(selectedCargo) => {
                   setFormData((prev) => ({
                     ...prev,
-                    job_id: selectedCargo ? selectedCargo.job_id : null,
+                    job_id: selectedCargo ? selectedCargo.id : null,
                     job_title: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
                   }));
                   setEditing(true);
                 }}
                 verDetalles={() => {
-                  const cargo = cargos.find(
-                    (c) => c.job_id === formData.job_id
+                  const cargo = jobsParsed.find(
+                    (c) => c.value === formData.job_id
                   );
                   if (cargo) {
                     alert(`Detalles del cargo:\n${cargo.name}`);
@@ -119,7 +129,7 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
               <input
                 name="sector_name"
                 type="text"
-                value={formData.job_sector_name}
+                value={formData.job?.sector?.name}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
                 disabled
               />
@@ -128,12 +138,15 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
         </div>
 
         <div className="flex justify-between gap-2">
-          <Image
-            src="/imagen-oficina.png"
-            alt="Foto del empleado"
-            width={200}
-            height={200}
-            className="rounded-md object-cover"
+          <EmployeePhoto
+            photoBase64={formData.photo}
+            onPhotoChange={(newBase64) => {
+              setFormData((prev) => ({
+                ...prev,
+                photo: newBase64,
+              }));
+              setEditing(true);
+            }}
           />
         </div>
         <div className="flex ">
@@ -221,22 +234,70 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
               className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
             />
           </div>
-          <input
-            name="adress_state_id"
-            type="text"
-            placeholder="Estado"
-            value={formData.address_state_id}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
-          <input
-            name="adress_country_id"
-            type="text"
-            placeholder="Pais"
-            value={formData.address_country_id}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-          />
+          <div className="flex flex-col w-full">
+            <label className="text-sm text-gray-500">Estado/Provincia</label>
+
+            <RelationalInput
+              label={"Estado/Provincia"}
+              options={statesParsed}
+              value={
+                statesParsed.find(
+                  (c) => c.value === formData.address_state_id
+                ) || null
+              }
+              onChange={(selectedCargo) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  address_state_id: selectedCargo ? selectedCargo.id : null,
+                  address_state_name: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
+                }));
+                setEditing(true);
+              }}
+              verDetalles={() => {
+                const cargo = statesParsed.find(
+                  (c) => c.value === formData.address_state_id
+                );
+                if (cargo) {
+                  alert(`Detalles del cargo:\n${cargo.name}`);
+                }
+              }}
+              onCrearNuevo={() => {
+                alert("Abrir modal para crear nuevo cargo");
+              }}
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm text-gray-500">País</label>
+
+            <RelationalInput
+              label={"Estado/Provincia"}
+              options={statesParsed}
+              value={
+                statesParsed.find(
+                  (c) => c.value === formData.address_country_id
+                ) || null
+              }
+              onChange={(selectedCargo) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  address_country_id: selectedCargo ? selectedCargo.id : null,
+                  address_country_name: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
+                }));
+                setEditing(true);
+              }}
+              verDetalles={() => {
+                const cargo = statesParsed.find(
+                  (c) => c.value === formData.address_country_id
+                );
+                if (cargo) {
+                  alert(`Detalles del cargo:\n${cargo.name}`);
+                }
+              }}
+              onCrearNuevo={() => {
+                alert("Abrir modal para crear nuevo cargo");
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col">
