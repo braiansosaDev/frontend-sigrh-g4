@@ -127,7 +127,10 @@ export default function JobOpportunityOptions({
     }
 
     if (formData.required_abilities.length === 0) {
-      return alert("Debes agregar al menos una etiqueta.");
+      return alert("Debes agregar al menos una etiqueta excluyente.");
+    }
+    if (formData.desirable_abilities.length === 0) {
+      return alert("Debes agregar al menos una etiqueta deseable.");
     }
     if (formData.title.length > 75) {
       return alert("El título no puede tener más de 75 caracteres.");
