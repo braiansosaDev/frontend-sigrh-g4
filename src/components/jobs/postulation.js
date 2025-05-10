@@ -107,6 +107,28 @@ export default function PostulationModal({ onClose, jobTitle }) {
     return true;
   };
 
+  const validateCV = (file) => {
+    // Validar que el archivo sea un Word o PDF
+    const allowedExtensions = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (!allowedExtensions.includes(file.type)) {
+      alert("El archivo debe ser un documento Word o PDF.");
+      return false;
+    }
+
+    // Validar que el archivo no pese más de 5 MB
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSizeInBytes) {
+      alert("El archivo no puede pesar más de 5 MB.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = async () => {
     if (step === 1) {
       if (!validateStep1()) {
@@ -120,6 +142,8 @@ export default function PostulationModal({ onClose, jobTitle }) {
       } else if (!language) {
         alert("Por favor, selecciona el idioma de tu CV.");
         return;
+      } else if (!validateCV(cvFile)) {
+        return;
       }
       setStep(3);
     }
@@ -127,7 +151,7 @@ export default function PostulationModal({ onClose, jobTitle }) {
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && validateCV(file)) {
       setCvFile(file);
     }
   };
