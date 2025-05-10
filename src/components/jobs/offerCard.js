@@ -138,7 +138,7 @@ export default function OfferCard({ jobOpportunity, onApply }) {
       </div>
 
       <button
-        onClick={() => onApply(jobOpportunity.title)}
+        onClick={() => onApply(jobOpportunity)}
         className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors mt-2 cursor-pointer"
       >
         Postularme

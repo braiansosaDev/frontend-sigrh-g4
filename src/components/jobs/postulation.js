@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react";
 import config from "@/config";
+import Cookies from "js-cookie";
+import axios from "axios";
 
-export default function PostulationModal({ onClose, jobTitle }) {
+export default function PostulationModal({ onClose, jobTitle, jobId }) {
+  const token = Cookies.get("token"); // Token de autenticación
   const [step, setStep] = useState(1); // Controla la etapa del proceso
   const [email, setEmail] = useState(""); // Almacena el correo del postulante
   const [name, setName] = useState(""); // Almacena el nombre del postulante
@@ -153,6 +156,54 @@ export default function PostulationModal({ onClose, jobTitle }) {
     const file = e.target.files[0];
     if (file && validateCV(file)) {
       setCvFile(file);
+    }
+  };
+
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Extraer solo la parte Base64
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file); // Leer como DataURL (Base64)
+    });
+  };
+
+  const CreatePostulation = async () => {
+    try {
+      // Convertir el archivo a Base64
+      const cvFileBase64 = await fileToBase64(cvFile);
+
+      const payload = {
+        job_opportunity_id: jobId,
+        name: name,
+        surname: surname,
+        email: email,
+        phone_number: phone,
+        address_country_id: parseInt(countryId), // Asegurarse de que sea un número
+        address_state_id: parseInt(stateId), // Asegurarse de que sea un número
+        cv_file: cvFileBase64, // Archivo en formato Base64
+        cv_language: language,
+      };
+
+      console.log("Payload:", payload);
+
+      const res = await axios.post(
+        `${config.API_URL}/postulations/create`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status !== 201) throw new Error("Error al enviar la postulación");
+
+      setStep(4); // Confirmación de envío
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al crear la postulación");
     }
   };
 
@@ -330,7 +381,7 @@ export default function PostulationModal({ onClose, jobTitle }) {
               ¿Estás seguro de enviar tu CV para la oferta "{jobTitle}"?
             </p>
             <button
-              onClick={() => setStep(4)}
+              onClick={() => CreatePostulation()}
               className="w-full px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
             >
               Confirmar y Enviar

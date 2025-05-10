@@ -16,8 +16,7 @@ export default function OffersTable() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el buscador
   const [currentPage, setCurrentPage] = useState(0); // Página actual
   const [itemsPerPage, setItemsPerPage] = useState(3); // Número de tarjetas por página dinámico
-  const [selectedJobOpportunityTitle, setSelectedJobOpportunityTitle] =
-    useState(""); // Título de la oferta seleccionada
+  const [selectedJobOpportunity, setSelectedJobOpportunity] = useState(""); // Título de la oferta seleccionada
   const [isFiltering, setIsFiltering] = useState(false); // Estado para mostrar el modal de filtros
   const [isPostulating, setIsPostulating] = useState(false); // Estado para mostrar el modal de postulación
   const [filteredOffers, setFilteredjobOportunity] = useState([]);
@@ -135,8 +134,8 @@ export default function OffersTable() {
     setIsFiltering(false); // Cierra el modal de filtros
   };
 
-  const handleApply = (jobTitle) => {
-    setSelectedJobOpportunityTitle(jobTitle);
+  const handleApply = (job) => {
+    setSelectedJobOpportunity(job);
     setIsPostulating(true); // Abre el modal de postulación
   };
 
@@ -256,7 +255,8 @@ export default function OffersTable() {
       {isPostulating && (
         <PostulationModal
           onClose={() => setIsPostulating(false)}
-          jobTitle={selectedJobOpportunityTitle}
+          jobTitle={selectedJobOpportunity.title}
+          jobId={selectedJobOpportunity.id}
         ></PostulationModal>
       )}
     </div>
