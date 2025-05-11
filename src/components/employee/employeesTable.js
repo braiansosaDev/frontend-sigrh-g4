@@ -1,23 +1,29 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaFilter } from "react-icons/fa";
-import { useRouter } from "next/navigation"; // Importamos useRouter de Next.js
+import { useRouter } from "next/navigation";
 import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
+import EmployeeFilters from "./EmployeeFilters";
 
 export default function EmployeesTable() {
   const [employees, setEmployees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({});
+
+  const handleApplyFilters = (newFilters) => {
+    setFilters(newFilters);
+  };
+
   const token = Cookies.get("token");
+  const router = useRouter();
 
   const fetchEmployees = async () => {
     try {
       const res = await axios.get(`${config.API_URL}/employees`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (res.status != 200) throw new Error("Error al traer los empleados");
-
+      if (res.status !== 200) throw new Error("Error al traer los empleados");
       setEmployees(res.data);
     } catch (e) {
       alert("Ocurrió un error al traer los empleados");
@@ -28,76 +34,132 @@ export default function EmployeesTable() {
     fetchEmployees();
   }, []);
 
-  const router = useRouter(); // Hook de Next.js para navegación
-
   const handleRowClick = (id) => {
-    // Redirige a la página de detalle del empleado
     router.push(`/sigrh/employees/${id}`);
   };
 
+  const filteredEmployees = employees
+    .filter((employee) => {
+      const fullName =
+        `${employee.first_name} ${employee.last_name}`.toLowerCase();
+      return fullName.includes(searchTerm.toLowerCase());
+    })
+    .filter((employee) => {
+      if (filters.activeFilter) {
+        if (filters.activeFilter === "activo" && !employee.active) return false;
+        if (filters.activeFilter === "inactivo" && employee.active)
+          return false;
+      }
+      return true;
+    })
+    .filter((employee) => {
+      if (filters.idFilter) {
+        return employee.id.toString() === filters.idFilter;
+      }
+      return true;
+    })
+    .filter((employee) => {
+      if (filters.startDate && filters.endDate) {
+        const hireDate = new Date(employee.hire_date);
+        return (
+          hireDate >= new Date(filters.startDate) &&
+          hireDate <= new Date(filters.endDate)
+        );
+      }
+      return true;
+    });
+
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
         <div className="flex gap-2 items-center">
           <h1 className="text-2xl font-semibold">Empleados</h1>
-          <button className="px-4 py-2 bg-emerald-500 rounded-full font-semibold text-white mt-2">
+          <button
+            onClick={() => router.push("employees/new")}
+            className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"
+          >
             + Agregar
           </button>
         </div>
 
         <input
           type="text"
-          className="px-6 py-3 border border-gray-300 rounded-full w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="🔍︎ Buscar por nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-full w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="🔍︎ Buscar por nombre o apellido..."
         />
 
-        {/* Botón de Filtros */}
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 border-2 border-emerald-500 font-semibold">
-          <FaFilter />
-          Filtros
-        </button>
+        <EmployeeFilters
+          employees={employees}
+          onApplyFilters={handleApplyFilters}
+        />
       </div>
 
-      {/* Tabla de empleados */}
-      <div className="overflow-x-auto">
+      {/* Contenedor de la tabla con scroll */}
+      <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
         <table className="min-w-full bg-white">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
-                Legajo ID
+                ID
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
-                Nombre
+                Nombre/s
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
-                Puesto
+                Apellido/s
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
                 Fecha de Contratación
               </th>
+              <th className="py-2 px-4 text-sm text-center font-medium text-gray-600">
+                Activo
+              </th>
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => (
-              <tr
-                key={employee.id}
-                className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
-                onClick={() => handleRowClick(employee.id)} // Llamamos a la función al hacer clic
-              >
-                <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.id}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.full_name}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.job_title}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-700">
-                  {employee.hire_date}
+            {filteredEmployees.length > 0 ? (
+              filteredEmployees.map((employee) => (
+                <tr
+                  key={employee.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleRowClick(employee.id)}
+                >
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {employee.id}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {employee.first_name}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {employee.last_name}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
+                    {new Date(employee.hire_date).toLocaleDateString("es-AR", {
+                      timeZone: "UTC",
+                    })}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-center text-gray-700">
+                    {employee.active ? (
+                      <div className="flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-green-200 text-green-600">
+                        Activo
+                      </div>
+                    ) : (
+                      <div className="flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-red-200 text-red-600">
+                        Inactivo
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="py-4 text-center text-gray-500">
+                  No se encontraron empleados
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
