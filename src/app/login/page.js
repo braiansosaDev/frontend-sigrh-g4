@@ -8,26 +8,28 @@ import config from "@/config";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [legajo, setLegajo] = useState("");
+  const [usuarioId, setUsuarioId] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        `${config.API_URL}/employees/login`,
-        {username: legajo, password}
-      )
+      setErrorMessage(""); // Limpiar error anterior
+      const res = await axios.post(`${config.API_URL}/auth/login`, {
+        user_id: usuarioId,
+        password,
+      });
 
-      if (res.status != 200) throw new Error("Login fallido");
+      if (res.status !== 200) throw new Error("Login fallido");
 
       const data = await res.data;
       Cookies.set("token", data.access_token, { expires: 1 });
       router.push("/sigrh");
     } catch (error) {
       console.error(error);
-      alert("Credenciales inválidas");
+      setErrorMessage("Credenciales inválidas. Verifica tu usuario y contraseña.");
     }
   };
 
@@ -39,34 +41,31 @@ export default function LoginPage() {
       </div>
 
       {/* Formulario: visible siempre */}
-      <div
-        className="flex flex-1 items-center justify-center p-8
-  bg-[url('/pattern-sigrh.svg')] bg-cover bg-center md:bg-none"
-      >
+      <div className="flex flex-1 items-center justify-center p-8 bg-[url('/pattern-sigrh.svg')] bg-cover bg-center md:bg-none">
         <div className="w-full max-w-4xl bg-white p-8 rounded-2xl">
-          <h2 className="mb-6 text-center text-5xl font-bold text-gray-800">
-            SIGRH+
-          </h2>
-          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">
-            Iniciar sesión
-          </h2>
+          <h2 className="mb-6 text-center text-5xl font-bold text-gray-800">SIGRH+</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">Iniciar sesión</h2>
+
+          {/* Mensaje de error */}
+          {errorMessage && (
+            <div className="mb-4 rounded-md bg-red-100 p-4 text-sm text-red-700 border border-red-300">
+              {errorMessage}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Legajo
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
               <input
-                type="number"
-                value={legajo}
-                onChange={(e) => setLegajo(e.target.value)}
-                placeholder="Ingrese su legajo"
+                type="text"
+                value={usuarioId}
+                onChange={(e) => setUsuarioId(e.target.value)}
+                placeholder="Ingrese su usuario"
                 className="w-full rounded-full border border-gray-300 p-3 focus:border-emerald-500 focus:outline-none focus:ring"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contraseña
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
               <input
                 type="password"
                 value={password}
