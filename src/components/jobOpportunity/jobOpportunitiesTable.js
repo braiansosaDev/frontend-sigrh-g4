@@ -134,7 +134,7 @@ export default function JobOpportunityTable() {
   const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
     try {
       const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 0,
+        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
         status: jobOpportunityNewData.status || "activo",
         work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
         title: jobOpportunityNewData.title || "", //
@@ -186,7 +186,7 @@ export default function JobOpportunityTable() {
   const handleSaveJobOpportunityForm = async (jobOpportunityNewData, id) => {
     try {
       const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 0,
+        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
         status: jobOpportunityNewData.status || "activo",
         work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
         title: jobOpportunityNewData.title || "", //

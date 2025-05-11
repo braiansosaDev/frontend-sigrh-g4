@@ -3,7 +3,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 
-export default function JobOpportunitiesTags({ tags, setFormData, type }) {
+export default function JobOpportunitiesTags({
+  tags,
+  setFormData,
+  type,
+  otherTags,
+}) {
   const [availableTags, setAvailableTags] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -26,7 +31,7 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
 
   useEffect(() => {
     fetchAvailableTags();
-  }, [tags]);
+  }, [tags, otherTags]);
 
   const create_ability = async (ability) => {
     try {
@@ -51,21 +56,27 @@ export default function JobOpportunitiesTags({ tags, setFormData, type }) {
     setInputValue(value);
 
     if (value) {
-      const filteredSuggestions = [];
-      for (const tag of availableTags) {
-        if (
-          tag.name.toLowerCase().includes(value.toLowerCase()) &&
-          !tags.some(
-            (existingTag) =>
-              existingTag.name.toLowerCase() === tag.name.toLowerCase()
-          )
-        ) {
-          filteredSuggestions.push(tag);
-        }
-        if (filteredSuggestions.length === maxSuggestions) {
-          break; // Al tener ua sola sugerencia, salimos del bucle
-        }
-      }
+      const filteredSuggestions = availableTags
+        .filter(
+          (tag) =>
+            tag.name.toLowerCase().includes(value.toLowerCase()) &&
+            !tags.some(
+              (existingTag) =>
+                existingTag.name.toLowerCase() === tag.name.toLowerCase()
+            ) &&
+            !otherTags.some(
+              (existingTag) =>
+                existingTag.name.toLowerCase() === tag.name.toLowerCase()
+            )
+        )
+        // Ordenar para que las coincidencias exactas aparezcan primero
+        .sort((a, b) => {
+          if (a.name.toLowerCase() === value.toLowerCase()) return -1;
+          if (b.name.toLowerCase() === value.toLowerCase()) return 1;
+          return 0;
+        })
+        .slice(0, maxSuggestions);
+
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions([]);

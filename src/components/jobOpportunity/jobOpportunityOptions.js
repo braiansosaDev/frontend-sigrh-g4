@@ -264,11 +264,13 @@ export default function JobOpportunityOptions({
           </div>
           <JobOpportunitiesTags
             tags={formData.required_abilities}
+            otherTags={formData.desirable_abilities}
             setFormData={setFormData}
             type="required_abilities"
           />
           <JobOpportunitiesTags
             tags={formData.desirable_abilities}
+            otherTags={formData.required_abilities}
             setFormData={setFormData}
             type="desirable_abilities"
           />
