@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { useRouter } from "next/navigation"; // Cambiar a `next/navigation` para usar el router en el app directory
 
 export default function JobOpportunityCard({ jobOpportunity, onModify }) {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const token = Cookies.get("token");
+  const router = useRouter(); // Inicializar el router
 
   const fetchCountries = async () => {
     try {
@@ -98,7 +100,9 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         </span>{" "}
       </p>
       <button
-        onClick={() => {}}
+        onClick={() =>
+          router.push(`/sigrh/job_opportunities/${jobOpportunity.id}`)
+        } // Redirigir a la subruta
         className="mt-2 px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
       >
         Ver postulados

@@ -17,7 +17,7 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const [language, setLanguage] = useState(""); // Idioma del CV
   const [countries, setCountries] = useState([]); // Lista de países
   const [states, setStates] = useState([]); // Lista de provincias
-  const [postulations, setPostulations] = useState([]); // Lista de postulaciones
+  const [canCreate, setCanCreate] = useState(false); // Verifica si se puede crear una postulación
   const [cvFile, setCvFile] = useState(null); // Almacena el archivo del CV
 
   const fetchCountries = async () => {
@@ -42,31 +42,31 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
     }
   };
 
-  const fetchJobOpportunityPostulations = async () => {
+  const fetchCanCreatePostulation = async () => {
     try {
-      const res = await axios.get(`${config.API_URL}/postulations/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status !== 200) throw new Error("Error al obtener postulaciones");
-
-      setPostulations(
-        res.data.filter(
-          (postulation) => postulation.job_opportunity_id === jobId
-        )
+      const res = await axios.get(
+        `${config.API_URL}/postulations/can_create?job_opportunity_id=${jobId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
+      if (res.status !== 200)
+        throw new Error("No se pudo verificar la capacidad de postulaciones");
+
+      setCanCreate(res.data);
     } catch (e) {
-      alert("No se pudieron obtener las postulaciones");
+      alert("No se puedo obtener la capacidad de postulaciones: " + e);
     }
   };
 
   useEffect(() => {
     fetchCountries();
     fetchStates();
-    fetchJobOpportunityPostulations();
+    fetchCanCreatePostulation();
   }, []);
 
   useEffect(() => {
-    fetchJobOpportunityPostulations();
+    fetchCanCreatePostulation();
   }, [step]);
 
   const handleCountryChange = (e) => {
@@ -92,17 +92,12 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       return false;
     }
 
-    // Validar que el email no esté ya registrado en la misma oferta
-    const emailExists = postulations.some(
-      (postulation) =>
-        postulation.email === email && postulation.job_opportunity_id === jobId
-    );
-    if (emailExists) {
+    /*if (!canCreate) {
       alert(
         "Ya existe una postulación con este email para esta oferta de trabajo."
       );
       return false;
-    }
+    }*/
 
     // Validar longitud del nombre
     if (name.length > 50) {
@@ -164,9 +159,7 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       return false;
     }
 
-    // Validar que haya mil cvs o menos
-    const cvsCount = postulations.length;
-    if (cvsCount >= 1000) {
+    if (!canCreate) {
       alert(
         "Lo sentimos, la capacidad máxima de postulaciones ha sido alcanzada."
       );
