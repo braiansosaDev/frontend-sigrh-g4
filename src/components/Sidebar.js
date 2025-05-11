@@ -2,7 +2,7 @@
 
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; // Importamos usePathname
 import {
   FaUsers,
   FaBriefcase,
@@ -13,18 +13,27 @@ import {
 
 export default function Sidebar({ isOpen, onClose }) {
   const router = useRouter();
+  const pathname = usePathname(); // Obtenemos la ruta actual
 
   const handleLogout = () => {
     Cookies.remove("token"); // elimina el token
-    router.push("sigrh/login"); // redirige al login (o a donde quieras)
+    router.push("sigrh/login"); // redirige al login
   };
+
+  const isActive = (path) => pathname === path; // Función para saber si la pagina actual es la que se está viendo
 
   return (
     <>
       {/* Sidebar desktop */}
       <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-16 left-0 p-4">
         <ul className="space-y-4">
-          <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+          <li
+            className={`${
+              isActive("/sigrh/employees")
+                ? "bg-emerald-500 text-white"
+                : "hover:bg-emerald-500 hover:text-white"
+            } rounded-lg p-2 transition-all`}
+          >
             <Link
               href="/sigrh/employees"
               className="flex items-center space-x-2"
@@ -33,16 +42,28 @@ export default function Sidebar({ isOpen, onClose }) {
               <span>Empleados</span>
             </Link>
           </li>
-          <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+          <li
+            className={`${
+              isActive("/sigrh/job_opportunities")
+                ? "bg-emerald-500 text-white"
+                : "hover:bg-emerald-500 hover:text-white"
+            } rounded-lg p-2 transition-all`}
+          >
             <Link
-              href="/sigrh/vacancies"
+              href="/sigrh/job_opportunities"
               className="flex items-center space-x-2"
             >
               <FaBriefcase className="text-2xl" />
-              <span>Vacantes</span>
+              <span>Convocatorias</span>
             </Link>
           </li>
-          <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+          <li
+            className={`${
+              isActive("/sigrh/attendance")
+                ? "bg-emerald-500 text-white"
+                : "hover:bg-emerald-500 hover:text-white"
+            } rounded-lg p-2 transition-all`}
+          >
             <Link
               href="/sigrh/attendance"
               className="flex items-center space-x-2"
@@ -74,7 +95,13 @@ export default function Sidebar({ isOpen, onClose }) {
             onClick={(e) => e.stopPropagation()} // Para no cerrar si hace click adentro
           >
             <ul className="space-y-4">
-              <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+              <li
+                className={`${
+                  isActive("/sigrh")
+                    ? "bg-emerald-500 text-white"
+                    : "hover:bg-emerald-500 hover:text-white"
+                } rounded-lg p-2 transition-all`}
+              >
                 <Link
                   href="/sigrh"
                   className="flex items-center space-x-2"
@@ -84,7 +111,13 @@ export default function Sidebar({ isOpen, onClose }) {
                   <span>Inicio</span>
                 </Link>
               </li>
-              <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+              <li
+                className={`${
+                  isActive("/sigrh/employees")
+                    ? "bg-emerald-500 text-white"
+                    : "hover:bg-emerald-500 hover:text-white"
+                } rounded-lg p-2 transition-all`}
+              >
                 <Link
                   href="/sigrh/employees"
                   className="flex items-center space-x-2"
@@ -94,17 +127,29 @@ export default function Sidebar({ isOpen, onClose }) {
                   <span>Empleados</span>
                 </Link>
               </li>
-              <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+              <li
+                className={`${
+                  isActive("/sigrh/job_opportunities")
+                    ? "bg-emerald-500 text-white"
+                    : "hover:bg-emerald-500 hover:text-white"
+                } rounded-lg p-2 transition-all`}
+              >
                 <Link
-                  href="/sigrh/vacancies"
+                  href="/sigrh/job_opportunities"
                   className="flex items-center space-x-2"
                   onClick={onClose}
                 >
                   <FaBriefcase className="text-2xl" />
-                  <span>Vacantes</span>
+                  <span>Convocatorias</span>
                 </Link>
               </li>
-              <li className="hover:bg-emerald-500 hover:text-white rounded-lg p-2 transition-all">
+              <li
+                className={`${
+                  isActive("/sigrh/attendance")
+                    ? "bg-emerald-500 text-white"
+                    : "hover:bg-emerald-500 hover:text-white"
+                } rounded-lg p-2 transition-all`}
+              >
                 <Link
                   href="/sigrh/attendance"
                   className="flex items-center space-x-2"
