@@ -46,12 +46,12 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
   return (
     <div className="bg-white shadow-md rounded-lg p-4 flex flex-col gap-2 relative border border-gray-300">
       {/* Botón Modificar en la esquina superior derecha */}
-      <button
+      {/* <button
         onClick={() => onModify(jobOpportunity)} // Pasar la convocatoria directamente
         className="absolute top-2 right-2 px-2 py-1 bg-emerald-500 text-white rounded-md text-s hover:bg-emerald-600"
       >
         Modificar
-      </button>
+      </button> */}
 
       <h2 className="text-lg font-bold text-gray-800">
         {jobOpportunity.title}
@@ -105,7 +105,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         } // Redirigir a la subruta
         className="mt-2 px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
       >
-        Ver postulados
+        Ver detalles
       </button>
     </div>
   );

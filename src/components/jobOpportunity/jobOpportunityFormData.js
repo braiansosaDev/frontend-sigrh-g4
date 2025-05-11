@@ -4,8 +4,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
 
-export default function JobOpportunityOptions({
-  isAdding,
+export default function JobOpportunityFormData({
   onClose,
   onSave,
   jobOpportunity,
@@ -101,57 +100,6 @@ export default function JobOpportunityOptions({
     fetchStates();
   }, []); // Cambia la dependencia a un array vacío
 
-  const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
-    try {
-      const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
-        status: jobOpportunityNewData.status || "activo",
-        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
-        title: jobOpportunityNewData.title || "", //
-        description: jobOpportunityNewData.description || "",
-        budget: jobOpportunityNewData.budget || 1,
-        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
-        state_id: jobOpportunityNewData.state_id || 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        required_abilities: (
-          jobOpportunityNewData.required_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-        desirable_abilities: (
-          jobOpportunityNewData.desirable_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-      };
-
-      console.log(JSON.stringify(payload));
-
-      const res = await axios.post(
-        `${config.API_URL}/opportunities/create`,
-        JSON.stringify(payload),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (res.status != 201) throw new Error("Error al crear la convocatoria");
-      onClose();
-    } catch (e) {
-      console.error(e);
-      alert("Ocurrió un error al crear la convocatoria");
-    }
-
-
-  };
 
   const checkRegion = (e) => {
     const { name, value } = e.target;
@@ -191,24 +139,16 @@ export default function JobOpportunityOptions({
       return alert("La descripción no puede tener más de 1000 caracteres.");
     }
 
-    if (isAdding) {
-      onSave(formData);
-    } else {
+   
       onSave(formData, jobOpportunity.id);
-    }
+
 
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white rounded-lg shadow-lg w-2/3 h-auto overflow-y-auto p-6 border border-gray-300 z-10">
-        <h2 className="text-xl font-bold mb-2">
-          {isAdding
-            ? "Generar nueva convocatoria 💼"
-            : "Editar convocatoria 💼"}
-        </h2>
+    <div className="flex items-center justify-between">
+      <div className="bg-white w-full h-auto overflow-y-auto p-6">
         <form onSubmit={handleSubmit} className="space-y-2">
           <div className="grid grid-cols-2 gap-12">
             <div>
@@ -340,7 +280,7 @@ export default function JobOpportunityOptions({
               name="saveButton"
               className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
             >
-              {isAdding ? "Crear" : "Guardar"}
+              Guardar
             </button>
           </div>
         </form>

@@ -134,7 +134,7 @@ export default function JobOpportunityTable() {
   const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
     try {
       const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
+        owner_employee_id: null,
         status: jobOpportunityNewData.status || "activo",
         work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
         title: jobOpportunityNewData.title || "", //

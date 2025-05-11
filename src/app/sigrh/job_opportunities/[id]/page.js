@@ -1,14 +1,11 @@
-import PostulationsTable from "@/components/postulationsResults/postulationsTable";
+import JobOpportunityContainer from "@/components/jobOpportunity/jobOpportunityContainer";
 
-export default function VacanciesPage({ params }) {
-  const { id } = params;
+export default async function VacanciesPage({ params }) {
+  const { id } = await params;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4 ml-4 mt-4 text-center">
-        Postulaciones de la convocatoria #{id}
-      </h1>
-      <PostulationsTable jobOpportunityId={id} />
+      <JobOpportunityContainer jobOpportunityId={id} />
     </div>
   );
 }
