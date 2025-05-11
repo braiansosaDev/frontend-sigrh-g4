@@ -25,41 +25,45 @@ export default function EmployeeUser({ employeeData, id }) {
   }
 
   async function handleSave() {
-    if (id != "new") {
-      try {
-        const cleanedData = cleanEmployeePayload(formData);
+  const cleanedData = cleanEmployeePayload(formData);
 
-        const res = await axios.patch(
-          `${config.API_URL}/employees/${id}`,
-          cleanedData
-        );
+  try {
+    let res;
 
-        if (res.status != 200) throw new Error("Error al guardar cambios");
-        alert("Cambios guardados exitosamente.");
-        setEditing(false);
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
-      }
+    if (id !== "new") {
+      res = await axios.patch(`${config.API_URL}/employees/${id}`, cleanedData);
     } else {
-      try {
-        const cleanedData = cleanEmployeePayload(formData);
+      res = await axios.post(`${config.API_URL}/employees/register`, cleanedData);
+    }
 
-        const res = await axios.post(
-          `${config.API_URL}/employees/register`,
-          cleanedData
-        );
+    const expectedStatus = id !== "new" ? 200 : 201;
+    if (res.status !== expectedStatus) {
+      throw new Error(`Error inesperado al guardar. Código: ${res.status}`);
+    }
 
-        if (res.status != 201) throw new Error("Error al guardar cambios");
-        router.push(`/sigrh/employees/${res.data.id}`);
-        setEditing(false);
-        alert("Cambios guardados exitosamente.");
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
+    if (id === "new") {
+      router.push(`/sigrh/employees/${res.data.id}`);
+    }
+
+    setEditing(false);
+    alert("Cambios guardados exitosamente.");
+  } catch (error) {
+    console.error(error);
+
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+
+      if (status === 400) {
+        alert(detail || "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso.");
+        return;
       }
     }
+
+    alert("Ocurrió un error al guardar los datos del empleado");
   }
+}
+
 
   function handleCancel() {
     setFormData(employeeData);

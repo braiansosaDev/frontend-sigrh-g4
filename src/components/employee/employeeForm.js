@@ -24,6 +24,63 @@ import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás boo
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  function validateForm() {
+    const newErrors = {};
+
+    const today = new Date();
+    const birthDate = new Date(formData.birth_date);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const isTooYoung =
+      age < 16 ||
+      (age === 16 && monthDiff < 0) ||
+      (age === 16 && monthDiff === 0 && today.getDate() < birthDate.getDate());
+
+    if (!formData.first_name?.trim())
+      newErrors.first_name = "El nombre es obligatorio";
+    if (!formData.last_name?.trim())
+      newErrors.last_name = "El apellido es obligatorio";
+    if (!formData.dni?.trim()) newErrors.dni = "El DNI es obligatorio";
+    if (isNaN(formData.dni)) newErrors.dni = "El DNI debe ser numérico";
+    if (!formData.type_dni?.trim())
+      newErrors.type_dni = "Tipo de DNI obligatorio";
+    if (!formData.birth_date)
+      newErrors.birth_date = "La fecha de nacimiento es obligatoria";
+    else if (isTooYoung) newErrors.birth_date = "Debe tener al menos 16 años";
+
+    if (!formData.personal_email?.trim())
+      newErrors.personal_email = "El email es obligatorio";
+    else if (!/\S+@\S+\.\S+/.test(formData.personal_email))
+      newErrors.personal_email = "Email inválido";
+
+    if (!formData.phone?.trim()) newErrors.phone = "El teléfono es obligatorio";
+
+    if (!formData.hire_date)
+      newErrors.hire_date = "La fecha de contratación es obligatoria";
+
+    if (!formData.job_id) newErrors.job_id = "Debe seleccionar un cargo";
+
+    if (!formData.address_street?.trim())
+      newErrors.address_street = "La calle es obligatoria";
+    if (!formData.address_city?.trim())
+      newErrors.address_city = "La ciudad es obligatoria";
+    if (!formData.address_cp?.trim())
+      newErrors.address_cp = "El código postal es obligatorio";
+
+    if (!formData.address_state_id)
+      newErrors.address_state_id = "Debe seleccionar una provincia";
+    if (!formData.address_country_id)
+      newErrors.address_country_id = "Debe seleccionar un país";
+
+    if (!formData.salary)
+      newErrors.salary = "Debe indicar al menos un salario";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   const {
     countries,
     loading: loadingCountries,
@@ -51,39 +108,52 @@ export default function EmployeeForm({ employeeData, id }) {
   }
 
   async function handleSave() {
-    if (id != "new") {
-      try {
-        const cleanedData = cleanEmployeePayloadFormData(formData);
+    if (!validateForm()) return;
+    const cleanedData = cleanEmployeePayloadFormData(formData);
 
-        const res = await axios.patch(
+    try {
+      let res;
+
+      if (id !== "new") {
+        res = await axios.patch(
           `${config.API_URL}/employees/${id}`,
           cleanedData
         );
-
-        if (res.status != 200) throw new Error("Error al guardar cambios");
-        alert("Cambios guardados exitosamente.");
-        setEditing(false);
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
-      }
-    } else {
-      try {
-        const cleanedData = cleanEmployeePayloadFormData(formData);
-
-        const res = await axios.post(
+      } else {
+        res = await axios.post(
           `${config.API_URL}/employees/register`,
           cleanedData
         );
-
-        if (res.status != 201) throw new Error("Error al guardar cambios");
-        router.push(`/sigrh/employees/${res.data.id}`);
-        setEditing(false);
-        alert("Cambios guardados exitosamente.");
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
       }
+
+      const expectedStatus = id !== "new" ? 200 : 201;
+      if (res.status !== expectedStatus) {
+        throw new Error(`Error inesperado al guardar, código: ${res.status}`);
+      }
+
+      if (id === "new") {
+        router.push(`/sigrh/employees/${res.data.id}`);
+      }
+
+      setEditing(false);
+      alert("Cambios guardados exitosamente.");
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const detail = error.response?.data?.detail;
+
+        if (status === 400) {
+          alert(
+            detail ||
+              "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso."
+          );
+          return;
+        }
+      }
+
+      alert("Ocurrió un error al guardar los datos del empleado");
     }
   }
 
@@ -113,6 +183,11 @@ export default function EmployeeForm({ employeeData, id }) {
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
+              {errors.first_name && (
+                <span className="text-red-500 text-sm">
+                  {errors.first_name}
+                </span>
+              )}
             </div>
             <div className="flex flex-col w-full">
               <label className="text-sm text-gray-500">Apellido/s</label>
@@ -123,6 +198,9 @@ export default function EmployeeForm({ employeeData, id }) {
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
+              {errors.last_name && (
+                <span className="text-red-500 text-sm">{errors.last_name}</span>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="text-sm text-gray-500">Estado</label>
@@ -173,6 +251,9 @@ export default function EmployeeForm({ employeeData, id }) {
                   alert("Abrir modal para crear nuevo cargo");
                 }}
               />
+              {errors.job_id && (
+                <span className="text-red-500 text-sm">{errors.job_id}</span>
+              )}
             </div>
 
             <div className="flex flex-col w-full">
@@ -180,10 +261,15 @@ export default function EmployeeForm({ employeeData, id }) {
               <input
                 name="sector_name"
                 type="text"
-                value={formData.job?.sector?.name}
+                value={formData.job?.sector?.name || ""}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
                 disabled
               />
+              {errors.sector_name && (
+                <span className="text-red-500 text-sm">
+                  {errors.sector_name}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -211,6 +297,9 @@ export default function EmployeeForm({ employeeData, id }) {
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
+              {errors.dni && (
+                <span className="text-red-500 text-sm">{errors.dni}</span>
+              )}
             </div>
 
             <div className="flex flex-col">
@@ -228,6 +317,9 @@ export default function EmployeeForm({ employeeData, id }) {
                 <option value="du">DU</option>
                 <option value="li">LI</option>
               </select>
+              {errors.type_dni && (
+                <span className="text-red-500 text-sm">{errors.type_dni}</span>
+              )}
             </div>
           </div>
 
@@ -243,6 +335,11 @@ export default function EmployeeForm({ employeeData, id }) {
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
+              {errors.birth_date && (
+                <span className="text-red-500 text-sm">
+                  {errors.birth_date}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -256,39 +353,77 @@ export default function EmployeeForm({ employeeData, id }) {
             onChange={handleChange}
             className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
           />
+          {errors.personal_email && (
+            <span className="text-red-500 text-sm">
+              {errors.personal_email}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
           <label className="text-sm text-gray-500">Dirección</label>
+
           <div className="flex gap-2">
-            <input
-              name="address_street"
-              type="text"
-              placeholder="Calle"
-              value={formData.address_street}
-              onChange={handleChange}
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-            />
-            <input
-              name="address_city"
-              type="text"
-              placeholder="Ciudad"
-              value={formData.address_city}
-              onChange={handleChange}
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-            />
-            <input
-              name="address_cp"
-              type="text"
-              placeholder="CP"
-              value={formData.address_cp}
-              onChange={handleChange}
-              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-            />
+            <div className="flex flex-col w-full">
+              <input
+                name="address_street"
+                type="text"
+                placeholder="Calle"
+                value={formData.address_street}
+                onChange={(e) => {
+                  handleChange(e);
+                  setErrors((prev) => ({ ...prev, address_street: "" }));
+                }}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+              {errors.address_street && (
+                <span className="text-red-500 text-sm">
+                  {errors.address_street}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col w-full">
+              <input
+                name="address_city"
+                type="text"
+                placeholder="Ciudad"
+                value={formData.address_city}
+                onChange={(e) => {
+                  handleChange(e);
+                  setErrors((prev) => ({ ...prev, address_city: "" }));
+                }}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+              {errors.address_city && (
+                <span className="text-red-500 text-sm">
+                  {errors.address_city}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col w-full">
+              <input
+                name="address_cp"
+                type="text"
+                placeholder="CP"
+                value={formData.address_cp}
+                onChange={(e) => {
+                  handleChange(e);
+                  setErrors((prev) => ({ ...prev, address_cp: "" }));
+                }}
+                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+              />
+              {errors.address_cp && (
+                <span className="text-red-500 text-sm">
+                  {errors.address_cp}
+                </span>
+              )}
+            </div>
           </div>
+
           <div className="flex flex-col w-full">
             <label className="text-sm text-gray-500">Estado/Provincia</label>
-
             <RelationalInput
               label={"Estado/Provincia"}
               options={statesParsed}
@@ -297,64 +432,48 @@ export default function EmployeeForm({ employeeData, id }) {
                   (c) => c.value === formData.address_state_id
                 ) || null
               }
-              onChange={(selectedCargo) => {
+              onChange={(selected) => {
                 setFormData((prev) => ({
                   ...prev,
-                  address_state_id: selectedCargo ? selectedCargo.value : null,
-                  address_state_name: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
+                  address_state_id: selected ? selected.value : null,
+                  address_state_name: selected ? selected.label : "",
                 }));
                 setEditing(true);
-              }}
-              verDetalles={() => {
-                const cargo = statesParsed.find(
-                  (c) => c.value === formData.address_state_id
-                );
-                if (cargo) {
-                  alert(`Detalles del cargo:\n${cargo.name}`);
-                }
-              }}
-              onCrearNuevo={() => {
-                alert("Abrir modal para crear nuevo cargo");
+                setErrors((prev) => ({ ...prev, address_state_id: "" }));
               }}
             />
+            {errors.address_state_id && (
+              <span className="text-red-500 text-sm">
+                {errors.address_state_id}
+              </span>
+            )}
           </div>
+
           <div className="flex flex-col w-full">
             <label className="text-sm text-gray-500">País</label>
-
             <RelationalInput
-              label={"Pais"}
-              options={countriesParsed.filter((country) => {
-                country.value == formData.address_state_id;
-              })}
+              label={"País"}
+              options={countriesParsed}
               value={
                 countriesParsed.find(
                   (c) => c.value === formData.address_country_id
                 ) || null
               }
-              onChange={(selectedCargo) => {
+              onChange={(selected) => {
                 setFormData((prev) => ({
                   ...prev,
-                  address_country_id: selectedCargo
-                    ? selectedCargo.value
-                    : null,
-                  address_country_name: selectedCargo
-                    ? selectedCargo.label
-                    : "", // Guardás el nombre también
+                  address_country_id: selected ? selected.value : null,
+                  address_country_name: selected ? selected.label : "",
                 }));
                 setEditing(true);
-              }}
-              verDetalles={() => {
-                const cargo = countriesParsed.find(
-                  (c) => c.value === formData.address_country_id
-                );
-                if (cargo) {
-                  alert(`Detalles del cargo:\n${cargo.name}`);
-                }
-              }}
-              onCrearNuevo={() => {
-                alert("Abrir modal para crear nuevo cargo");
+                setErrors((prev) => ({ ...prev, address_country_id: "" }));
               }}
             />
+            {errors.address_country_id && (
+              <span className="text-red-500 text-sm">
+                {errors.address_country_id}
+              </span>
+            )}
           </div>
         </div>
 
@@ -370,6 +489,9 @@ export default function EmployeeForm({ employeeData, id }) {
             }}
             inputClass="!bg-transparent !text-black !focus:outline-none !pb-1"
           />
+          {errors.phone && (
+            <span className="text-red-500 text-sm">{errors.phone}</span>
+          )}
         </div>
 
         <div className="flex gap-2 justify-between">
@@ -384,6 +506,9 @@ export default function EmployeeForm({ employeeData, id }) {
               onChange={handleChange}
               className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
             />
+            {errors.hire_date && (
+              <span className="text-red-500 text-sm">{errors.hire_date}</span>
+            )}
           </div>
 
           <HasPermission permission={PERMISSIONS.VIEW_SALARY}>
@@ -396,6 +521,9 @@ export default function EmployeeForm({ employeeData, id }) {
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
+              {errors.salary && (
+                <span className="text-red-500 text-sm">{errors.salary}</span>
+              )}
             </div>
           </HasPermission>
         </div>
