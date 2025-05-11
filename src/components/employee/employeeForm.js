@@ -5,15 +5,24 @@ import HasPermission from "../HasPermission";
 import { PERMISSIONS } from "@/constants/permissions";
 import RelationalInput from "../RelationalInput";
 import SelectActiveChip from "./SelectActiveChip";
-import { defaultEmployeeForm } from "@/constants/defaultEmployeeForm";
+import { defaultEmployeeDataForm } from "@/constants/defaultEmployeeForm";
 import { useCountries } from "@/hooks/useCountries";
 import { useJob } from "@/hooks/useJob";
 import { parseOptionsToRelationalInput } from "@/utils/parseOptions";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import EmployeePhoto from "./EmployeePhoto";
+import { useRouter } from "next/navigation";
+import {
+  cleanEmployeePayload,
+  cleanEmployeePayloadFormData,
+} from "@/utils/cleanEmployeePayload";
+import axios from "axios";
+import config from "@/config";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás bootstrap
 
-export default function EmployeeForm({ employeeData, onSaveChanges }) {
-  const [formData, setFormData] = useState(defaultEmployeeForm);
+export default function EmployeeForm({ employeeData, id }) {
+  const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
   const {
     countries,
@@ -26,6 +35,7 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
     error: errorStatesCountry,
   } = useStatesCountry();
   const { jobs, loading: loadingJobs, error: errorJobs } = useJob();
+  const router = useRouter();
 
   const jobsParsed = parseOptionsToRelationalInput(jobs);
   const countriesParsed = parseOptionsToRelationalInput(countries);
@@ -40,9 +50,41 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
     setEditing(true);
   }
 
-  function handleSave() {
-    onSaveChanges(formData);
-    setEditing(false);
+  async function handleSave() {
+    if (id != "new") {
+      try {
+        const cleanedData = cleanEmployeePayloadFormData(formData);
+
+        const res = await axios.patch(
+          `${config.API_URL}/employees/${id}`,
+          cleanedData
+        );
+
+        if (res.status != 200) throw new Error("Error al guardar cambios");
+        alert("Cambios guardados exitosamente.");
+        setEditing(false);
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al guardar los datos del empleado");
+      }
+    } else {
+      try {
+        const cleanedData = cleanEmployeePayloadFormData(formData);
+
+        const res = await axios.post(
+          `${config.API_URL}/employees/register`,
+          cleanedData
+        );
+
+        if (res.status != 201) throw new Error("Error al guardar cambios");
+        router.push(`/sigrh/employees/${res.data.id}`);
+        setEditing(false);
+        alert("Cambios guardados exitosamente.");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al guardar los datos del empleado");
+      }
+    }
   }
 
   function handleCancel() {
@@ -51,7 +93,10 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
   }
 
   useEffect(() => {
-    setFormData(employeeData);
+    setFormData({
+      ...defaultEmployeeDataForm,
+      ...employeeData,
+    });
   }, [employeeData]);
 
   return (
@@ -81,14 +126,17 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
             </div>
             <div className="flex flex-col">
               <label className="text-sm text-gray-500">Estado</label>
+
               <SelectActiveChip
-                value={employeeData.active ? "activo" : "inactivo"}
-                onChange={(newState) =>
+                value={formData.active ? "activo" : "inactivo"}
+                onChange={(e) => {
+                  const newValue = e.target.value === "activo";
                   setFormData((prev) => ({
                     ...prev,
-                    active: newState === "active",
-                  }))
-                }
+                    active: newValue,
+                  }));
+                  setEditing(true);
+                }}
               />
             </div>
           </div>
@@ -105,8 +153,11 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
                 onChange={(selectedCargo) => {
                   setFormData((prev) => ({
                     ...prev,
-                    job_id: selectedCargo ? selectedCargo.id : null,
-                    job_title: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
+                    job_id: selectedCargo ? selectedCargo.value : null,
+                    job_title: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
+                    job: jobs.find((job) => {
+                      return job.id == selectedCargo.value;
+                    }),
                   }));
                   setEditing(true);
                 }}
@@ -168,7 +219,8 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
               </label>
               <select
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-                value={formData.type_dni}
+                name="type_dni"
+                value={formData.type_dni || "du"}
                 onChange={handleChange}
               >
                 <option value="lc">LC</option>
@@ -248,8 +300,8 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
               onChange={(selectedCargo) => {
                 setFormData((prev) => ({
                   ...prev,
-                  address_state_id: selectedCargo ? selectedCargo.id : null,
-                  address_state_name: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
+                  address_state_id: selectedCargo ? selectedCargo.value : null,
+                  address_state_name: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
                 }));
                 setEditing(true);
               }}
@@ -270,23 +322,29 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
             <label className="text-sm text-gray-500">País</label>
 
             <RelationalInput
-              label={"Estado/Provincia"}
-              options={statesParsed}
+              label={"Pais"}
+              options={countriesParsed.filter((country) => {
+                country.value == formData.address_state_id;
+              })}
               value={
-                statesParsed.find(
+                countriesParsed.find(
                   (c) => c.value === formData.address_country_id
                 ) || null
               }
               onChange={(selectedCargo) => {
                 setFormData((prev) => ({
                   ...prev,
-                  address_country_id: selectedCargo ? selectedCargo.id : null,
-                  address_country_name: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
+                  address_country_id: selectedCargo
+                    ? selectedCargo.value
+                    : null,
+                  address_country_name: selectedCargo
+                    ? selectedCargo.label
+                    : "", // Guardás el nombre también
                 }));
                 setEditing(true);
               }}
               verDetalles={() => {
-                const cargo = statesParsed.find(
+                const cargo = countriesParsed.find(
                   (c) => c.value === formData.address_country_id
                 );
                 if (cargo) {
@@ -302,12 +360,15 @@ export default function EmployeeForm({ employeeData, onSaveChanges }) {
 
         <div className="flex flex-col">
           <label className="text-sm text-gray-500">Teléfono</label>
-          <input
-            name="phone"
-            type="text"
+          <PhoneInput
+            country={"ar"}
             value={formData.phone}
-            onChange={handleChange}
-            className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+            onChange={(phone, countryData, e, formattedValue) => {
+              const formatted = phone.startsWith("+") ? phone : `+${phone}`;
+              setFormData((prev) => ({ ...prev, phone: formatted }));
+              setEditing(true);
+            }}
+            inputClass="!bg-transparent !text-black !focus:outline-none !pb-1"
           />
         </div>
 

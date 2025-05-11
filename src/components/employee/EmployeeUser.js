@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import HasPermission from "../HasPermission";
-import { PERMISSIONS } from "@/constants/permissions";
 import RelationalInput from "../RelationalInput";
+import axios from "axios";
+import { cleanEmployeePayload } from "@/utils/cleanEmployeePayload";
+import config from "@/config";
 
-export default function EmployeeUser({ employeeData, onSaveChanges }) {
+export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
     user_id: "",
     password: "",
@@ -23,9 +24,41 @@ export default function EmployeeUser({ employeeData, onSaveChanges }) {
     setEditing(true);
   }
 
-  function handleSave() {
-    onSaveChanges(formData);
-    setEditing(false);
+  async function handleSave() {
+    if (id != "new") {
+      try {
+        const cleanedData = cleanEmployeePayload(formData);
+
+        const res = await axios.patch(
+          `${config.API_URL}/employees/${id}`,
+          cleanedData
+        );
+
+        if (res.status != 200) throw new Error("Error al guardar cambios");
+        alert("Cambios guardados exitosamente.");
+        setEditing(false);
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al guardar los datos del empleado");
+      }
+    } else {
+      try {
+        const cleanedData = cleanEmployeePayload(formData);
+
+        const res = await axios.post(
+          `${config.API_URL}/employees/register`,
+          cleanedData
+        );
+
+        if (res.status != 201) throw new Error("Error al guardar cambios");
+        router.push(`/sigrh/employees/${res.data.id}`);
+        setEditing(false);
+        alert("Cambios guardados exitosamente.");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al guardar los datos del empleado");
+      }
+    }
   }
 
   function handleCancel() {
@@ -37,17 +70,6 @@ export default function EmployeeUser({ employeeData, onSaveChanges }) {
     setFormData(employeeData);
   }, [employeeData]);
 
-  const cargos = [
-    { job_id: 1, sector_id: 1, name: "Desarrollador Full Stack" },
-    { job_id: 2, sector_id: 1, name: "Desarrollador Frontend" },
-    { job_id: 3, sector_id: 1, name: "Desarrollador Backend" },
-    { job_id: 4, sector_id: 1, name: "Desarrollador Python" },
-  ].map((cargo) => ({
-    ...cargo,
-    label: cargo.name,
-    value: cargo.job_id,
-  }));
-
   return (
     <div className="mt-4 space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -58,7 +80,7 @@ export default function EmployeeUser({ employeeData, onSaveChanges }) {
               <input
                 name="user_id"
                 type="text"
-                value={employeeData.user_id}
+                value={formData.user_id || ""}
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
@@ -68,13 +90,13 @@ export default function EmployeeUser({ employeeData, onSaveChanges }) {
               <input
                 name="password"
                 type="password"
-                value={employeeData.password}
+                value={formData.password || ""}
                 onChange={handleChange}
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <div className="flex flex-col w-full">
               <label className="text-sm text-gray-500">Rol</label>
 
@@ -102,7 +124,7 @@ export default function EmployeeUser({ employeeData, onSaveChanges }) {
                 }}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
