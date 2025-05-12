@@ -7,6 +7,7 @@ import config from "@/config";
 import SelectStatusChip from "./SelectStatusChip";
 import { useCountries } from "@/hooks/useCountries";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
+import * as XLSX from "xlsx";
 
 export default function PostulationsTable({
   jobOpportunityId,
@@ -31,6 +32,35 @@ export default function PostulationsTable({
   const getStateName = (stateId) => {
     const state = states.find((s) => s.id === stateId);
     return state ? state.name : "Estado desconocido";
+  };
+
+  const exportToExcel = () => {
+    // Crear una hoja de cálculo a partir de los datos de las postulaciones
+    const worksheet = XLSX.utils.json_to_sheet(
+      filteredPostulations.map((postulation) => ({
+        ID: postulation.id,
+        Nombre: postulation.name,
+        Apellido: postulation.surname,
+        Email: postulation.email,
+        Teléfono: postulation.phone_number,
+        Ubicación: `${getStateName(
+          postulation.address_state_id
+        )}, ${getCountryName(postulation.address_country_id)}`,
+        Evaluación: postulation.suitable ? "Apta" : "No apta",
+        Estado: postulation.status,
+        "Habilidades Requeridas":
+          postulation.ability_match?.required_words?.join(", ") || "Ninguna",
+        "Habilidades Deseables":
+          postulation.ability_match?.desired_words?.join(", ") || "Ninguna",
+      }))
+    );
+
+    // Crear un libro de trabajo y agregar la hoja de cálculo
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Postulaciones");
+
+    // Generar el archivo Excel y descargarlo
+    XLSX.writeFile(workbook, "postulaciones.xlsx");
   };
 
   const fetchPostulations = async () => {
@@ -100,6 +130,18 @@ export default function PostulationsTable({
 
   return (
     <div className="p-6">
+      {/* Botón para exportar a Excel */}
+      {postulations.length > 0 && (
+        <div className="mb-4">
+          <button
+            onClick={exportToExcel}
+            className="px-4 py-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors"
+          >
+            Exportar a Excel
+          </button>
+        </div>
+      )}
+
       {/* Contenedor de la tabla con scroll */}
       <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
         <table className="min-w-full bg-white">
