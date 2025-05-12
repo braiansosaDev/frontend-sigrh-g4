@@ -19,6 +19,7 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const [states, setStates] = useState([]); // Lista de provincias
   const [canCreate, setCanCreate] = useState(false); // Verifica si se puede crear una postulación
   const [cvFile, setCvFile] = useState(null); // Almacena el archivo del CV
+  const [postulations, setPostulations] = useState([]); // Almacena las postulaciones
 
   const fetchCountries = async () => {
     try {
@@ -71,47 +72,58 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
 
   const handleCountryChange = (e) => {
     setCountryId(e.target.value);
-    setStateId(""); // Reinicia la provincia seleccionada
+    setStateId("");
   };
 
   const handleStateChange = (e) => {
     setStateId(e.target.value);
   };
 
-  const validateStep1 = () => {
-    // Validar que los campos no estén vacíos
+  const fetchPostulations = async () => {
+    try {
+      const res = await axios.get(
+        `${config.API_URL}/postulations/?job_opportunity_id=${jobId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.status !== 200)
+        throw new Error("Error al obtener las postulaciones");
+
+      setPostulations(res.data);
+    } catch (error) {
+      console.error("Error al obtener las postulaciones:", error);
+      return []; // Devuelve un array vacío en caso de error
+    }
+  };
+
+  useEffect(() => {
+    fetchPostulations();
+  }, []);
+
+  const validateStep1 = async () => {
     if (!email || !name || !surname || !phone || !countryId || !stateId) {
       alert("Por favor, completa todos los campos.");
       return false;
     }
 
-    // Validar formato del email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       alert("Por favor, ingresa un email válido.");
       return false;
     }
 
-    /*if (!canCreate) {
-      alert(
-        "Ya existe una postulación con este email para esta oferta de trabajo."
-      );
-      return false;
-    }*/
-
-    // Validar longitud del nombre
     if (name.length > 50) {
       alert("El nombre no puede tener más de 50 caracteres.");
       return false;
     }
 
-    // Validar longitud del apellido
     if (surname.length > 50) {
       alert("El apellido no puede tener más de 50 caracteres.");
       return false;
     }
 
-    // Validar formato del número de teléfono (E.164 estándar global)
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phone)) {
       alert(
@@ -120,7 +132,6 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       return false;
     }
 
-    // Validar que el país seleccionado exista en la lista de países
     const countryExists = countries.some(
       (country) => country.id === parseInt(countryId)
     );
@@ -129,14 +140,22 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       return false;
     }
 
-    // Validar que la provincia seleccionada exista en la lista de provincias
     const stateExists = states.some((state) => state.id === parseInt(stateId));
     if (!stateExists) {
       alert("La provincia seleccionada no es válida.");
       return false;
     }
 
-    // Si todas las validaciones pasan
+    const emailExists = postulations.some(
+      (postulation) => postulation.email.toLowerCase() === email.toLowerCase()
+    );
+    if (emailExists) {
+      alert(
+        "Ya existe una postulación con este email para esta oferta de trabajo."
+      );
+      return false;
+    }
+
     return true;
   };
 

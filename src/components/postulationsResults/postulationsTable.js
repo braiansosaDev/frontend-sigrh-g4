@@ -170,10 +170,18 @@ export default function PostulationsTable({
                   <td className="py-2 px-4 text-sm text-gray-700">
                     <span
                       className={`font-semibold ${
-                        postulation.suitable ? "text-green-600" : "text-red-600"
+                        postulation.status === "pendiente"
+                          ? "text-yellow-500"
+                          : postulation.suitable
+                          ? "text-green-600"
+                          : "text-red-600"
                       }`}
                     >
-                      {postulation.suitable ? "Apto" : "No apto"}
+                      {postulation.status === "pendiente"
+                        ? "Pendiente"
+                        : postulation.suitable
+                        ? "Apta"
+                        : "No apta"}
                     </span>
                   </td>
                   <td className="py-2 px-4 text-sm text-gray-700">

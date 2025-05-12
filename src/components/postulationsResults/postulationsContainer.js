@@ -8,49 +8,21 @@ import { FaWandMagicSparkles } from "react-icons/fa6";
 import PostulationsTable from "./postulationsTable";
 
 export default function PostulationsContainer({ jobOpportunityId }) {
-  const [postulations, setPostulations] = useState([]); // Lista de todas las postulaciones
-  const [filteredPostulations, setFilteredPostulations] = useState([]); // Lista filtrada
-  const [filter, setFilter] = useState("all"); // Filtro actual: "all", "aptas", "no_aptas"
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para el buscador
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const token = Cookies.get("token");
-
-  useEffect(() => {
-    fetchPostulations();
-  }, []);
-
-  // Obtener las postulaciones desde el backend
-  const fetchPostulations = async () => {
-    setLoading(true); // Mostrar "Cargando" mientras se obtienen los datos
-    try {
-      const res = await axios.get(
-        `${config.API_URL}/postulations?job_opportunity_id=${jobOpportunityId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.status !== 200) throw new Error("Error al obtener postulaciones");
-
-      setPostulations(res.data);
-    } catch (error) {
-      console.error("Error al obtener las postulaciones:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
   };
 
-  // Manejar el cambio en el buscador
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const handleEvaluateCVs = async () => {
-    setLoading(true); // Mostrar "Cargando" mientras se procesan los CVs
+    setLoading(true);
     try {
       const res = await axios.get(
         `${config.API_URL}/matcher/${jobOpportunityId}`,
@@ -60,12 +32,10 @@ export default function PostulationsContainer({ jobOpportunityId }) {
       );
 
       if (res.status !== 200) throw new Error("Error al procesar los CVs");
-
-      fetchPostulations(); // Actualizar las postulaciones después de evaluar
     } catch (error) {
       console.error("Error al procesar los CVs:", error);
     } finally {
-      setLoading(false); // Ocultar "Cargando" después de procesar
+      setLoading(false);
     }
   };
 

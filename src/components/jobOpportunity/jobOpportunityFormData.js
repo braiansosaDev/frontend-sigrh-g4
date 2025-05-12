@@ -80,8 +80,6 @@ export default function JobOpportunityFormData({
           .flat()
           .find((state) => state.id === jobOpportunity.state_id);
         countryId = state ? state.country_id : "";
-      } else {
-        console.log("No hay estados disponibles para asignar el país.");
       }
 
       setFormData({

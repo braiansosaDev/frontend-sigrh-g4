@@ -79,8 +79,6 @@ export default function JobOpportunityOptions({
           .flat()
           .find((state) => state.id === jobOpportunity.state_id);
         countryId = state ? state.country_id : "";
-      } else {
-        console.log("No hay estados disponibles para asignar el país.");
       }
 
       setFormData({
@@ -99,7 +97,7 @@ export default function JobOpportunityOptions({
   useEffect(() => {
     fetchCountries();
     fetchStates();
-  }, []); // Cambia la dependencia a un array vacío
+  }, []);
 
   const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
     try {
@@ -149,8 +147,6 @@ export default function JobOpportunityOptions({
       console.error(e);
       alert("Ocurrió un error al crear la convocatoria");
     }
-
-
   };
 
   const checkRegion = (e) => {
