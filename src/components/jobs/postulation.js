@@ -179,9 +179,9 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       if (!cvFile) {
         alert("Por favor, sube tu CV antes de continuar.");
         return;
-      } else if (!language) {
+        /*} else if (!language) {
         alert("Por favor, selecciona el idioma de tu CV.");
-        return;
+        return;*/
       } else if (!validateCV(cvFile)) {
         return;
       }
@@ -358,34 +358,36 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               Sube tu CV
             </h2>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md
-              focus:ring-emerald-500 focus:border-emerald-500 mb-4"
-            >
-              <option value="" disabled>
-                Selecciona el idioma de tu CV
-              </option>
-              <option value="es">Español</option>
-              <option value="en">Inglés</option>
-            </select>
-            <div
-              className="w-full h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center text-gray-500 cursor-pointer"
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file) {
-                  setCvFile(file);
-                }
-              }}
-              onDragOver={(e) => e.preventDefault()}
-            >
-              {cvFile ? (
-                <span>{cvFile.name}</span>
-              ) : (
-                <span>Arrastra tu archivo aquí o haz clic para subirlo</span>
-              )}
+            <div>
+              {/*<select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md
+                focus:ring-emerald-500 focus:border-emerald-500 mb-4"
+              >
+                <option value="" disabled>
+                  Selecciona el idioma de tu CV
+                </option>
+                <option value="es">Español</option>
+                <option value="en">Inglés</option>
+              </select>*/}
+              <div
+                className="w-full h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center text-gray-500 cursor-pointer"
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) {
+                    setCvFile(file);
+                  }
+                }}
+                onDragOver={(e) => e.preventDefault()}
+              >
+                {cvFile ? (
+                  <span>{cvFile.name}</span>
+                ) : (
+                  <span>Arrastra tu archivo aquí o haz clic para subirlo</span>
+                )}
+              </div>
             </div>
             <input
               type="file"

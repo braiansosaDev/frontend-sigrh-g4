@@ -26,6 +26,8 @@ export default function JobOpportunityFormData({
   const [states, setStates] = useState([]);
   const [statesAreLoaded, setStatesAreLoaded] = useState(false);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const fetchCountries = async () => {
     try {
       const res = await axios.get(`${config.API_URL}/countries/`, {
@@ -100,7 +102,6 @@ export default function JobOpportunityFormData({
     fetchStates();
   }, []); // Cambia la dependencia a un array vacío
 
-
   const checkRegion = (e) => {
     const { name, value } = e.target;
 
@@ -118,7 +119,7 @@ export default function JobOpportunityFormData({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Verifica si el botón "Guardar" fue el que disparó el evento
@@ -139,11 +140,19 @@ export default function JobOpportunityFormData({
       return alert("La descripción no puede tener más de 1000 caracteres.");
     }
 
-   
-      onSave(formData, jobOpportunity.id);
+    setIsSaving(true);
 
+    try {
+      await onSave(formData, jobOpportunity.id);
 
-    onClose();
+      setTimeout(() => {
+        setIsSaving(false);
+        onClose();
+      }, 2000);
+    } catch (error) {
+      console.error("Error al guardar la convocatoria:", error);
+      setIsSaving(false); // Desactivar el estado de guardado en caso de error
+    }
   };
 
   return (
@@ -278,9 +287,14 @@ export default function JobOpportunityFormData({
             <button
               type="submit"
               name="saveButton"
-              className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
+              className={`px-4 py-2 rounded-md text-white ${
+                isSaving
+                  ? "bg-emerald-400 cursor-not-allowed"
+                  : "bg-emerald-500 hover:bg-emerald-600"
+              }`}
+              disabled={isSaving}
             >
-              Guardar
+              {isSaving ? "Guardado ✅" : "Guardar"}
             </button>
           </div>
         </form>
