@@ -102,7 +102,7 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
     fetchPostulations();
   }, []);
 
-  const validateStep1 = async () => {
+  const validateStep1 = () => {
     if (!email || !name || !surname || !phone || !countryId || !stateId) {
       alert("Por favor, completa todos los campos.");
       return false;
