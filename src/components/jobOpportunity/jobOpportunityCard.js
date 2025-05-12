@@ -49,7 +49,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         {jobOpportunity.title}
       </h2>
       <p className="text-sm text-gray-600">
-        Descripción:{" "}
+        📋 Descripción:{" "}
         <span className="font-semibold">
           {jobOpportunity.description.length > 100
             ? jobOpportunity.description.substring(0, 200) + "..."
@@ -57,7 +57,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         </span>
       </p>
       <p className="text-sm text-gray-600">
-        Zona:{" "}
+        🌍 Zona:{" "}
         <span className="font-semibold">
           {(() => {
             const state = states.find(
@@ -76,11 +76,11 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         </span>
       </p>
       <p className="text-sm text-gray-600">
-        Modalidad:{" "}
+        💻 Modalidad:{" "}
         <span className="font-semibold">{jobOpportunity.work_mode}</span>
       </p>
       <p className="text-sm text-gray-600">
-        Estado:{" "}
+        🔌 Estado:{" "}
         <span
           className={`text-sm font-semibold ${
             jobOpportunity.status === "no_activo"
@@ -97,7 +97,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         <p className="text-sm font-semibold text-gray-600 mb-1">
           Habilidades excluyentes:
         </p>
-        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-2 rounded-md">
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-md">
           {jobOpportunity.required_abilities &&
           jobOpportunity.required_abilities.length > 0 ? (
             jobOpportunity.required_abilities.map((ability, index) => (

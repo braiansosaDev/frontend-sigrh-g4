@@ -160,14 +160,14 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
   };
 
   const validateCV = (file) => {
-    // Validar que el archivo sea un Word o PDF
+    // Validar que el archivo sea un PDF, dsp agregaremos word (por eso está comentado)
     const allowedExtensions = [
       "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      /*"application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",*/
     ];
     if (!allowedExtensions.includes(file.type)) {
-      alert("El archivo debe ser un documento Word o PDF.");
+      alert("El archivo debe ser un documento PDF.");
       return false;
     }
 
