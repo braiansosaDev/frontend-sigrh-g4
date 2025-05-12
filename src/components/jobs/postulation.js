@@ -241,8 +241,6 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
         cv_language: language,
       };
 
-      console.log("Payload:", payload);
-
       const res = await axios.post(
         `${config.API_URL}/postulations/create`,
         JSON.stringify(payload),

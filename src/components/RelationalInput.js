@@ -15,7 +15,7 @@ export default function RelationalInput({
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  const wrapperRef = useRef(null);  // <-- ref para el contenedor
+  const wrapperRef = useRef(null); // <-- ref para el contenedor
 
   const filteredOptions = options.filter((opt) =>
     opt.label.toLowerCase().includes(query.toLowerCase())
@@ -97,12 +97,16 @@ export default function RelationalInput({
                 key={opt.value}
                 className={`px-2 py-1 cursor-pointer flex justify-between ${
                   highlightedIndex === index ? "bg-blue-100" : ""
-                } ${value && value.value === opt.value ? "font-semibold" : ""} hover:bg-gray-100`}
+                } ${
+                  value && value.value === opt.value ? "font-semibold" : ""
+                } hover:bg-gray-100`}
                 onClick={() => seleccionar(opt)}
               >
                 {opt.label}
                 {value && value.value === opt.value && (
-                  <span className="text-green-500 text-xs ml-2">(Seleccionado)</span>
+                  <span className="text-green-500 text-xs ml-2">
+                    (Seleccionado)
+                  </span>
                 )}
               </li>
             ))}

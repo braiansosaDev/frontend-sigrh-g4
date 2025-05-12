@@ -10,7 +10,6 @@ import { useStatesCountry } from "@/hooks/useStatesCountry";
 
 export default function PostulationsTable({
   jobOpportunityId,
-  onRefresh,
   filter,
   searchInput,
 }) {
@@ -104,7 +103,7 @@ export default function PostulationsTable({
       {/* Contenedor de la tabla con scroll */}
       <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
         <table className="min-w-full bg-white">
-          <thead className="bg-gray-100 sticky top-0 z-10">
+          <thead className="bg-gray-100 top-0 z-10">
             <tr>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
                 ID
@@ -227,7 +226,7 @@ export default function PostulationsTable({
                       value={postulation.status}
                       postulationId={postulation.id}
                       onChange={() => {
-                        onRefresh();
+                        fetchPostulations();
                       }}
                     />
                   </td>

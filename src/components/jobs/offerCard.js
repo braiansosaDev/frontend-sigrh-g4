@@ -5,6 +5,16 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 
+const toCamelCase = (text) => {
+  let result = "";
+  result += text.charAt(0).toUpperCase();
+  for (let i = 1; i < text.length; i++) {
+    result += text.charAt(i).toLowerCase();
+  }
+
+  return result;
+};
+
 export default function OfferCard({ jobOpportunity, onApply }) {
   const [showFullDescription, setShowFullDescription] = useState(false); // Estado para alternar descripción
 
@@ -90,7 +100,7 @@ export default function OfferCard({ jobOpportunity, onApply }) {
         </span>
       </p>
       <p className="text-sm text-gray-600 font-semibold mb-2 mt-2 cursor-default">
-        💻 {jobOpportunity.work_mode}
+        💻 {toCamelCase(jobOpportunity.work_mode)}
       </p>
 
       {/* Habilidades requeridas */}

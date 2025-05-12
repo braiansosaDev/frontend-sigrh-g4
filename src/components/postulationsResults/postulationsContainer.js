@@ -110,9 +110,6 @@ export default function PostulationsContainer({ jobOpportunityId }) {
             jobOpportunityId={jobOpportunityId}
             searchInput={searchTerm}
             filter={filter}
-            onRefresh={() => {
-              fetchPostulations();
-            }}
           />
         )}
       </div>
