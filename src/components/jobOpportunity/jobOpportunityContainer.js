@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
 import JobOpportunityFormData from "./jobOpportunityFormData";
-import PostulationsTable from "../postulationsResults/postulationsTable";
+import PostulationsContainer from "../postulationsResults/postulationsContainer";
 
 export default function JobOpportunityContainer({ jobOpportunityId }) {
   const [opportunityData, setOpportunityData] = useState({});
@@ -37,6 +37,56 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
   useEffect(() => {
     fetchOpportunityData();
   }, []);
+
+  const handleSaveJobOpportunityForm = async (jobOpportunityNewData, id) => {
+    try {
+      const payload = {
+        owner_employee_id: opportunityData.owner_employee_id,
+        status: jobOpportunityNewData.status || "activo",
+        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
+        title: jobOpportunityNewData.title || "",
+        description: jobOpportunityNewData.description || "",
+        budget: jobOpportunityNewData.budget || 1,
+        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
+        state_id: jobOpportunityNewData.state_id || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        required_abilities: (
+          jobOpportunityNewData.required_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+        desirable_abilities: (
+          jobOpportunityNewData.desirable_abilities || []
+        ).map((ability) => ({
+          name: ability.name || "",
+          description: ability.description || "",
+          id: ability.id || 0,
+        })),
+      };
+
+      const res = await axios.patch(
+        `${config.API_URL}/opportunities/${id}`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status !== 200)
+        throw new Error("Error al modificar la convocatoria");
+
+      setOpportunityData(res.data);
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al modificar la convocatoria");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -77,11 +127,15 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
         </div>
 
         {activeTab === 0 && (
-          <JobOpportunityFormData jobOpportunity={opportunityData} />
+          <JobOpportunityFormData
+            jobOpportunity={opportunityData}
+            onSave={handleSaveJobOpportunityForm}
+            onClose={() => {}}
+          />
         )}
 
         {activeTab === 1 && (
-          <PostulationsTable jobOpportunityId={opportunityData.id} />
+          <PostulationsContainer jobOpportunityId={opportunityData.id} />
         )}
       </div>
     </div>

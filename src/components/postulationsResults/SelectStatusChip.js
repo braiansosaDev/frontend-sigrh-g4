@@ -25,7 +25,6 @@ const SelectStatusChip = ({ value, postulationId, onChange }) => {
         `${config.API_URL}/postulations/${postulationId}`,
         { status: newValue }
       );
-      console.log("Estado actualizado:", res.data);
       // Aquí podrías agregar un estado local para actualizar visualmente si lo necesitás.
       onChange();
     } catch (error) {
@@ -37,12 +36,22 @@ const SelectStatusChip = ({ value, postulationId, onChange }) => {
     <select
       value={value}
       onChange={handleChange}
-      className={`rounded-full px-3 py-1 text-sm font-semibold border focus:outline-none ${getColorClass(value)}`}
+      className={`rounded-full px-3 py-1 text-sm font-semibold border focus:outline-none ${getColorClass(
+        value
+      )}`}
     >
-      <option value="pendiente" className="bg-white text-black">Pendiente</option>
-      <option value="aceptada" className="bg-white text-black">Aceptada</option>
-      <option value="no aceptada" className="bg-white text-black">No aceptada</option>
-      <option value="contratado" className="bg-white text-black">Contratado</option>
+      <option value="pendiente" className="bg-white text-black">
+        Pendiente
+      </option>
+      <option value="aceptada" className="bg-white text-black">
+        Aceptada
+      </option>
+      <option value="no aceptada" className="bg-white text-black">
+        No aceptada
+      </option>
+      <option value="contratado" className="bg-white text-black">
+        Contratado
+      </option>
     </select>
   );
 };

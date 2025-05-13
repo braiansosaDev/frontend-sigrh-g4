@@ -108,8 +108,6 @@ export default function JobOpportunityTable() {
     } catch (e) {
       alert("No se pudieron obtener las convocatorias");
     }
-
-    console.log(jobOpportunities);
   };
 
   const fetchStates = async () => {
@@ -160,8 +158,6 @@ export default function JobOpportunityTable() {
         })),
       };
 
-      console.log(JSON.stringify(payload));
-
       const res = await axios.post(
         `${config.API_URL}/opportunities/create`,
         JSON.stringify(payload),
@@ -177,57 +173,6 @@ export default function JobOpportunityTable() {
     } catch (e) {
       console.error(e);
       alert("Ocurrió un error al crear la convocatoria");
-    }
-
-    setIsAdding(false);
-    fetchJobOpportunities(); // Refresca la lista de convocatorias después de crear una nueva
-  };
-
-  const handleSaveJobOpportunityForm = async (jobOpportunityNewData, id) => {
-    try {
-      const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
-        status: jobOpportunityNewData.status || "activo",
-        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
-        title: jobOpportunityNewData.title || "", //
-        description: jobOpportunityNewData.description || "",
-        budget: jobOpportunityNewData.budget || 1,
-        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
-        state_id: jobOpportunityNewData.state_id || 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        required_abilities: (
-          jobOpportunityNewData.required_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-        desirable_abilities: (
-          jobOpportunityNewData.desirable_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-      };
-
-      const res = await axios.patch(
-        `${config.API_URL}/opportunities/${id}`,
-        JSON.stringify(payload),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (res.status != 200)
-        throw new Error("Error al modificar la convocatoria");
-    } catch (e) {
-      console.error(e);
-      alert("Ocurrió un error al modificar la convocatoria");
     }
 
     setIsAdding(false);
@@ -317,17 +262,6 @@ export default function JobOpportunityTable() {
             isAdding={isAdding}
             onClose={() => setIsAdding(false)}
             onSave={handleCreateJobOpportunityForm}
-          />
-        )}
-
-        {isEditing && (
-          <JobOpportunityOptions
-            isAdding={false}
-            onClose={() => setIsEditing(false)}
-            onSave={handleSaveJobOpportunityForm}
-            jobOpportunity={currentjobOportunity.find(
-              (job) => job.title === selectedJobOpportunityTitle
-            )}
           />
         )}
 

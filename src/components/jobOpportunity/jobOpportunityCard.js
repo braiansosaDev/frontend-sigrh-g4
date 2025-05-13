@@ -45,19 +45,11 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 flex flex-col gap-2 relative border border-gray-300">
-      {/* Botón Modificar en la esquina superior derecha */}
-      {/* <button
-        onClick={() => onModify(jobOpportunity)} // Pasar la convocatoria directamente
-        className="absolute top-2 right-2 px-2 py-1 bg-emerald-500 text-white rounded-md text-s hover:bg-emerald-600"
-      >
-        Modificar
-      </button> */}
-
       <h2 className="text-lg font-bold text-gray-800">
         {jobOpportunity.title}
       </h2>
       <p className="text-sm text-gray-600">
-        Descripción:{" "}
+        📋 Descripción:{" "}
         <span className="font-semibold">
           {jobOpportunity.description.length > 100
             ? jobOpportunity.description.substring(0, 200) + "..."
@@ -65,7 +57,7 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         </span>
       </p>
       <p className="text-sm text-gray-600">
-        Zona:{" "}
+        🌍 Zona:{" "}
         <span className="font-semibold">
           {(() => {
             const state = states.find(
@@ -84,11 +76,11 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
         </span>
       </p>
       <p className="text-sm text-gray-600">
-        Modalidad:{" "}
+        💻 Modalidad:{" "}
         <span className="font-semibold">{jobOpportunity.work_mode}</span>
       </p>
       <p className="text-sm text-gray-600">
-        Estado:{" "}
+        🔌 Estado:{" "}
         <span
           className={`text-sm font-semibold ${
             jobOpportunity.status === "no_activo"
@@ -99,6 +91,51 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
           {jobOpportunity.status === "no_activo" ? "Inactiva" : "Activa"}
         </span>{" "}
       </p>
+
+      {/* Habilidades requeridas */}
+      <div className="mb-2 mt-2">
+        <p className="text-sm font-semibold text-gray-600 mb-1">
+          Habilidades excluyentes:
+        </p>
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-md">
+          {jobOpportunity.required_abilities &&
+          jobOpportunity.required_abilities.length > 0 ? (
+            jobOpportunity.required_abilities.map((ability, index) => (
+              <span
+                key={index}
+                className="bg-emerald-100 text-emerald-700 font-semibold px-3 py-1 rounded-full text-sm whitespace-nowrap"
+              >
+                {ability.name}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500 text-sm">No especificadas</span>
+          )}
+        </div>
+      </div>
+
+      {/* Habilidades deseables */}
+      <div className="mb-2 mt-2">
+        <p className="text-sm font-semibold text-gray-600 mb-1">
+          Habilidades deseables:
+        </p>
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-2 rounded-md">
+          {jobOpportunity.desirable_abilities &&
+          jobOpportunity.desirable_abilities.length > 0 ? (
+            jobOpportunity.desirable_abilities.map((ability, index) => (
+              <span
+                key={index}
+                className="bg-gray-100 text-gray-700 px-3 py-1 font-semibold rounded-full text-sm whitespace-nowrap"
+              >
+                {ability.name}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500 text-sm">No especificadas</span>
+          )}
+        </div>
+      </div>
+
       <button
         onClick={() =>
           router.push(`/sigrh/job_opportunities/${jobOpportunity.id}`)
