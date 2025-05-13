@@ -126,16 +126,22 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
           ))}
         </div>
 
+          
         {activeTab === 0 && (
+          <div className="h-[70vh] overflow-y-auto">
           <JobOpportunityFormData
             jobOpportunity={opportunityData}
             onSave={handleSaveJobOpportunityForm}
             onClose={() => {}}
           />
+          </div>
         )}
+        
 
         {activeTab === 1 && (
+          <div className="h-[70vh] overflow-y-auto">
           <PostulationsContainer jobOpportunityId={opportunityData.id} />
+          </div>
         )}
       </div>
     </div>

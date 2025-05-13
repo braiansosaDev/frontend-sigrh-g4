@@ -212,7 +212,7 @@ export default function JobOpportunityTable() {
       </div>
 
       {/* Para mostrar todas las convocatorias en pantalla */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="h-[70vh] overflow-y-auto grid grid-cols-1 gap-4">
         {currentjobOportunity.map((jobOpportunity, index) => (
           <JobOpportunityCard
             key={index}

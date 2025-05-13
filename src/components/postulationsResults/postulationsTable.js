@@ -143,7 +143,7 @@ export default function PostulationsTable({
       )}
 
       {/* Contenedor de la tabla con scroll */}
-      <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
+      <div className="overflow-x-auto max-h-[70vh] max-w-[90%] overflow-y-auto rounded-lg">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-100 top-0 z-10">
             <tr>
