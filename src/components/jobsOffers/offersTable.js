@@ -169,7 +169,7 @@ export default function OffersTable() {
               type="text"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="px-6 py-3 border bg-emerald-500 placeholder-emerald-50 border-emerald-600 rounded-full w-3/4 text-sm text-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-6 py-3 border bg-white border-emerald-600 rounded-full w-3/4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder="🔍︎ Buscar por título..."
             />
             <button
@@ -186,7 +186,7 @@ export default function OffersTable() {
               type="text"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="px-6 py-3 border bg-emerald-500 text-emerald-50 placeholder-emerald-50 border-emerald-700 rounded-full w-full lg:w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:scale-102 hover:scale-102 transition-transform"
+              className="px-6 py-3 border bg-white border-emerald-700 rounded-full w-full lg:w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:scale-102 hover:scale-102 transition-transform"
               placeholder="🔍︎ Buscar por título..."
             />
           </div>

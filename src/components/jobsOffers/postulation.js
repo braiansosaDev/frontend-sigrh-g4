@@ -4,6 +4,8 @@ import { useState, useEffect, use } from "react";
 import config from "@/config";
 import Cookies from "js-cookie";
 import axios from "axios";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const token = Cookies.get("token"); // Token de autenticación
@@ -312,12 +314,12 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Teléfono
                 </label>
-                <input
-                  type="tel"
+
+                <PhoneInput
+                  country={"ar"}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-                  placeholder="+541112345678"
+                  onChange={setPhone}
+                  inputClass="!w-full  !border !border-gray-300 !rounded-md !focus:ring-emerald-500 !focus:border-emerald-500"
                 />
               </div>
               <div>
