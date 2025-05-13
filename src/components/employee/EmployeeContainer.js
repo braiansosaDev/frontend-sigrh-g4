@@ -45,47 +45,6 @@ export default function EmployeeContainer({ id }) {
     }
   }, []);
 
-  const handleSaveEmployeeForm = async (employeeChangedData) => {
-    if (id != "new") {
-      try {
-        const cleanedData = cleanEmployeePayload(employeeChangedData);
-
-        const res = await axios.patch(
-          `${config.API_URL}/employees/${id}`,
-          cleanedData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (res.status != 200) throw new Error("Error al guardar cambios");
-        alert("Cambios guardados exitosamente.");
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
-      }
-    } else {
-      try {
-        const cleanedData = cleanEmployeePayload(employeeChangedData);
-
-        const res = await axios.post(
-          `${config.API_URL}/employees/register`,
-          cleanedData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (res.status != 201) throw new Error("Error al guardar cambios");
-        router.push(`/sigrh/employees/${res.data.id}`);
-        alert("Cambios guardados exitosamente.");
-      } catch (e) {
-        console.error(e);
-        alert("Ocurrió un error al guardar los datos del empleado");
-      }
-    }
-  };
-
   return (
     <div className="p-6">
       <div className="flex items-center gap-2 text-black">

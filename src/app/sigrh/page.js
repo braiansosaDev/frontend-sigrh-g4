@@ -1,7 +1,7 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import HomeContainer from "@/components/home/homeContainer";
 
 export default function Home() {
   return (
-    <WorkInProgress />
+    <HomeContainer />
   );
 }

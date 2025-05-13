@@ -1,4 +1,5 @@
 import SIGRHLayout from "@/components/SIGRHLayout/SIGRHLayout";
+import { UserProvider } from "@/contexts/userContext";
 
 export const metadata = {
   title: "SIGRH+",
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <SIGRHLayout>{children}</SIGRHLayout>;
+  return (
+    <UserProvider>
+      <SIGRHLayout>{children}</SIGRHLayout>
+    </UserProvider>
+  );
 }

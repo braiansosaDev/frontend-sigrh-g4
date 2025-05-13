@@ -1,5 +1,5 @@
-import OffersTable from "@/components/jobs/offersTable";
+import OffersTable from "@/components/jobsOffers/offersTable";
 
 export default function OffersPage() {
-  return <OffersTable></OffersTable>;
+  return <OffersTable />;
 }
