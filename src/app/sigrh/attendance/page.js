@@ -1,7 +1,5 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import AttendanceContainer from "@/components/attendance/attendanceContainer";
 
 export default function AttendancePage() {
-  return (
-    <WorkInProgress />
-  );
+  return <AttendanceContainer />;
 }
