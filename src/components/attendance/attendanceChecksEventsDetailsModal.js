@@ -3,45 +3,104 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { MdOutlineModeEdit, MdDeleteOutline  } from "react-icons/md";
 
-export default function AttendanceChecksEventsDetailsModal({ open, employeeId, fecha, onClose }) {
+
+export default function AttendanceChecksEventsDetailsModal({
+  open,
+  employeeId,
+  fecha,
+  onClose,
+}) {
   const [fichadas, setFichadas] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({ event_date: "", event_type: "in" });
 
   const token = Cookies.get("token");
 
-  useEffect(() => {
+  const fetchFichadas = async () => {
     if (!open || !employeeId || !fecha) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(`${config.API_URL}/clock_events`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { employee_id: employeeId, fecha },
+      });
+      setFichadas(res.data);
+    } catch {
+      alert("Error al traer las fichadas");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchFichadas = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(`${config.API_URL}/clock_events`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const filtradas = res.data.filter(
-          (f) =>
-            f.employee.id === employeeId &&
-            f.event_date.startsWith(fecha)
-        );
-        setFichadas(filtradas);
-      } catch (err) {
-        alert("Error al traer las fichadas");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchFichadas();
   }, [open, employeeId, fecha]);
+
+  const handleDelete = async (id) => {
+    if (!confirm("¿Eliminar fichada?")) return;
+    try {
+      await axios.delete(`${config.API_URL}/clock_events/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchFichadas();
+    } catch {
+      alert("Error al eliminar fichada");
+    }
+  };
+
+  const handleEdit = (fichada) => {
+    setEditingId(fichada.id);
+    setFormData({
+      event_date: fichada.event_date.slice(0, 19), // yyyy-mm-ddThh:mm:ss
+      event_type: fichada.event_type,
+    });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.patch(
+        `${config.API_URL}/clock_events/${editingId}`,
+        {
+          employee_id: employeeId,
+          ...formData,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingId(null);
+      fetchFichadas();
+    } catch {
+      alert("Error al actualizar fichada");
+    }
+  };
+
+  const handleCreate = async () => {
+    try {
+      await axios.post(
+        `${config.API_URL}/clock_events`,
+        {
+          employee_id: employeeId,
+          ...formData,
+          source: "portal-web",
+          device_id: "portal-web"
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setFormData({ event_date: "", event_type: "in" });
+      fetchFichadas();
+    } catch {
+      alert("Error al crear fichada");
+    }
+  };
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-70 flex items-center justify-center">
       <div className="absolute inset-0 bg-black opacity-50"></div>
-      <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg relative">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-lg"
           onClick={onClose}
@@ -50,6 +109,39 @@ export default function AttendanceChecksEventsDetailsModal({ open, employeeId, f
         </button>
         <h2 className="text-lg font-semibold mb-4">Fichadas del día</h2>
 
+        {/* Formulario nueva fichada */}
+        <div className="flex gap-2 mb-4">
+          <input
+            type="datetime-local"
+            value={formData.event_date}
+            onChange={(e) => setFormData((p) => ({ ...p, event_date: e.target.value }))}
+            className="border border-gray-300 px-3 py-2 rounded w-full text-sm"
+          />
+          <select
+            value={formData.event_type}
+            onChange={(e) => setFormData((p) => ({ ...p, event_type: e.target.value }))}
+            className="border border-gray-300 px-3 py-2 rounded text-sm"
+          >
+            <option value="in">Entrada</option>
+            <option value="out">Salida</option>
+          </select>
+          {editingId ? (
+            <button
+              onClick={handleUpdate}
+              className="bg-amber-500 text-white px-4 py-2 rounded text-sm"
+            >
+              Actualizar
+            </button>
+          ) : (
+            <button
+              onClick={handleCreate}
+              className="bg-emerald-500 text-white px-4 py-2 rounded text-sm"
+            >
+              Agregar
+            </button>
+          )}
+        </div>
+
         {loading ? (
           <p className="text-sm text-gray-500">Cargando...</p>
         ) : fichadas.length > 0 ? (
@@ -57,18 +149,36 @@ export default function AttendanceChecksEventsDetailsModal({ open, employeeId, f
             {fichadas.map((f) => (
               <li
                 key={f.id}
-                className="border p-2 rounded text-sm flex justify-between"
+                className="border border-gray-300 p-2 rounded text-sm flex justify-between items-center"
               >
-                <span>{new Date(f.event_date).toLocaleTimeString("es-AR")}</span>
-                <span
-                  className={
-                    f.event_type === "in"
-                      ? "text-green-600 font-semibold"
-                      : "text-red-600 font-semibold"
-                  }
-                >
-                  {f.event_type === "in" ? "Entrada" : "Salida"}
-                </span>
+                <div>
+                  <span className="block">
+                    {new Date(f.event_date).toLocaleTimeString("es-AR", { hour12: false })}
+                  </span>
+                  <span
+                    className={
+                      f.event_type === "in"
+                        ? "text-green-600 font-semibold"
+                        : "text-red-600 font-semibold"
+                    }
+                  >
+                    {f.event_type === "in" ? "Entrada" : "Salida"}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(f)}
+                    className="text-gray-400 hover:underline text-xs"
+                  >
+                    <MdOutlineModeEdit className="w-6 h-6"/>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(f.id)}
+                    className="text-red-500 hover:underline text-xs"
+                  >
+                    <MdDeleteOutline className="w-6 h-6"/>
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
