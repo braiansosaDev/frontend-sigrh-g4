@@ -26,6 +26,7 @@ export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [facialRegister, setFacialRegister] = useState("");
 
   function validateForm() {
     const newErrors = {};
@@ -155,6 +156,32 @@ export default function EmployeeForm({ employeeData, id }) {
 
       alert("Ocurrió un error al guardar los datos del empleado");
     }
+
+    try {
+      const payload = {
+        employee_id: formData.id,
+        embedding: facialRegister,
+      };
+
+      console.log(JSON.stringify(payload));
+
+      const res = await axios.post(
+        `${config.API_URL}/face_recognition/resgister`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status != 201) throw new Error("Error al registrar rostro");
+      onClose();
+    } catch (e) {
+      console.error(e);
+      alert("Ocurrió un error al registrar el rostro");
+    }
   }
 
   function handleCancel() {
@@ -191,12 +218,13 @@ export default function EmployeeForm({ employeeData, id }) {
           .withFaceLandmarks()
           .withFaceDescriptor();
         if (detection && detection.descriptor) {
-          setFormData((prev) => ({
-            ...prev,
-            facial_register: JSON.stringify(Array.from(detection.descriptor)), //Embedding a string
-          }));
+          setFacialRegister(Array.from(detection.descriptor));
+          console.log(
+            "Facial register updated:",
+            Array.from(detection.descriptor)
+          );
         } else {
-          setFormData((prev) => ({ ...prev, facial_register: "" }));
+          setFacialRegister(Array.from(detection.descriptor));
         }
       };
     }

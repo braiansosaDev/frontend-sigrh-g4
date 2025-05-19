@@ -52,34 +52,22 @@ export default function FaceScan({ onFoundFace, onError }) {
       )
         return;
 
-      const detections = await faceapi.detectSingleFace(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions()
-      );
+      const detection = await faceapi
+        .detectSingleFace(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions()
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptor();
 
-      if (detections && detections.box && !processing) {
+      if (detection && detection.descriptor && !processing) {
         setProcessing(true);
         setStatus("Rostro detectado, enviando...");
 
-        // Recortar la cara
-        const { x, y, width, height } = detections.box;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        // El embedding es un Float32Array, lo convertimos a array normal
+        const embedding = Array.from(detection.descriptor);
 
-        // Crear un canvas temporal para la cara recortada
-        const faceCanvas = document.createElement("canvas");
-        faceCanvas.width = width;
-        faceCanvas.height = height;
-        faceCanvas
-          .getContext("2d")
-          .drawImage(canvas, x, y, width, height, 0, 0, width, height);
-
-        const base64 = faceCanvas.toDataURL("image/jpeg");
-
-        await sendToBackend(base64);
+        await sendToBackend(embedding);
 
         setTimeout(() => setProcessing(false), 3000); // Cooldown
       }
@@ -89,12 +77,14 @@ export default function FaceScan({ onFoundFace, onError }) {
     return () => clearInterval(interval);
   }, [processing]);
 
-  const sendToBackend = async (base64) => {
+  const sendToBackend = async (embedding) => {
     setStatus("Enviando al backend...");
     try {
-      const res = await axios.get(`${config.API_URL}/clock_events/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        `${config.API_URL}/face_recognition/`,
+        { embedding },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       onFoundFace(res.data);
     } catch (e) {
       onError(e);
