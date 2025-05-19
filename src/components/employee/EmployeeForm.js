@@ -21,12 +21,14 @@ import config from "@/config";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás bootstrap
 import * as faceapi from "face-api.js";
+import Cookies from "js-cookie";
 
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const [facialRegister, setFacialRegister] = useState("");
+  const token = Cookies.get("token");
 
   function validateForm() {
     const newErrors = {};
@@ -177,7 +179,6 @@ export default function EmployeeForm({ employeeData, id }) {
       );
 
       if (res.status != 201) throw new Error("Error al registrar rostro");
-      onClose();
     } catch (e) {
       console.error(e);
       alert("Ocurrió un error al registrar el rostro");
