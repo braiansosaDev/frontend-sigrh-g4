@@ -166,7 +166,7 @@ export default function EmployeeForm({ employeeData, id }) {
       console.log(JSON.stringify(payload));
 
       const res = await axios.post(
-        `${config.API_URL}/face_recognition/resgister`,
+        `${config.API_URL}/face_recognition/register`,
         JSON.stringify(payload),
         {
           headers: {
