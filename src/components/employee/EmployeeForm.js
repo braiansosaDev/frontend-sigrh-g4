@@ -20,6 +20,7 @@ import axios from "axios";
 import config from "@/config";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás bootstrap
+import * as faceapi from "face-api.js";
 
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
@@ -74,8 +75,7 @@ export default function EmployeeForm({ employeeData, id }) {
     if (!formData.address_country_id)
       newErrors.address_country_id = "Debe seleccionar un país";
 
-    if (!formData.salary)
-      newErrors.salary = "Debe indicar al menos un salario";
+    if (!formData.salary) newErrors.salary = "Debe indicar al menos un salario";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -168,6 +168,40 @@ export default function EmployeeForm({ employeeData, id }) {
       ...employeeData,
     });
   }, [employeeData]);
+
+  // Modelos de face-api
+  useEffect(() => {
+    faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+    faceapi.nets.faceRecognitionNet.loadFromUri("/models");
+    faceapi.nets.faceLandmark68Net.loadFromUri("/models");
+  }, []);
+
+  // Para generar un nuevo embedding cada vez que se cambia la foto
+  useEffect(() => {
+    async function updateFacialRegister() {
+      if (!formData.photo) {
+        setFormData((prev) => ({ ...prev, facial_register: "" }));
+        return;
+      }
+      const img = new window.Image();
+      img.src = formData.photo;
+      img.onload = async () => {
+        const detection = await faceapi
+          .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+        if (detection && detection.descriptor) {
+          setFormData((prev) => ({
+            ...prev,
+            facial_register: JSON.stringify(Array.from(detection.descriptor)), //Embedding a string
+          }));
+        } else {
+          setFormData((prev) => ({ ...prev, facial_register: "" }));
+        }
+      };
+    }
+    updateFacialRegister();
+  }, [formData.photo]);
 
   return (
     <div className="mt-4 space-y-4">
