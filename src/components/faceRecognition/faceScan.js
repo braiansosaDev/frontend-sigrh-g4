@@ -14,7 +14,9 @@ export default function FaceScan({ onFoundFace, onError }) {
   useEffect(() => {
     const loadModels = async () => {
       setStatus("Cargando modelos...");
-      await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+      faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+      faceapi.nets.faceRecognitionNet.loadFromUri("/models");
+      faceapi.nets.faceLandmark68Net.loadFromUri("/models");
       setStatus("Modelos cargados");
     };
     loadModels();
@@ -79,10 +81,11 @@ export default function FaceScan({ onFoundFace, onError }) {
 
   const sendToBackend = async (embedding) => {
     setStatus("Enviando al backend...");
+    console.log("Embedding:", embedding);
     try {
       const res = await axios.post(
         `${config.API_URL}/face_recognition/`,
-        { embedding },
+        { embedding: embedding },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       onFoundFace(res.data);
