@@ -17,7 +17,7 @@ export default function AttendanceEmployeeChecksTable() {
     };
   });
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const token = Cookies.get("token");
   const router = useRouter();
@@ -39,13 +39,20 @@ export default function AttendanceEmployeeChecksTable() {
     }
   };
 
+  const handleFichadasChanged = () => {
+    fetchAttendanceResume();
+  };
+
   useEffect(() => {
     fetchAttendanceResume();
   }, [filters.startDate]);
 
   const filteredData = resumeData.filter((item) => {
     const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
-    return fullName.includes(filters.searchTerm.toLowerCase());
+    const matchesName = fullName.includes(filters.searchTerm.toLowerCase());
+    const matchesEmployeeId =
+      !filters.employeeId || item.employee_id === Number(filters.employeeId);
+    return matchesName && matchesEmployeeId;
   });
 
   return (
@@ -68,7 +75,11 @@ export default function AttendanceEmployeeChecksTable() {
         <AttendanceEmployeeChecksFilter
           employees={resumeData}
           onApplyFilters={(f) =>
-            setFilters((prev) => ({ ...prev, startDate: f.startDate }))
+            setFilters((prev) => ({
+              ...prev,
+              startDate: f.startDate,
+              employeeId: f.employeeId,
+            }))
           }
         />
       </div>
@@ -90,6 +101,9 @@ export default function AttendanceEmployeeChecksTable() {
                 Sector
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+                Fecha
+              </th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
                 Primera entrada
               </th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
@@ -107,7 +121,7 @@ export default function AttendanceEmployeeChecksTable() {
                   key={item.employee_id}
                   className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
                   onClick={() => {
-                    setSelectedEmployeeId(item.employee_id);
+                    setSelectedEmployee(item); // 👈 guardamos el empleado completo
                     setModalOpen(true);
                   }}
                 >
@@ -124,25 +138,36 @@ export default function AttendanceEmployeeChecksTable() {
                     {item.job || "Sin sector"}
                   </td>
                   <td className="py-2 px-4 text-sm text-gray-700">
+                    {new Date(item.date + "T12:00:00").toLocaleDateString(
+                      "es-AR"
+                    )}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-700">
                     {item.first_in
-                      ? new Date(item.first_in).toLocaleTimeString("es-AR")
+                      ? new Date(item.first_in).toLocaleTimeString("es-AR", {
+                          hour12: false,
+                        })
                       : "—"}
                   </td>
                   <td className="py-2 px-4 text-sm text-gray-700">
                     {item.last_out
-                      ? new Date(item.last_out).toLocaleTimeString("es-AR")
+                      ? new Date(item.last_out).toLocaleTimeString("es-AR", {
+                          hour12: false,
+                        })
                       : "—"}
                   </td>
-                  <td  className="py-2 px-4 text-sm text-center text-gray-700 flex gap-2">{item.total_events}<button
-                    onClick={() => {
-                      setSelectedEmployeeId(item.employee_id);
-                      setModalOpen(true);
-                    }}
-                    className="text-emerald-600 text-sm underline hover:text-emerald-800"
-                  >
-                    Ver
-                  </button></td>
-                  
+                  <td className="py-2 px-4 text-sm text-center text-gray-700 flex gap-2">
+                    {item.total_events}
+                    <button
+                      onClick={() => {
+                        setSelectedEmployee(item);
+                        setModalOpen(true);
+                      }}
+                      className="text-emerald-600 text-sm underline hover:text-emerald-800"
+                    >
+                      Ver
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -158,9 +183,11 @@ export default function AttendanceEmployeeChecksTable() {
 
       <AttendanceChecksEventsDetailsModal
         open={modalOpen}
-        employeeId={selectedEmployeeId}
+        employeeId={selectedEmployee?.employee_id}
+        employeeData={selectedEmployee}
         fecha={filters.startDate}
         onClose={() => setModalOpen(false)}
+        onFichadasChanged={handleFichadasChanged}
       />
     </div>
   );

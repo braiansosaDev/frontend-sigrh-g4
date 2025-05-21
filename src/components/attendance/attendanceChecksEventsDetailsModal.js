@@ -3,19 +3,23 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
-import { MdOutlineModeEdit, MdDeleteOutline  } from "react-icons/md";
-
+import { MdOutlineModeEdit, MdDeleteOutline } from "react-icons/md";
 
 export default function AttendanceChecksEventsDetailsModal({
   open,
   employeeId,
+  employeeData,
   fecha,
   onClose,
+  onFichadasChanged,
 }) {
   const [fichadas, setFichadas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ event_date: "", event_type: "in" });
+  const [formData, setFormData] = useState({
+    event_date: "",
+    event_type: "in",
+  });
 
   const token = Cookies.get("token");
 
@@ -36,6 +40,28 @@ export default function AttendanceChecksEventsDetailsModal({
   };
 
   useEffect(() => {
+    if (open && fecha && !editingId) {
+      // Formateamos a yyyy-MM-ddTHH:mm para el input datetime-local
+      const defaultDateTime = `${fecha}T00:00`; // o la hora que quieras por defecto
+      setFormData((prev) => ({
+        ...prev,
+        event_date: defaultDateTime,
+      }));
+    }
+  }, [open, fecha, editingId]);
+
+  useEffect(() => {
+    if (!open) {
+      setEditingId(null);
+      setFormData({
+        event_date: "",
+        event_type: "in",
+      });
+      setFichadas([]);
+    }
+  }, [open]);
+
+  useEffect(() => {
     fetchFichadas();
   }, [open, employeeId, fecha]);
 
@@ -46,6 +72,7 @@ export default function AttendanceChecksEventsDetailsModal({
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchFichadas();
+      onFichadasChanged();
     } catch {
       alert("Error al eliminar fichada");
     }
@@ -57,6 +84,7 @@ export default function AttendanceChecksEventsDetailsModal({
       event_date: fichada.event_date.slice(0, 19), // yyyy-mm-ddThh:mm:ss
       event_type: fichada.event_type,
     });
+    onFichadasChanged();
   };
 
   const handleUpdate = async () => {
@@ -71,6 +99,7 @@ export default function AttendanceChecksEventsDetailsModal({
       );
       setEditingId(null);
       fetchFichadas();
+      onFichadasChanged();
     } catch {
       alert("Error al actualizar fichada");
     }
@@ -84,12 +113,13 @@ export default function AttendanceChecksEventsDetailsModal({
           employee_id: employeeId,
           ...formData,
           source: "portal-web",
-          device_id: "portal-web"
+          device_id: "portal-web",
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFormData({ event_date: "", event_type: "in" });
       fetchFichadas();
+      onFichadasChanged();
     } catch {
       alert("Error al crear fichada");
     }
@@ -107,19 +137,26 @@ export default function AttendanceChecksEventsDetailsModal({
         >
           ✕
         </button>
-        <h2 className="text-lg font-semibold mb-4">Fichadas del día</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Fichadas {`${employeeData.first_name} ${employeeData.last_name}`} ({new Date(fecha + "T12:00:00").toLocaleDateString()}
+          )
+        </h2>
 
         {/* Formulario nueva fichada */}
         <div className="flex gap-2 mb-4">
           <input
             type="datetime-local"
             value={formData.event_date}
-            onChange={(e) => setFormData((p) => ({ ...p, event_date: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, event_date: e.target.value }))
+            }
             className="border border-gray-300 px-3 py-2 rounded w-full text-sm"
           />
           <select
             value={formData.event_type}
-            onChange={(e) => setFormData((p) => ({ ...p, event_type: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, event_type: e.target.value }))
+            }
             className="border border-gray-300 px-3 py-2 rounded text-sm"
           >
             <option value="in">Entrada</option>
@@ -153,7 +190,11 @@ export default function AttendanceChecksEventsDetailsModal({
               >
                 <div>
                   <span className="block">
-                    {new Date(f.event_date).toLocaleTimeString("es-AR", { hour12: false })}
+                    {new Date(f.event_date).toLocaleTimeString("es-AR", {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                   <span
                     className={
@@ -170,13 +211,13 @@ export default function AttendanceChecksEventsDetailsModal({
                     onClick={() => handleEdit(f)}
                     className="text-gray-400 hover:underline text-xs"
                   >
-                    <MdOutlineModeEdit className="w-6 h-6"/>
+                    <MdOutlineModeEdit className="w-6 h-6" />
                   </button>
                   <button
                     onClick={() => handleDelete(f.id)}
                     className="text-red-500 hover:underline text-xs"
                   >
-                    <MdDeleteOutline className="w-6 h-6"/>
+                    <MdDeleteOutline className="w-6 h-6" />
                   </button>
                 </div>
               </li>

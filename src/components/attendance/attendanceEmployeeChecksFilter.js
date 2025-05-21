@@ -69,20 +69,6 @@ export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilte
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 space-y-4">
-          {/* Filtro tipo de evento */}
-          <div>
-            <span className="text-gray-500 text-sm">Tipo de evento</span>
-            <select
-              value={eventTypeFilter}
-              onChange={(e) => setEventTypeFilter(e.target.value)}
-              className="w-full px-3 py-2 border rounded text-sm"
-            >
-              <option value="">Todos</option>
-              <option value="in">Entrada</option>
-              <option value="out">Salida</option>
-            </select>
-          </div>
-
           {/* Filtro por empleado */}
           <div>
             <span className="text-gray-500 text-sm">Empleado</span>
@@ -93,8 +79,8 @@ export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilte
             >
               <option value="">Todos</option>
               {employees.map((event) => (
-                <option key={event.employee.id} value={event.employee.id}>
-                  {event.employee.id} - {event.employee.first_name} {event.employee.last_name}
+                <option key={event.employee_id} value={event.employee_id}>
+                  {event.employee_id} - {event.first_name} {event.last_name}
                 </option>
               ))}
             </select>
@@ -102,18 +88,11 @@ export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilte
 
           {/* Rango de fechas */}
           <div>
-            <span className="text-gray-500 text-sm">Desde</span>
+            <span className="text-gray-500 text-sm">Fecha</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border rounded text-sm"
-            />
-            <span className="text-gray-500 text-sm">Hasta</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
               className="w-full px-3 py-2 border rounded text-sm"
             />
           </div>
