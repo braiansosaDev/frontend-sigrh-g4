@@ -113,63 +113,13 @@ export default function EmployeeForm({ employeeData, id }) {
   async function handleSave() {
     if (!validateForm()) return;
     const cleanedData = cleanEmployeePayloadFormData(formData);
+    let faceValidation;
 
     try {
-      let res;
-
-      if (id !== "new") {
-        res = await axios.patch(
-          `${config.API_URL}/employees/${id}`,
-          cleanedData
-        );
-      } else {
-        res = await axios.post(
-          `${config.API_URL}/employees/register`,
-          cleanedData
-        );
-      }
-
-      const expectedStatus = id !== "new" ? 200 : 201;
-      if (res.status !== expectedStatus) {
-        throw new Error(`Error inesperado al guardar, código: ${res.status}`);
-      }
-
-      if (id === "new") {
-        router.push(`/sigrh/employees/${res.data.id}`);
-      }
-
-      setEditing(false);
-      alert("Cambios guardados exitosamente.");
-    } catch (error) {
-      console.error(error);
-
-      if (axios.isAxiosError(error)) {
-        const status = error.response?.status;
-        const detail = error.response?.data?.detail;
-
-        if (status === 400) {
-          alert(
-            detail ||
-              "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso."
-          );
-          return;
-        }
-      }
-
-      alert("Ocurrió un error al guardar los datos del empleado");
-    }
-
-    try {
-      const payload = {
-        employee_id: formData.id,
-        embedding: facialRegister,
-      };
-
-      console.log(JSON.stringify(payload));
-
-      const res = await axios.post(
-        `${config.API_URL}/face_recognition/register`,
-        JSON.stringify(payload),
+      faceValidation = await axios.get(
+        //Verifica si un rostro similar ya está registrado
+        `${config.API_URL}/face_recognition/`,
+        JSON.stringify(facialRegister),
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,11 +127,83 @@ export default function EmployeeForm({ employeeData, id }) {
           },
         }
       );
-
-      if (res.status != 201) throw new Error("Error al registrar rostro");
+      if (res.status != 200)
+        throw new Error("Un rostro similar ya está registrado");
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al registrar el rostro");
+      alert("Un rostro similar ya está registrado para otro usuario.");
+    }
+
+    if (faceValidation) {
+      try {
+        let res;
+
+        if (id !== "new") {
+          res = await axios.patch(
+            `${config.API_URL}/employees/${id}`,
+            cleanedData
+          );
+        } else {
+          res = await axios.post(
+            `${config.API_URL}/employees/register`,
+            cleanedData
+          );
+        }
+
+        const expectedStatus = id !== "new" ? 200 : 201;
+        if (res.status !== expectedStatus) {
+          throw new Error(`Error inesperado al guardar, código: ${res.status}`);
+        }
+
+        if (id === "new") {
+          router.push(`/sigrh/employees/${res.data.id}`);
+        }
+
+        setEditing(false);
+        alert("Cambios guardados exitosamente.");
+      } catch (error) {
+        console.error(error);
+
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const detail = error.response?.data?.detail;
+
+          if (status === 400) {
+            alert(
+              detail ||
+                "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso."
+            );
+            return;
+          }
+        }
+
+        alert("Ocurrió un error al guardar los datos del empleado");
+      }
+
+      try {
+        const payload = {
+          employee_id: formData.id,
+          embedding: facialRegister,
+        };
+
+        console.log(JSON.stringify(payload));
+
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/register`,
+          JSON.stringify(payload),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status != 201) throw new Error("Error al registrar rostro");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al registrar el rostro");
+      }
     }
   }
 
