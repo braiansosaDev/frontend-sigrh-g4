@@ -1,27 +1,31 @@
 import React from "react";
 
 const columns = [
-  "Día",
+  "Id",
   "Fecha",
-  "Novedad",
-  "Entrada",
-  "Salida",
-  "Cant. fichadas",
-  "Turno",
   "Concepto",
-  "Horas",
-  "Pagar",
-  "Cantidad",
-  "Desde",
-  "Hasta",
+  "Turno",
+  "Cant. Fichadas",
+  "Notas",
+  "register_type",
+  "Primer check in",
+  "Último check out",
+  "Tiempo trabajado",
+  "Pagar?",
+  "Salario diario",
 ];
 
-export default function PayrollTable({ data, name }) {
+export default function PayrollTable({ data, employee }) {
   return (
     <div className="overflow-x-auto">
-      <div>
-        <h2 className="font-semibold mb-4 ml-4">Asistencia de: {name}</h2>
-      </div>
+      {employee ? (
+        <div>
+          <h2 className="font-semibold mb-4 ml-4">
+            {" "}
+            Asistencia de {employee.first_name + "" + employee.last_name}
+          </h2>
+        </div>
+      ) : null}
       <table className="min-w-full border border-gray-200 bg-white rounded-lg shadow">
         <thead>
           <tr>
@@ -36,31 +40,50 @@ export default function PayrollTable({ data, name }) {
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {data?.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}
                 className="text-center py-4 text-gray-400"
               >
-                No hay datos compatibles con su búsqueda, revise que los datos
-                sean correctos.
+                {employee
+                  ? "No hay resultados para la búsqueda."
+                  : "Ingrese los campos de búsqueda y haga clic en sincronizar para ver los resultados."}
               </td>
             </tr>
           ) : (
-            data.map((row, idx) => (
+            data?.map((row, idx) => (
               <tr key={idx} className="hover:bg-emerald-50">
-                <td className="px-3 py-2 border-b">{row.dia}</td>
-                <td className="px-3 py-2 border-b">{row.fecha}</td>
-                <td className="px-3 py-2 border-b">{row.novedad}</td>
-                <td className="px-3 py-2 border-b">{row.entrada}</td>
-                <td className="px-3 py-2 border-b">{row.salida}</td>
-                <td className="px-3 py-2 border-b">{row.cantFichadas}</td>
-                <td className="px-3 py-2 border-b">{row.turno}</td>
-                <td className="px-3 py-2 border-b">{row.concepto}</td>
-                <td className="px-3 py-2 border-b">{row.horas}</td>
-                <td className="px-3 py-2 border-b">{row.pagar}</td>
-                <td className="px-3 py-2 border-b">{row.cantidad}</td>
-                <td className="px-3 py-2 border-b">{row.desde}</td>
+                <td className="px-3 py-2 border-b">{row.employee_hours.id}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.work_date}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.concept.description}
+                </td>
+                <td className="px-3 py-2 border-b">{row.shift.description}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.check_count}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.notes}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.register_type}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.first_check_in}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.last_check_out}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.time_worked}
+                </td>
+                <td className="px-3 py-2 border-b">{row.employee_hours.pay}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.daily_salary}
+                </td>
                 <td className="px-3 py-2 border-b">{row.hasta}</td>
               </tr>
             ))
