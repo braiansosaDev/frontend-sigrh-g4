@@ -84,7 +84,7 @@ export default function FaceScan({ onFoundFace, onError }) {
     console.log("Embedding:", embedding);
     try {
       const res = await axios.post(
-        `${config.API_URL}/face_recognition/`,
+        `${config.API_URL}/face_recognition/in`,
         { embedding: embedding },
         { headers: { Authorization: `Bearer ${token}` } }
       );

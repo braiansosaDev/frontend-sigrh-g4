@@ -22,7 +22,7 @@ export default function PayrollTable({ data, employee }) {
         <div>
           <h2 className="font-semibold mb-4 ml-4">
             {" "}
-            Asistencia de {employee.first_name + "" + employee.last_name}
+            Asistencia de {employee.first_name + " " + employee.last_name}
           </h2>
         </div>
       ) : null}

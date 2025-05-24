@@ -144,7 +144,11 @@ export default function PayrollContainer({}) {
   const handleProcesar = () => {};
 
   const handleExportarExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(asistencias);
+    if (payroll.length === 0) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+    const ws = XLSX.utils.json_to_sheet(payroll);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Planilla");
     XLSX.writeFile(wb, "planilla.xlsx");

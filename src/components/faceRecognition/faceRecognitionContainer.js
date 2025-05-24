@@ -94,15 +94,25 @@ export default function FaceRecognitionContainer() {
         <p className="text-gray-600 mb-5">
           Asegúrate de estar bien posicionado frente a la cámara.
         </p>
-        <button
-          onClick={() => setStep("waiting")}
-          className="bg-emerald-600 text-white px-6 py-2 rounded-md text-lg hover:bg-emerald-700"
-        >
-          Reintentar
-        </button>
       </div>
     </div>
   );
+
+  // Es un useEffect para el cierre automático
+  useEffect(() => {
+    if (step === "error") {
+      const timer = setTimeout(() => {
+        setStep("findingFace");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    if (step === "succesful") {
+      const timer = setTimeout(() => {
+        setStep("waiting");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   return (
     <>
