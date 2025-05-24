@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import PayrollTable from "./payrollTable";
 import * as XLSX from "xlsx";
 import { useEmployees } from "@/hooks/useEmployees";
-import { usePayroll } from "@/hooks/usePayroll";
 import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";

@@ -113,13 +113,17 @@ export default function EmployeeForm({ employeeData, id }) {
   async function handleSave() {
     if (!validateForm()) return;
     const cleanedData = cleanEmployeePayloadFormData(formData);
-    let faceValidation;
+    let new_id;
 
     try {
-      await axios.post(
+      const payload = {
+        embedding: facialRegister,
+      };
+
+      const res = await axios.post(
         //Verifica si un rostro similar ya está registrado
         `${config.API_URL}/face_recognition/`,
-        JSON.stringify(facialRegister),
+        JSON.stringify(payload),
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -127,14 +131,12 @@ export default function EmployeeForm({ employeeData, id }) {
           },
         }
       );
-      if (res.status === 200)
-        throw new Error("Un rostro similar ya está registrado");
-      return;
-    } catch (e) {
-      console.error(e);
-      alert("Hay un error con el rostro");
-    }
 
+      if (res.status === 200 && res.data.employee_id !== formData.id) {
+        alert("Un rostro similar ya está registrado");
+        return;
+      }
+    } catch (e) {}
     try {
       let res;
 
@@ -159,8 +161,8 @@ export default function EmployeeForm({ employeeData, id }) {
         router.push(`/sigrh/employees/${res.data.id}`);
       }
 
+      new_id = res.data.id;
       setEditing(false);
-      alert("Cambios guardados exitosamente.");
     } catch (error) {
       console.error(error);
 
@@ -180,30 +182,70 @@ export default function EmployeeForm({ employeeData, id }) {
       alert("Ocurrió un error al guardar los datos del empleado");
     }
 
-    try {
-      const payload = {
-        employee_id: formData.id,
-        embedding: facialRegister,
-      };
+    console.log("Data:", employeeData);
 
-      console.log(JSON.stringify(payload));
-
-      const res = await axios.post(
-        `${config.API_URL}/face_recognition/register`,
-        JSON.stringify(payload),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+    if (!employeeData || !employeeData.photo) {
+      try {
+        let payload = {};
+        if (new_id) {
+          payload = {
+            employee_id: new_id,
+            embedding: facialRegister,
+          };
+        } else {
+          payload = {
+            employee_id: id,
+            embedding: facialRegister,
+          };
         }
-      );
 
-      if (res.status != 201) throw new Error("Error al registrar rostro");
-    } catch (e) {
-      console.error(e);
-      alert("Ocurrió un error al registrar el rostro");
+        console.log("Registrando:", JSON.stringify(payload));
+
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/register`,
+          JSON.stringify(payload),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status != 201) throw new Error("Error al registrar rostro");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al registrar el rostro");
+        return;
+      }
+    } else {
+      try {
+        const payload = {
+          employee_id: id,
+          embedding: facialRegister,
+        };
+
+        console.log("Modificando:", JSON.stringify(payload));
+
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/update`,
+          JSON.stringify(payload),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status != 200) throw new Error("Error al actualizar el rostro");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al actualizar el rostro");
+        return;
+      }
     }
+    alert("Cambios guardados exitosamente.");
   }
 
   function handleCancel() {

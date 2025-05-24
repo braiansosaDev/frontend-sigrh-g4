@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import FaceScan from "./faceScan";
+import Cookies from "js-cookie";
+import config from "@/config";
+import axios from "axios";
 
 export default function FaceRecognitionContainer({ type }) {
   const [step, setStep] = useState("waiting"); // "waiting", "findingFace", "succesful", "error"
@@ -11,7 +14,34 @@ export default function FaceRecognitionContainer({ type }) {
     { fecha: "13/05/2025 08:00", tipo: "Entrada" },
   ];
 
-  const onFoundFace = () => {
+  const findEmployee = async (employee_id) => {
+    const token = Cookies.get("token");
+
+    try {
+      const res = await axios.get(
+        `${config.API_URL}/employees/${employee_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status != 200) {
+        throw new Error("No se pudieron obtener los empleados");
+      }
+
+      setEmpleado(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error al traer los datos del empleado");
+      return;
+    }
+  };
+
+  const onFoundFace = (employee_id) => {
+    console.log("employee_id", employee_id);
+    findEmployee(employee_id);
     setStep("succesful");
   };
 
@@ -48,7 +78,7 @@ export default function FaceRecognitionContainer({ type }) {
         <div className="flex flex-col items-center space-y-2">
           <div className="relative">
             <img
-              src="https://via.placeholder.com/100"
+              src={empleado?.photo}
               alt="Foto rostro"
               className="rounded-full w-24 h-24"
             />
@@ -59,26 +89,9 @@ export default function FaceRecognitionContainer({ type }) {
           <h2 className="text-2xl font-semibold text-emerald-700">
             ¡Fichada exitosa!
           </h2>
-          <p className="text-xl font-medium">{empleado?.nombre}</p>
-          <p className="text-gray-600">{empleado?.fechaHora}</p>
-          <p className="text-gray-800 font-semibold">{empleado?.tipo}</p>
-        </div>
-
-        <div className="mt-6 w-full max-w-sm">
-          <h3 className="text-left font-semibold mb-2 text-emerald-700">
-            Últimas fichadas
-          </h3>
-          <div className="bg-emerald-50 rounded-lg shadow p-4 text-left">
-            {empleado?.historial.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex justify-between text-sm text-gray-800 border-b py-1 last:border-b-0"
-              >
-                <span>{item.fecha}</span>
-                <span>{item.tipo}</span>
-              </div>
-            ))}
-          </div>
+          <p className="text-xl font-medium">
+            {empleado?.first_name} {empleado?.last_name}
+          </p>
         </div>
       </div>
     </div>
@@ -89,7 +102,7 @@ export default function FaceRecognitionContainer({ type }) {
       <div className="bg-white p-10 rounded-xl shadow-md">
         <div className="text-6xl text-red-500 mb-5">❌</div>
         <h2 className="text-2xl font-bold text-gray-800">
-          No se pudo reconocer el rostro
+          No se pudo encontrar el rostro
         </h2>
         <p className="text-gray-600 mb-5">
           Asegúrate de estar bien posicionado frente a la cámara.

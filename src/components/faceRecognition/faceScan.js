@@ -89,7 +89,7 @@ export default function FaceScan({ onFoundFace, onError, type }) {
           { embedding: embedding },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        onFoundFace(res.data);
+        onFoundFace(res.data.employee_id);
       } catch (e) {
         onError(e);
       }
@@ -100,7 +100,7 @@ export default function FaceScan({ onFoundFace, onError, type }) {
           { embedding: embedding },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        onFoundFace(res.data);
+        onFoundFace(res.data.employee_id);
       } catch (e) {
         onError(e);
       }
