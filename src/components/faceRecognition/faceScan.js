@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 
-export default function FaceScan({ onFoundFace, onError }) {
+export default function FaceScan({ onFoundFace, onError, type }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [status, setStatus] = useState("Esperando...");
@@ -82,15 +82,28 @@ export default function FaceScan({ onFoundFace, onError }) {
   const sendToBackend = async (embedding) => {
     setStatus("Enviando al backend...");
     console.log("Embedding:", embedding);
-    try {
-      const res = await axios.post(
-        `${config.API_URL}/face_recognition/in`,
-        { embedding: embedding },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      onFoundFace(res.data);
-    } catch (e) {
-      onError(e);
+    if (type === "in") {
+      try {
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/in`,
+          { embedding: embedding },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        onFoundFace(res.data);
+      } catch (e) {
+        onError(e);
+      }
+    } else if (type === "out") {
+      try {
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/out`,
+          { embedding: embedding },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        onFoundFace(res.data);
+      } catch (e) {
+        onError(e);
+      }
     }
   };
 

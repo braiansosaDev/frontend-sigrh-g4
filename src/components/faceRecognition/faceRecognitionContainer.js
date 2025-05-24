@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import FaceScan from "./faceScan";
 
-export default function FaceRecognitionContainer() {
+export default function FaceRecognitionContainer({ type }) {
   const [step, setStep] = useState("waiting"); // "waiting", "findingFace", "succesful", "error"
   const [empleado, setEmpleado] = useState(null);
 
@@ -39,7 +39,7 @@ export default function FaceRecognitionContainer() {
   );
 
   const renderFaceScan = () => (
-    <FaceScan onFoundFace={onFoundFace} onError={onError} />
+    <FaceScan onFoundFace={onFoundFace} onError={onError} type={type} />
   );
 
   const renderSuccesful = () => (
