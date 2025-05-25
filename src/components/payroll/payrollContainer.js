@@ -48,25 +48,13 @@ export default function PayrollContainer({}) {
   const token = Cookies.get("token");
 
   const fetchPayroll = async () => {
-    const payload = {
-      employee_id: selectedEmployee?.id,
-      start_date: startDate,
-      end_date: endDate,
-    };
-
-    console.log("payload", JSON.stringify(payload));
-
     try {
-      const response = await axios.post(
-        `${config.API_URL}/payroll/`,
-        JSON.stringify(payload),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${config.API_URL}/employee_hours/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.status != 200) {
         throw new Error("No se pudieron obtener los empleados");
@@ -244,7 +232,7 @@ export default function PayrollContainer({}) {
             onClick={handleSincronizar}
             className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-semibold"
           >
-            Sincronizar
+            Buscar
           </button>
         </div>
 

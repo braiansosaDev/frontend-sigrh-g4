@@ -52,9 +52,12 @@ export default function FaceRecognitionContainer({ type }) {
   const renderWaiting = () => (
     <div className="flex flex-col items-center justify-center min-h-screen text-center space-y-6">
       <div className="bg-white p-10 rounded-xl shadow-md">
-        <h1 className="text-3xl font-bold cursor-default text-gray-800 mb-10">
+        <h1 className="text-3xl font-bold cursor-default text-gray-800 mb-2">
           Fichada facial
         </h1>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-10">
+          {type === "in" ? "Entrada" : "Salida"}
+        </h2>
         <div className="text-6xl cursor-default mb-10">📷</div>
         <button
           className="bg-emerald-500 text-white px-6 py-3 cursor-pointer rounded-md text-lg hover:bg-emerald-600"
