@@ -2,7 +2,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaFilter } from "react-icons/fa";
 
-export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilters }) {
+export default function AttendanceEmployeeChecksFilter({
+  employees,
+  onApplyFilters,
+}) {
   const [eventTypeFilter, setEventTypeFilter] = useState("");
   const [employeeIdFilter, setEmployeeIdFilter] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -93,8 +96,8 @@ export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilte
             >
               <option value="">Todos</option>
               {employees.map((event) => (
-                <option key={event.employee.id} value={event.employee.id}>
-                  {event.employee.id} - {event.employee.first_name} {event.employee.last_name}
+                <option key={event.employee_id} value={event.employee_id}>
+                  {event.employee_id} - {event.first_name} {event.last_name}
                 </option>
               ))}
             </select>

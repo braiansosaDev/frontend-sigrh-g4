@@ -48,6 +48,8 @@ export default function AttendanceEmployeeChecksTable() {
     return fullName.includes(filters.searchTerm.toLowerCase());
   });
 
+  console.log("Filtered Data:", filteredData);
+
   return (
     <div className="p-6">
       <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
@@ -133,16 +135,18 @@ export default function AttendanceEmployeeChecksTable() {
                       ? new Date(item.last_out).toLocaleTimeString("es-AR")
                       : "—"}
                   </td>
-                  <td  className="py-2 px-4 text-sm text-center text-gray-700 flex gap-2">{item.total_events}<button
-                    onClick={() => {
-                      setSelectedEmployeeId(item.employee_id);
-                      setModalOpen(true);
-                    }}
-                    className="text-emerald-600 text-sm underline hover:text-emerald-800"
-                  >
-                    Ver
-                  </button></td>
-                  
+                  <td className="py-2 px-4 text-sm text-center text-gray-700 flex gap-2">
+                    {item.total_events}
+                    <button
+                      onClick={() => {
+                        setSelectedEmployeeId(item.employee_id);
+                        setModalOpen(true);
+                      }}
+                      className="text-emerald-600 text-sm underline hover:text-emerald-800"
+                    >
+                      Ver
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (

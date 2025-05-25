@@ -227,7 +227,7 @@ export default function EmployeeForm({ employeeData, id }) {
 
         console.log("Modificando:", JSON.stringify(payload));
 
-        const res = await axios.post(
+        const res = await axios.patch(
           `${config.API_URL}/face_recognition/update`,
           JSON.stringify(payload),
           {
