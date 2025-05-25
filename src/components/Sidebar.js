@@ -13,6 +13,7 @@ import {
   FaSignOutAlt,
   FaChevronRight,
 } from "react-icons/fa";
+import { MdSecurity } from "react-icons/md";
 
 const menuItems = [
   {
@@ -28,6 +29,7 @@ const menuItems = [
       { label: "Listado de empleados", path: "/sigrh/employees", icon: <FaUsers />},
       { label: "Puestos de trabajo", path: "/sigrh/jobs", icon: <FaBriefcase /> },
       { label: "Sectores", path: "/sigrh/sectors", icon: <FaUsers /> },
+      { label: "Roles", path: "/sigrh/roles", icon: <MdSecurity /> },
     ],
   },
   {
