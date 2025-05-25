@@ -30,7 +30,7 @@ export default function RelationalInput({
 
   const verDetalles = () => {
     if (value) {
-      router.push(`${resourceUrl}/${value.value}`);
+      router.push(`${resourceUrl}`);
     }
   };
 

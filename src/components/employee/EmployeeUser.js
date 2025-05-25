@@ -5,6 +5,7 @@ import RelationalInput from "../RelationalInput";
 import axios from "axios";
 import { cleanEmployeePayload } from "@/utils/cleanEmployeePayload";
 import config from "@/config";
+import { useRoles } from "@/hooks/useRoles";
 
 export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
@@ -14,6 +15,14 @@ export default function EmployeeUser({ employeeData, id }) {
     role_name: ""
   });
   const [editing, setEditing] = useState(false);
+  const {roles, loading, error} = useRoles();
+  const mappedRoles = roles.map((r) => ({
+  value: r.id,
+  label: r.name,
+  description: r.description,
+  permissions: r.permissions,
+}));
+
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -100,35 +109,28 @@ export default function EmployeeUser({ employeeData, id }) {
               />
             </div>
           </div>
-          {/* <div className="flex gap-2">
-            <div className="flex flex-col w-full">
-              <label className="text-sm text-gray-500">Rol</label>
+          <div className="flex flex-col w-full">
+  <label className="text-sm text-gray-500">Rol</label>
+  <RelationalInput
+  options={mappedRoles}
+  value={
+    mappedRoles.find((r) => r.value === formData.role) || null
+  }
+  onChange={(selected) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: selected?.value || "",
+      role_name: selected?.label || "",
+    }));
+    setEditing(true);
+  }}
+  resourceUrl="/sigrh/roles"
+  onCrearNuevo={() => alert("Abrir modal para crear nuevo rol")}
+/>
 
-              <RelationalInput
-                options={cargos}
-                value={cargos.find((c) => c.role_id === employeeData.role_id) || null}
-                onChange={(selectedCargo) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    role_id: selectedCargo ? selectedCargo.role_id : null,
-                    role_name: selectedCargo ? selectedCargo.name : "", // Guardás el nombre también
-                  }));
-                  setEditing(true);
-                }}
-                verDetalles={() => {
-                  const cargo = cargos.find(
-                    (c) => c.role_id === employeeData.role_id
-                  );
-                  if (cargo) {
-                    alert(`Detalles del cargo:\n${cargo.name}`);
-                  }
-                }}
-                onCrearNuevo={() => {
-                  alert("Abrir modal para crear nuevo cargo");
-                }}
-              />
-            </div>
-          </div> */}
+</div>
+
+
         </div>
       </div>
 

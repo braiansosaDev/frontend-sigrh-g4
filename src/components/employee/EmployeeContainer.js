@@ -9,7 +9,6 @@ import EmployeeForm from "./EmployeeForm";
 import EmployeeWorkHistory from "./EmployeeWorkHistory";
 import EmployeeDocuments from "./EmployeeDocuments";
 import EmployeeUser from "./EmployeeUser";
-import { cleanEmployeePayload } from "@/utils/cleanEmployeePayload";
 
 export default function EmployeeContainer({ id }) {
   const [employeeData, setEmployeeData] = useState({});
