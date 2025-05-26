@@ -55,6 +55,8 @@ export default function AttendanceEmployeeChecksTable() {
     return matchesName && matchesEmployeeId;
   });
 
+  console.log("Filtered Data:", filteredData);
+
   return (
     <div className="p-6">
       <div className="flex flex-wrap gap-2 justify-between items-center mb-4">

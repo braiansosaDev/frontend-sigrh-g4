@@ -20,11 +20,15 @@ import axios from "axios";
 import config from "@/config";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás bootstrap
+import * as faceapi from "face-api.js";
+import Cookies from "js-cookie";
 
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [facialRegister, setFacialRegister] = useState("");
+  const token = Cookies.get("token");
 
   function validateForm() {
     const newErrors = {};
@@ -74,8 +78,7 @@ export default function EmployeeForm({ employeeData, id }) {
     if (!formData.address_country_id)
       newErrors.address_country_id = "Debe seleccionar un país";
 
-    if (!formData.salary)
-      newErrors.salary = "Debe indicar al menos un salario";
+    if (!formData.salary) newErrors.salary = "Debe indicar al menos un salario";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -110,7 +113,30 @@ export default function EmployeeForm({ employeeData, id }) {
   async function handleSave() {
     if (!validateForm()) return;
     const cleanedData = cleanEmployeePayloadFormData(formData);
+    let new_id;
 
+    try {
+      const payload = {
+        embedding: facialRegister,
+      };
+
+      const res = await axios.post(
+        //Verifica si un rostro similar ya está registrado
+        `${config.API_URL}/face_recognition/`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status === 200 && res.data.employee_id !== formData.id) {
+        alert("Un rostro similar ya está registrado");
+        return;
+      }
+    } catch (e) {}
     try {
       let res;
 
@@ -135,8 +161,8 @@ export default function EmployeeForm({ employeeData, id }) {
         router.push(`/sigrh/employees/${res.data.id}`);
       }
 
+      new_id = res.data.id;
       setEditing(false);
-      alert("Cambios guardados exitosamente.");
     } catch (error) {
       console.error(error);
 
@@ -155,6 +181,71 @@ export default function EmployeeForm({ employeeData, id }) {
 
       alert("Ocurrió un error al guardar los datos del empleado");
     }
+
+    console.log("Data:", employeeData);
+
+    if (!employeeData || !employeeData.photo) {
+      try {
+        let payload = {};
+        if (new_id) {
+          payload = {
+            employee_id: new_id,
+            embedding: facialRegister,
+          };
+        } else {
+          payload = {
+            employee_id: id,
+            embedding: facialRegister,
+          };
+        }
+
+        console.log("Registrando:", JSON.stringify(payload));
+
+        const res = await axios.post(
+          `${config.API_URL}/face_recognition/register`,
+          JSON.stringify(payload),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status != 201) throw new Error("Error al registrar rostro");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al registrar el rostro");
+        return;
+      }
+    } else {
+      try {
+        const payload = {
+          employee_id: id,
+          embedding: facialRegister,
+        };
+
+        console.log("Modificando:", JSON.stringify(payload));
+
+        const res = await axios.patch(
+          `${config.API_URL}/face_recognition/update`,
+          JSON.stringify(payload),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status != 200) throw new Error("Error al actualizar el rostro");
+      } catch (e) {
+        console.error(e);
+        alert("Ocurrió un error al actualizar el rostro");
+        return;
+      }
+    }
+    alert("Cambios guardados exitosamente.");
   }
 
   function handleCancel() {
@@ -168,6 +259,41 @@ export default function EmployeeForm({ employeeData, id }) {
       ...employeeData,
     });
   }, [employeeData]);
+
+  // Modelos de face-api
+  useEffect(() => {
+    faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+    faceapi.nets.faceRecognitionNet.loadFromUri("/models");
+    faceapi.nets.faceLandmark68Net.loadFromUri("/models");
+  }, []);
+
+  // Para generar un nuevo embedding cada vez que se cambia la foto
+  useEffect(() => {
+    async function updateFacialRegister() {
+      if (!formData.photo) {
+        setFormData((prev) => ({ ...prev, facial_register: "" }));
+        return;
+      }
+      const img = new window.Image();
+      img.src = formData.photo;
+      img.onload = async () => {
+        const detection = await faceapi
+          .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+        if (detection && detection.descriptor) {
+          setFacialRegister(Array.from(detection.descriptor));
+          console.log(
+            "Facial register updated:",
+            Array.from(detection.descriptor)
+          );
+        } else {
+          setFacialRegister(Array.from(detection.descriptor));
+        }
+      };
+    }
+    updateFacialRegister();
+  }, [formData.photo]);
 
   return (
     <div className="mt-4 space-y-4">

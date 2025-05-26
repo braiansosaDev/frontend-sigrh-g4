@@ -11,11 +11,17 @@ import {
   FaHome,
   FaSignOutAlt,
   FaChevronRight,
+  FaCashRegister,
+  FaMoneyBill,
+  FaMoneyCheck,
+  FaRegMoneyBillAlt,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { MdSecurity } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
+import { FaMoneyBillTransfer, FaRegMoneyBill1 } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -29,8 +35,16 @@ const menuItems = [
     path: "/sigrh/employees",
     requiredPermissions: [PermissionIds.ABM_EMPLEADOS], // ← ID de permiso para ABM empleados
     submenus: [
-      { label: "Listado de empleados", path: "/sigrh/employees", icon: <FaUsers /> },
-      { label: "Puestos de trabajo", path: "/sigrh/jobs", icon: <FaBriefcase /> },
+      {
+        label: "Listado de empleados",
+        path: "/sigrh/employees",
+        icon: <FaUsers />,
+      },
+      {
+        label: "Puestos de trabajo",
+        path: "/sigrh/jobs",
+        icon: <FaBriefcase />,
+      },
       { label: "Sectores", path: "/sigrh/sectors", icon: <FaUsers /> },
       {
         label: "Roles",
@@ -51,6 +65,11 @@ const menuItems = [
     icon: <FaRegClock className="text-2xl" />,
     path: "/sigrh/attendance",
     requiredPermissions: [PermissionIds.ABM_FICHADAS]
+  },
+  {
+    label: "Nómina",
+    icon: <FaMoneyCheck className="text-2xl" />,
+    path: "/sigrh/payroll",
   },
 ];
 

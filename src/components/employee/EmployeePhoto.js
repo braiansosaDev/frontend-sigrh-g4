@@ -2,16 +2,36 @@
 "use client";
 
 import { useRef } from "react";
+import * as faceapi from "face-api.js";
 
 export default function EmployeePhoto({ photoBase64, onPhotoChange }) {
   const fileInputRef = useRef(null);
 
-  const handleFileChange = (e) => {
+  // modelos de face-api
+  async function loadModels() {
+    await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+  }
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        onPhotoChange(reader.result);  // result es base64
+      reader.onloadend = async () => {
+        await loadModels();
+        // Hace otra imagen para detectar la cara sin corromper el original
+        const img = new window.Image();
+        img.src = reader.result;
+        img.onload = async () => {
+          const detection = await faceapi.detectSingleFace(
+            img,
+            new faceapi.TinyFaceDetectorOptions()
+          );
+          if (detection) {
+            onPhotoChange(reader.result); // Cambia la foto si encuentra una cara
+          } else {
+            alert("La imagen no contiene una cara reconocible.");
+          }
+        };
       };
       reader.readAsDataURL(file);
     }

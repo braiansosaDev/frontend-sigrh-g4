@@ -29,7 +29,9 @@ export default function LoginPage() {
       router.push("/sigrh");
     } catch (error) {
       console.error(error);
-      setErrorMessage("Credenciales inválidas. Verifica tu usuario y contraseña.");
+      setErrorMessage(
+        "Credenciales inválidas. Verifica tu usuario y contraseña."
+      );
     }
   };
 
@@ -43,8 +45,12 @@ export default function LoginPage() {
       {/* Formulario: visible siempre */}
       <div className="flex flex-1 items-center justify-center p-8 bg-[url('/pattern-sigrh.svg')] bg-cover bg-center md:bg-none">
         <div className="w-full max-w-4xl bg-white p-8 rounded-2xl">
-          <h2 className="mb-6 text-center text-5xl font-bold text-gray-800">SIGRH+</h2>
-          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">Iniciar sesión</h2>
+          <h2 className="mb-6 text-center text-5xl font-bold text-gray-800">
+            SIGRH+
+          </h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">
+            Iniciar sesión
+          </h2>
 
           {/* Mensaje de error */}
           {errorMessage && (
@@ -55,7 +61,9 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Usuario
+              </label>
               <input
                 type="text"
                 value={usuarioId}
@@ -65,7 +73,9 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
               <input
                 type="password"
                 value={password}
