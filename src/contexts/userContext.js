@@ -8,6 +8,7 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
@@ -23,10 +24,14 @@ export const UserProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUser(res.data);
+
+      const userData = res.data;
+      setUser(userData);
+      setRole(userData.role_entity);
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
       setUser(null);
+      setRole(null);
     } finally {
       setLoading(false);
     }
@@ -37,7 +42,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, role, loading }}>
       {children}
     </UserContext.Provider>
   );

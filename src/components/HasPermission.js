@@ -1,15 +1,18 @@
-'use client';
+// components/HasPermission.jsx
+"use client";
 
-import { usePermissions } from '../hooks/usePermissions';
+import { useUser } from "@/contexts/userContext";
 
-function HasPermission({ permission, children }) {
-  const permisos = usePermissions();
+/**
+ * @param {ReactNode} children - Contenido a renderizar si se cumple el permiso
+ * @param {number|string} id - ID del permiso requerido (recomendado: number)
+ */
+export default function HasPermission({ id, children }) {
+  const { role } = useUser();
+  const permissionIds = role?.permissions?.map((p) => Number(p.id));
+  const hasPermission = permissionIds?.includes(Number(id));
 
-  if (!permisos.includes(permission)) {
-    return null; // No renderiza nada si no tiene el permiso
-  }
+  if (!hasPermission) return null;
 
   return <>{children}</>;
 }
-
-export default HasPermission;

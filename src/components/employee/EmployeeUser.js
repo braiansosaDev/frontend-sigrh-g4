@@ -6,23 +6,24 @@ import axios from "axios";
 import { cleanEmployeePayload } from "@/utils/cleanEmployeePayload";
 import config from "@/config";
 import { useRoles } from "@/hooks/useRoles";
+import HasPermission from "../HasPermission";
+import { PermissionIds } from "@/enums/permissions";
 
 export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
     user_id: "",
     password: "",
     role_id: "",
-    role_name: ""
+    role_name: "",
   });
   const [editing, setEditing] = useState(false);
-  const {roles, loading, error} = useRoles();
+  const { roles, loading, error } = useRoles();
   const mappedRoles = roles.map((r) => ({
-  value: r.id,
-  label: r.name,
-  description: r.description,
-  permissions: r.permissions,
-}));
-
+    value: r.id,
+    label: r.name,
+    description: r.description,
+    permissions: r.permissions,
+  }));
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -34,45 +35,46 @@ export default function EmployeeUser({ employeeData, id }) {
   }
 
   async function handleSave() {
-  const cleanedData = cleanEmployeePayload(formData);
+    const dataToSend = { ...formData };
 
-  try {
-    let res;
-
-    if (id !== "new") {
-      res = await axios.patch(`${config.API_URL}/employees/${id}`, cleanedData);
-    } else {
-      res = await axios.post(`${config.API_URL}/employees/register`, cleanedData);
+    // Solo incluimos password si no está vacía
+    if (!dataToSend.password) {
+      delete dataToSend.password;
     }
 
-    const expectedStatus = id !== "new" ? 200 : 201;
-    if (res.status !== expectedStatus) {
-      throw new Error(`Error inesperado al guardar. Código: ${res.status}`);
-    }
+    const cleanedData = cleanEmployeePayload(dataToSend);
 
-    if (id === "new") {
-      router.push(`/sigrh/employees/${res.data.id}`);
-    }
+    try {
+      let res;
 
-    setEditing(false);
-    alert("Cambios guardados exitosamente.");
-  } catch (error) {
-    console.error(error);
-
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const detail = error.response?.data?.detail;
-
-      if (status === 400) {
-        alert(detail || "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso.");
-        return;
+      if (id !== "new") {
+        res = await axios.patch(
+          `${config.API_URL}/employees/${id}`,
+          cleanedData
+        );
+      } else {
+        res = await axios.post(
+          `${config.API_URL}/employees/register`,
+          cleanedData
+        );
       }
+
+      const expectedStatus = id !== "new" ? 200 : 201;
+      if (res.status !== expectedStatus) {
+        throw new Error(`Error inesperado al guardar. Código: ${res.status}`);
+      }
+
+      if (id === "new") {
+        router.push(`/sigrh/employees/${res.data.id}`);
+      }
+
+      setEditing(false);
+      alert("Cambios guardados exitosamente.");
+    } catch (error) {
+      console.error(error);
+      alert("Ocurrió un error al guardar los datos del empleado");
     }
-
-    alert("Ocurrió un error al guardar los datos del empleado");
   }
-}
-
 
   function handleCancel() {
     setFormData(employeeData);
@@ -109,28 +111,28 @@ export default function EmployeeUser({ employeeData, id }) {
               />
             </div>
           </div>
-          <div className="flex flex-col w-full">
-  <label className="text-sm text-gray-500">Rol</label>
-  <RelationalInput
-  options={mappedRoles}
-  value={
-    mappedRoles.find((r) => r.value === formData.role) || null
-  }
-  onChange={(selected) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: selected?.value || "",
-      role_name: selected?.label || "",
-    }));
-    setEditing(true);
-  }}
-  resourceUrl="/sigrh/roles"
-  onCrearNuevo={() => alert("Abrir modal para crear nuevo rol")}
-/>
 
-</div>
-
-
+          <HasPermission id={PermissionIds.ASIGNACION_ROLES_CARGA}>
+            <div className="flex flex-col w-full">
+              <label className="text-sm text-gray-500">Rol</label>
+              <RelationalInput
+                options={mappedRoles}
+                value={
+                  mappedRoles.find((r) => r.value === formData.role) || null
+                }
+                onChange={(selected) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    role: selected?.value || "",
+                    role_name: selected?.label || "",
+                  }));
+                  setEditing(true);
+                }}
+                resourceUrl="/sigrh/roles"
+                onCrearNuevo={() => alert("Abrir modal para crear nuevo rol")}
+              />
+            </div>
+          </HasPermission>
         </div>
       </div>
 
