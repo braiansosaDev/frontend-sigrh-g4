@@ -2,7 +2,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaFilter } from "react-icons/fa";
 
-export default function AttendanceEmployeeChecksFilter({ employees, onApplyFilters }) {
+export default function AttendanceEmployeeChecksFilter({
+  employees,
+  onApplyFilters,
+}) {
   const [eventTypeFilter, setEventTypeFilter] = useState("");
   const [employeeIdFilter, setEmployeeIdFilter] = useState("");
   const [startDate, setStartDate] = useState("");

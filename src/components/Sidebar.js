@@ -12,7 +12,13 @@ import {
   FaHome,
   FaSignOutAlt,
   FaChevronRight,
+  FaCashRegister,
+  FaMoneyBill,
+  FaMoneyCheck,
+  FaRegMoneyBillAlt,
+  FaMoneyBillWave,
 } from "react-icons/fa";
+import { FaMoneyBillTransfer, FaRegMoneyBill1 } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -25,8 +31,16 @@ const menuItems = [
     icon: <FaUsers className="text-2xl" />,
     path: "/sigrh/employees",
     submenus: [
-      { label: "Listado de empleados", path: "/sigrh/employees", icon: <FaUsers />},
-      { label: "Puestos de trabajo", path: "/sigrh/jobs", icon: <FaBriefcase /> },
+      {
+        label: "Listado de empleados",
+        path: "/sigrh/employees",
+        icon: <FaUsers />,
+      },
+      {
+        label: "Puestos de trabajo",
+        path: "/sigrh/jobs",
+        icon: <FaBriefcase />,
+      },
       { label: "Sectores", path: "/sigrh/sectors", icon: <FaUsers /> },
     ],
   },
@@ -39,6 +53,11 @@ const menuItems = [
     label: "Asistencia",
     icon: <FaRegClock className="text-2xl" />,
     path: "/sigrh/attendance",
+  },
+  {
+    label: "Nómina",
+    icon: <FaMoneyCheck className="text-2xl" />,
+    path: "/sigrh/payroll",
   },
 ];
 

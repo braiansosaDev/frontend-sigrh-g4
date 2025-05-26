@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 import { FaPlus } from "react-icons/fa";
-import Modal from "./JobModal"; // nuevo componente modal
+import Modal from "./jobModal"; // nuevo componente modal
 import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
 
 export default function JobsTable() {
@@ -60,18 +60,29 @@ export default function JobsTable() {
           <thead className="bg-gray-100 sticky top-0">
             <tr>
               <th className="py-2 px-4 text-left text-sm text-gray-600">ID</th>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">Nombre</th>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">Sector</th>
-              <th className="py-2 px-4 text-center text-sm text-gray-600">Acciones</th>
+              <th className="py-2 px-4 text-left text-sm text-gray-600">
+                Nombre
+              </th>
+              <th className="py-2 px-4 text-left text-sm text-gray-600">
+                Sector
+              </th>
+              <th className="py-2 px-4 text-center text-sm text-gray-600">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
             {jobs.length > 0 ? (
               jobs.map((job) => (
-                <tr key={job.id} className="border-b border-gray-100 hover:bg-gray-50 text-gray-700">
+                <tr
+                  key={job.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 text-gray-700"
+                >
                   <td className="py-2 px-4 text-sm">{job.id}</td>
                   <td className="py-2 px-4 text-sm">{job.name}</td>
-                  <td className="py-2 px-4 text-sm">{job.sector?.name || "-"}</td>
+                  <td className="py-2 px-4 text-sm">
+                    {job.sector?.name || "-"}
+                  </td>
                   <td className="py-2 px-4 text-sm text-center flex gap-3 justify-center">
                     <button
                       className="cursor-pointer text-emerald-500 hover:text-emerald-600"

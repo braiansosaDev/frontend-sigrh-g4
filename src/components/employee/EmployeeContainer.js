@@ -64,10 +64,12 @@ export default function EmployeeContainer({ id }) {
               key={index}
               onClick={() => {
                 if (id == "new" && index != 0) {
-                  alert("Debe cargar y guardar datos personales antes de poder cargar datos secundarios.");
+                  alert(
+                    "Debe cargar y guardar datos personales antes de poder cargar datos secundarios."
+                  );
                   return;
                 }
-                setActiveTab(index)
+                setActiveTab(index);
               }}
               className={`py-2 px-4 text-sm font-semibold rounded-t-md ${
                 activeTab === index
@@ -81,10 +83,7 @@ export default function EmployeeContainer({ id }) {
         </div>
 
         {activeTab === 0 && (
-          <EmployeeForm
-            employeeData={employeeData}
-            id={id}
-          />
+          <EmployeeForm employeeData={employeeData} id={id} />
         )}
 
         {/* Historial Laboral */}
@@ -95,10 +94,7 @@ export default function EmployeeContainer({ id }) {
 
         {/* Usuario */}
         {activeTab === 3 && (
-          <EmployeeUser
-            employeeData={employeeData}
-            id={id}
-          />
+          <EmployeeUser employeeData={employeeData} id={id} />
         )}
       </div>
     </div>
