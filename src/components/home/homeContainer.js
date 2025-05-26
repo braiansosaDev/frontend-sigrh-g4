@@ -109,12 +109,14 @@ export default function HomeContainer() {
             Asistencia
           </Link>
         </HasPermission>
-        <Link
-          href="/sigrh/payroll"
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-        >
-          Revisar nóminas
-        </Link>
+        <HasPermission id={PermissionIds.ABM_POSTULACIONES_CARGA}>
+          <Link
+            href="/sigrh/payroll"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+          >
+            Revisar nóminas
+          </Link>
+        </HasPermission>
       </div>
     </div>
   );
