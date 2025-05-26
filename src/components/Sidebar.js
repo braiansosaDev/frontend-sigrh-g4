@@ -70,6 +70,7 @@ const menuItems = [
     label: "Nómina",
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
+    requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA]
   },
 ];
 

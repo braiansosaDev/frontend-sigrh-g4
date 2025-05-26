@@ -159,25 +159,25 @@ export default function PayrollContainer({}) {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen p-6">
       {/* Barra superior de filtros y acciones */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white px-6 py-4 shadow-md border-b">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white  py-4">
         <div className="flex flex-wrap items-center gap-4 relative">
           {/* Buscador con sugerencias */}
           <div className="relative">
             <input
               ref={inputRef}
               type="text"
-              placeholder="Buscar empleado..."
+              placeholder="🔍︎ Buscar empleado..."
               value={search}
               onChange={handleInputChange}
               onFocus={() => setShowSuggestions(true)}
               onBlur={handleBlur}
-              className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
               autoComplete="off"
             />
             {showSuggestions && search && (
-              <div className="absolute z-10 bg-white border rounded w-full mt-1 max-h-48 overflow-auto shadow">
+              <div className="absolute z-10 bg-white border border-gray-300 rounded w-full mt-1 max-h-48 overflow-auto shadow">
                 {suggestions.length === 0 && !isEmployeeFinded ? (
                   <div className="px-3 py-2 text-gray-400 select-none">
                     No se encontraron empleados.
@@ -202,7 +202,7 @@ export default function PayrollContainer({}) {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none"
           />
 
           {/* Fecha final */}
@@ -210,14 +210,14 @@ export default function PayrollContainer({}) {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none"
           />
 
           {/* Filtro de conceptos */}
           <select
             value={concepto}
             onChange={(e) => setConcepto(e.target.value)}
-            className="border rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none"
           >
             <option value="">Todos los conceptos</option>
             {conceptos.map((c) => (
@@ -230,7 +230,7 @@ export default function PayrollContainer({}) {
           {/* Botón sincronizar */}
           <button
             onClick={handleSincronizar}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-semibold"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold"
           >
             Buscar
           </button>
@@ -240,20 +240,20 @@ export default function PayrollContainer({}) {
         <div className="flex gap-2 ml-auto">
           <button
             onClick={handleProcesar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
           >
             Procesar
           </button>
           <button
             onClick={handleExportarExcel}
-            className="bg-emerald-400 hover:bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-semibold"
+            className="bg-emerald-400 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold"
           >
             Exportar a Excel
           </button>
         </div>
       </div>
 
-      <div className="mt-6 flex-grow overflow-auto">
+      <div className="flex-grow overflow-auto">
         <PayrollTable data={payroll} employee={selectedEmployee} />
       </div>
     </div>

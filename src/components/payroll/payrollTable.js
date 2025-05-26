@@ -26,13 +26,13 @@ export default function PayrollTable({ data, employee }) {
           </h2>
         </div>
       ) : null}
-      <table className="min-w-full border border-gray-200 bg-white rounded-lg shadow">
-        <thead>
+      <table className="min-w-full bg-white rounded-lg shadow">
+        <thead className="bg-gray-100">
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                className="px-3 py-2 border-b bg-emerald-50 text-emerald-700 text-xs font-semibold text-left"
+                className="py-2 px-4 text-left text-sm font-medium text-gray-600"
               >
                 {col}
               </th>
@@ -48,7 +48,7 @@ export default function PayrollTable({ data, employee }) {
               >
                 {employee
                   ? "No hay resultados para la búsqueda."
-                  : "Ingrese los campos de búsqueda y haga clic en sincronizar para ver los resultados."}
+                  : "Ingrese los campos de búsqueda y haga clic en buscar para ver los resultados."}
               </td>
             </tr>
           ) : (
