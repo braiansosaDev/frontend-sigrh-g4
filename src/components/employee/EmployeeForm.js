@@ -12,9 +12,7 @@ import { parseOptionsToRelationalInput } from "@/utils/parseOptions";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import EmployeePhoto from "./EmployeePhoto";
 import { useRouter } from "next/navigation";
-import {
-  cleanEmployeePayloadFormData,
-} from "@/utils/cleanEmployeePayload";
+import { cleanEmployeePayloadFormData } from "@/utils/cleanEmployeePayload";
 import axios from "axios";
 import config from "@/config";
 import PhoneInput from "react-phone-input-2";

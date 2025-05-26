@@ -277,7 +277,30 @@ export default function JobOpportunityFormData({
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                if (jobOpportunity) {
+                  var countryId = "";
+                  if (statesAreLoaded) {
+                    const state = Object.values(states)
+                      .flat()
+                      .find((state) => state.id === jobOpportunity.state_id);
+                    countryId = state ? state.country_id : "";
+                  }
+                  setFormData({
+                    status: jobOpportunity.status || "activo",
+                    work_mode: jobOpportunity.work_mode || "remoto",
+                    title: jobOpportunity.title || "",
+                    description: jobOpportunity.description || "",
+                    country_id: countryId ? countryId : "",
+                    state_id: jobOpportunity.state_id || "",
+                    required_abilities: jobOpportunity.required_abilities || [],
+                    desirable_abilities:
+                      jobOpportunity.desirable_abilities || [],
+                  });
+                } else {
+                  onClose();
+                }
+              }}
               className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
             >
               Cancelar
