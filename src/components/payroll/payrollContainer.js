@@ -29,7 +29,7 @@ export default function PayrollContainer({}) {
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [concepto, setConcepto] = useState("");
+  //const [concepto, setConcepto] = useState("");
   const { employees, loading, error } = useEmployees();
   const [suggestions, setSuggestions] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -48,7 +48,7 @@ export default function PayrollContainer({}) {
       };
 
       const response = await axios.post(
-        `${config.API_URL}/payroll/`,
+        `${config.API_URL}/payroll/calculate`,
         JSON.stringify(payload),
         {
           headers: {
@@ -58,12 +58,12 @@ export default function PayrollContainer({}) {
         }
       );
 
-      if (response.status != 200) {
-        throw new Error("No se pudieron obtener los datos de la planilla");
+      if (response.status != 204) {
+        throw new Error("No se pudieron calcular los datos de la planilla");
       }
 
       const res = await axios.post(
-        `${config.API_URL}/employee_hours/`,
+        `${config.API_URL}/payroll/hours`,
         JSON.stringify(payload),
         {
           headers: {
