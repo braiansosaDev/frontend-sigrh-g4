@@ -13,7 +13,6 @@ import { useStatesCountry } from "@/hooks/useStatesCountry";
 import EmployeePhoto from "./EmployeePhoto";
 import { useRouter } from "next/navigation";
 import {
-  cleanEmployeePayload,
   cleanEmployeePayloadFormData,
 } from "@/utils/cleanEmployeePayload";
 import axios from "axios";
@@ -137,6 +136,7 @@ export default function EmployeeForm({ employeeData, id }) {
         return;
       }
     } catch (e) {}
+
     try {
       let res;
 
@@ -637,21 +637,19 @@ export default function EmployeeForm({ employeeData, id }) {
             )}
           </div>
 
-          <HasPermission permission={PERMISSIONS.VIEW_SALARY}>
-            <div className="flex flex-col justify-center ">
-              <label className="text-sm text-gray-500">Salario</label>
-              <input
-                name="salary"
-                type="text"
-                value={formData.salary}
-                onChange={handleChange}
-                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-              />
-              {errors.salary && (
-                <span className="text-red-500 text-sm">{errors.salary}</span>
-              )}
-            </div>
-          </HasPermission>
+          <div className="flex flex-col justify-center ">
+            <label className="text-sm text-gray-500">Salario</label>
+            <input
+              name="salary"
+              type="text"
+              value={formData.salary}
+              onChange={handleChange}
+              className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
+            />
+            {errors.salary && (
+              <span className="text-red-500 text-sm">{errors.salary}</span>
+            )}
+          </div>
         </div>
       </div>
 
