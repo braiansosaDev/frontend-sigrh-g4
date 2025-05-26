@@ -8,14 +8,6 @@ import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const conceptos = [
-  "Feriado",
-  "Simples convenio básico",
-  "Horas extra",
-  "Vacaciones",
-  "Licencia",
-];
-
 function stringSimilarity(a, b) {
   // Para encontrar coincidencias exactas
   if (a.toLowerCase() === b.toLowerCase()) return 1;
@@ -49,17 +41,43 @@ export default function PayrollContainer({}) {
 
   const fetchPayroll = async () => {
     try {
-      const response = await axios.get(`${config.API_URL}/employee_hours/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const payload = {
+        employee_id: selectedEmployee.id,
+        start_date: startDate,
+        end_date: endDate,
+      };
+
+      const response = await axios.post(
+        `${config.API_URL}/payroll/`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.status != 200) {
-        throw new Error("No se pudieron obtener los empleados");
+        throw new Error("No se pudieron obtener los datos de la planilla");
       }
-      setPayroll(response.data);
+
+      const res = await axios.post(
+        `${config.API_URL}/employee_hours/`,
+        JSON.stringify(payload),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.status != 200) {
+        throw new Error("No se pudieron obtener los datos de la planilla");
+      }
+
+      setPayroll(res.data);
     } catch (err) {
       console.error(err);
       alert("Ocurrió un error al traer los datos de la planilla");
@@ -128,7 +146,7 @@ export default function PayrollContainer({}) {
     setSelectedEmployee(employeeFinded);
   };
 
-  const handleProcesar = () => {};
+  //const handleProcesar = () => {};
 
   const handleExportarExcel = () => {
     if (payroll.length === 0) {
@@ -161,7 +179,7 @@ export default function PayrollContainer({}) {
   return (
     <div className="flex flex-col h-screen p-6">
       {/* Barra superior de filtros y acciones */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white  py-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white py-4">
         <div className="flex flex-wrap items-center gap-4 relative">
           {/* Buscador con sugerencias */}
           <div className="relative">
@@ -214,10 +232,11 @@ export default function PayrollContainer({}) {
           />
 
           {/* Filtro de conceptos */}
+          {/* 
           <select
             value={concepto}
             onChange={(e) => setConcepto(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="border rounded-md px-3 py-2 text-sm focus:outline-none"
           >
             <option value="">Todos los conceptos</option>
             {conceptos.map((c) => (
@@ -226,6 +245,7 @@ export default function PayrollContainer({}) {
               </option>
             ))}
           </select>
+          */}
 
           {/* Botón sincronizar */}
           <button
@@ -238,12 +258,14 @@ export default function PayrollContainer({}) {
 
         {/* Botones a la derecha */}
         <div className="flex gap-2 ml-auto">
+          {/*  
           <button
             onClick={handleProcesar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold"
           >
             Procesar
           </button>
+          */}
           <button
             onClick={handleExportarExcel}
             className="bg-emerald-400 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold"

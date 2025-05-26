@@ -1,18 +1,17 @@
 import React from "react";
 
 const columns = [
-  "Id",
+  "Día",
   "Fecha",
-  "Concepto",
+  "Novedad",
+  "Entrada",
+  "Salida",
+  "Cant. fichadas",
   "Turno",
-  "Cant. Fichadas",
+  "Concepto",
+  "Horas",
   "Notas",
-  "register_type",
-  "Primer check in",
-  "Último check out",
-  "Tiempo trabajado",
-  "Pagar?",
-  "Salario diario",
+  "Pago",
 ];
 
 export default function PayrollTable({ data, employee }) {
@@ -26,13 +25,13 @@ export default function PayrollTable({ data, employee }) {
           </h2>
         </div>
       ) : null}
-      <table className="min-w-full bg-white rounded-lg shadow">
-        <thead className="bg-gray-100">
+      <table className="min-w-full border border-gray-200 bg-white rounded-lg shadow">
+        <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                className="py-2 px-4 text-left text-sm font-medium text-gray-600"
+                className="px-3 py-2 border-b bg-emerald-50 text-emerald-700 text-xs font-semibold text-left"
               >
                 {col}
               </th>
@@ -48,25 +47,20 @@ export default function PayrollTable({ data, employee }) {
               >
                 {employee
                   ? "No hay resultados para la búsqueda."
-                  : "Ingrese los campos de búsqueda y haga clic en buscar para ver los resultados."}
+                  : "Ingrese los campos de búsqueda y haga clic en sincronizar para ver los resultados."}
               </td>
             </tr>
           ) : (
             data?.map((row, idx) => (
               <tr key={idx} className="hover:bg-emerald-50">
-                <td className="px-3 py-2 border-b">{row.employee_hours.id}</td>
+                <td className="px-3 py-2 border-b">
+                  {new Date(row.employee_hours.work_date).toLocaleDateString(
+                    "es-AR",
+                    { weekday: "long" }
+                  )}
+                </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.work_date}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.concept.description}
-                </td>
-                <td className="px-3 py-2 border-b">{row.shift.description}</td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.check_count}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.notes}
                 </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.register_type}
@@ -78,13 +72,19 @@ export default function PayrollTable({ data, employee }) {
                   {row.employee_hours.last_check_out}
                 </td>
                 <td className="px-3 py-2 border-b">
+                  {row.employee_hours.check_count}
+                </td>
+                <td className="px-3 py-2 border-b">{row.shift.description}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.concept.description}
+                </td>
+                <td className="px-3 py-2 border-b">
                   {row.employee_hours.time_worked}
                 </td>
-                <td className="px-3 py-2 border-b">{row.employee_hours.pay}</td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.daily_salary}
+                  {row.employee_hours.notes}
                 </td>
-                <td className="px-3 py-2 border-b">{row.hasta}</td>
+                <td className="px-3 py-2 border-b">{row.employee_hours.pay}</td>
               </tr>
             ))
           )}
