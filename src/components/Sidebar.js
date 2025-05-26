@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Cookies from "js-cookie";
-
 import {
   FaUsers,
   FaBriefcase,
@@ -18,6 +17,10 @@ import {
   FaRegMoneyBillAlt,
   FaMoneyBillWave,
 } from "react-icons/fa";
+import { MdSecurity } from "react-icons/md";
+import { canAccess } from "@/utils/permissions";
+import { useUser } from "@/contexts/userContext";
+import { PermissionIds } from "@/enums/permissions";
 import { FaMoneyBillTransfer, FaRegMoneyBill1 } from "react-icons/fa6";
 
 const menuItems = [
@@ -30,6 +33,7 @@ const menuItems = [
     label: "Empleados",
     icon: <FaUsers className="text-2xl" />,
     path: "/sigrh/employees",
+    requiredPermissions: [PermissionIds.ABM_EMPLEADOS], // ← ID de permiso para ABM empleados
     submenus: [
       {
         label: "Listado de empleados",
@@ -42,17 +46,25 @@ const menuItems = [
         icon: <FaBriefcase />,
       },
       { label: "Sectores", path: "/sigrh/sectors", icon: <FaUsers /> },
+      {
+        label: "Roles",
+        path: "/sigrh/roles",
+        icon: <MdSecurity />,
+        requiredPermissions: [PermissionIds.ABM_ROLES], // ← ID de permiso para ABM roles
+      },
     ],
   },
   {
     label: "Convocatorias",
     icon: <FaBriefcase className="text-2xl" />,
     path: "/sigrh/job_opportunities",
+    requiredPermissions: [PermissionIds.ABM_POSTULACIONES_CARGA, PermissionIds.ABM_POSTULACIONES_APROBACIONES],
   },
   {
     label: "Asistencia",
     icon: <FaRegClock className="text-2xl" />,
     path: "/sigrh/attendance",
+    requiredPermissions: [PermissionIds.ABM_FICHADAS]
   },
   {
     label: "Nómina",
@@ -66,6 +78,9 @@ export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
   const [activeSubMenu, setActiveSubMenu] = useState(null);
   const submenuRef = useRef();
+
+  const { role } = useUser();
+  const permissionIds = role?.permissions.map((p) => Number(p.id));
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -87,12 +102,18 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <div className="relative">
-      {/* Sidebar */}
       <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-16 left-0 p-4 z-20">
         <ul className="space-y-2">
           {menuItems.map((item, idx) => {
+            if (!canAccess(item.requiredPermissions, permissionIds)) return null;
+
             const isParentActive = pathname.startsWith(item.path);
             const hasSubmenus = Array.isArray(item.submenus);
+            const visibleSubmenus = (item.submenus || []).filter((sub) =>
+              canAccess(sub.requiredPermissions, permissionIds)
+            );
+
+            if (hasSubmenus && visibleSubmenus.length === 0) return null;
 
             return (
               <li key={idx} className="relative">
@@ -127,13 +148,13 @@ export default function Sidebar({ isOpen, onClose }) {
                       <FaChevronRight />
                     </button>
 
-                    {activeSubMenu === idx && (
+                    {activeSubMenu === idx && visibleSubmenus.length > 0 && (
                       <div
                         ref={submenuRef}
                         className="absolute top-0 left-full w-56 bg-white shadow-lg border border-gray-200 rounded-lg z-30"
                       >
                         <ul className="p-2">
-                          {item.submenus.map((sub, subIdx) => (
+                          {visibleSubmenus.map((sub, subIdx) => (
                             <li key={subIdx}>
                               <Link
                                 href={sub.path}

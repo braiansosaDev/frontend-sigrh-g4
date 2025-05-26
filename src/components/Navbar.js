@@ -44,7 +44,7 @@ export default function Navbar({ onToggleSidebar }) {
             <span className="text-sm font-semibold text-emerald-500">
               {user.first_name} {user.last_name}
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-end">
               {user.job?.name && (
                 <span className="text-xs text-gray-600">{user.job.name}</span>
               )}
@@ -55,6 +55,14 @@ export default function Navbar({ onToggleSidebar }) {
                 </span>
               )}
             </div>
+            {user.role_entity?.description ? (
+              <span className="text-xs text-gray-400 italic font-semibold">
+                {" "}
+                 {user.role_entity?.description} (Rol)
+              </span>
+            ) : (<span className="text-xs text-gray-400 italic font-semibold">
+                Invitado (Rol)
+              </span>)}
           </div>
           <img
             src={user.photo}

@@ -6,6 +6,8 @@ import Link from "next/link";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import HasPermission from "../HasPermission";
+import { PermissionIds } from "@/enums/permissions";
 
 export default function HomeContainer() {
   const { user } = useUser();
@@ -60,43 +62,53 @@ export default function HomeContainer() {
 
       {/* Cards de datos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-emerald-100 text-emerald-800 p-4 rounded-xl shadow-sm">
-          <p className="text-sm">Empleados activos</p>
-          <h2 className="text-3xl font-bold">{empleadosActivos}</h2>
-        </div>
-        <div className="bg-blue-100 text-blue-800 p-4 rounded-xl shadow-sm">
-          <p className="text-sm">Convocatorias abiertas</p>
-          <h2 className="text-3xl font-bold">{convocatoriasAbiertas}</h2>
-        </div>
+        <HasPermission id={PermissionIds.ABM_EMPLEADOS}>
+          <div className="bg-emerald-100 text-emerald-800 p-4 rounded-xl shadow-sm">
+            <p className="text-sm">Empleados activos</p>
+            <h2 className="text-3xl font-bold">{empleadosActivos}</h2>
+          </div>
+        </HasPermission>
+        <HasPermission id={PermissionIds.ABM_POSTULACIONES_CARGA}>
+          <div className="bg-blue-100 text-blue-800 p-4 rounded-xl shadow-sm">
+            <p className="text-sm">Convocatorias abiertas</p>
+            <h2 className="text-3xl font-bold">{convocatoriasAbiertas}</h2>
+          </div>
+        </HasPermission>
       </div>
 
       {/* Enlaces útiles */}
       <h2 className="text-lg font-medium text-gray-700 mb-3">Enlaces útiles</h2>
       <div className="flex flex-wrap gap-4">
-        <Link
-          href="/sigrh/employees"
-          className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition"
-        >
-          Ver empleados
-        </Link>
-        <Link
-          href="/sigrh/job_opportunities"
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        >
-          Ver convocatorias
-        </Link>
+        <HasPermission id={PermissionIds.ABM_EMPLEADOS}>
+          <Link
+            href="/sigrh/employees"
+            className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition"
+          >
+            Ver empleados
+          </Link>
+        </HasPermission>
+        <HasPermission id={PermissionIds.ABM_POSTULACIONES_CARGA}>
+          <Link
+            href="/sigrh/job_opportunities"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Ver convocatorias
+          </Link>
+        </HasPermission>
         <Link
           href="/"
           className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition"
         >
           Portal para postularse
         </Link>
-        <Link
-          href="/sigrh/attendance"
-          className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition"
-        >
-          Asistencia
-        </Link>
+        <HasPermission id={PermissionIds.ABM_FICHADAS}>
+          <Link
+            href="/sigrh/attendance"
+            className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition"
+          >
+            Asistencia
+          </Link>
+        </HasPermission>
         <Link
           href="/sigrh/payroll"
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
