@@ -8,14 +8,6 @@ import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const conceptos = [
-  "Feriado",
-  "Simples convenio básico",
-  "Horas extra",
-  "Vacaciones",
-  "Licencia",
-];
-
 function stringSimilarity(a, b) {
   // Para encontrar coincidencias exactas
   if (a.toLowerCase() === b.toLowerCase()) return 1;
@@ -33,11 +25,32 @@ function stringSimilarity(a, b) {
   return (matches / Math.max(a.length, 1)) * 0.5;
 }
 
+// Para agrupar fechas al llamar al back
+function groupConsecutiveDates(dates) {
+  if (dates.length === 0) return [];
+  const groups = [];
+  let groupStart = dates[0];
+  let prev = new Date(dates[0]);
+  for (let i = 1; i < dates.length; i++) {
+    const curr = new Date(dates[i]);
+    const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+    if (diff === 1) {
+      prev = curr;
+    } else {
+      groups.push({ start: groupStart, end: dates[i - 1] });
+      groupStart = dates[i];
+      prev = curr;
+    }
+  }
+  groups.push({ start: groupStart, end: dates[dates.length - 1] });
+  return groups;
+}
+
 export default function PayrollContainer({}) {
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [concepto, setConcepto] = useState("");
+  //const [concepto, setConcepto] = useState("");
   const { employees, loading, error } = useEmployees();
   const [suggestions, setSuggestions] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -49,17 +62,85 @@ export default function PayrollContainer({}) {
 
   const fetchPayroll = async () => {
     try {
-      const response = await axios.get(`${config.API_URL}/employee_hours/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status != 200) {
-        throw new Error("No se pudieron obtener los empleados");
+      if (!selectedEmployee || !startDate || !endDate) {
+        return;
       }
-      setPayroll(response.data);
+      // Primero, obtengo los que ya se procesaron
+      const res = await axios.post(
+        `${config.API_URL}/payroll/hours`,
+        {
+          employee_id: selectedEmployee.id,
+          start_date: startDate,
+          end_date: endDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const processed = res.data;
+
+      console.log("Procesados:", processed);
+
+      if (res.status !== 200) {
+        alert("Error al obtener los datos de la planilla");
+        return;
+      }
+
+      // Segundo, agarramos las fechas que no aparezcan (obs: hay que perfeccionar esto, creo(?)) y luego las envío a procesar si hay alguna sin procesar
+      const allDates = [];
+      let d = new Date(startDate);
+      const end = new Date(endDate);
+      while (d <= end) {
+        allDates.push(d.toISOString().slice(0, 10));
+        d.setDate(d.getDate() + 1);
+      }
+      const processedDates = processed.map((r) => r.employee_hours.work_date);
+      const missingDates = allDates.filter(
+        (date) => !processedDates.includes(date)
+      );
+
+      if (missingDates.length > 0) {
+        const blocks = groupConsecutiveDates(missingDates); //Divido en grupos las fechas faltantes para evitar problemas
+        console.log("Bloques faltantes:", blocks);
+        for (const block of blocks) {
+          await axios.post(
+            `${config.API_URL}/payroll/calculate`,
+            {
+              employee_id: selectedEmployee.id,
+              start_date: block.start,
+              end_date: block.end,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        }
+      }
+
+      // Tercero, ahora si, obtengo la planilla completa
+      const res2 = await axios.post(
+        `${config.API_URL}/payroll/hours`,
+        {
+          employee_id: selectedEmployee.id,
+          start_date: startDate,
+          end_date: endDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log("Planilla completa:", res2.data);
+
+      if (res2.status !== 200) {
+        alert("Error al obtener los datos de la planilla");
+        return;
+      }
+
+      setPayroll(res2.data);
     } catch (err) {
       console.error(err);
       alert("Ocurrió un error al traer los datos de la planilla");
@@ -125,17 +206,46 @@ export default function PayrollContainer({}) {
       return;
     }
 
+    // Obtiene la fecha de hoy en horario argentino (GMT-3)
+    const today = new Date().toLocaleDateString("en-CA", {
+      timeZone: "America/Argentina/Buenos_Aires",
+    });
+    // today será "2025-05-26" por ejemplo
+
+    if (endDate > today) {
+      alert("No puedes seleccionar una fecha futura.");
+      return;
+    }
+
     setSelectedEmployee(employeeFinded);
+    fetchPayroll();
   };
 
-  const handleProcesar = () => {};
+  //const handleProcesar = () => {};
 
   const handleExportarExcel = () => {
     if (payroll.length === 0) {
       alert("No hay datos para exportar.");
       return;
     }
-    const ws = XLSX.utils.json_to_sheet(payroll);
+    // Para que se puedan exportar los datos a Excel
+    const excelPayroll = payroll.map((row) => ({
+      Día: new Date(row.employee_hours.work_date).toLocaleDateString("es-AR", {
+        weekday: "long",
+      }),
+      Fecha: row.employee_hours.work_date,
+      Novedad: row.employee_hours.register_type,
+      Entrada: row.employee_hours.first_check_in,
+      Salida: row.employee_hours.last_check_out,
+      "Cant. fichadas": row.employee_hours.check_count,
+      Turno: row.shift?.description || "",
+      Concepto: row.concept?.description || "",
+      Horas: row.employee_hours.sumary_time,
+      Notas: row.employee_hours.notes,
+      Pago: row.pay ? "Si" : "No",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(excelPayroll);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Planilla");
     XLSX.writeFile(wb, "planilla.xlsx");
@@ -161,7 +271,7 @@ export default function PayrollContainer({}) {
   return (
     <div className="flex flex-col h-screen p-6">
       {/* Barra superior de filtros y acciones */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white  py-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white py-4">
         <div className="flex flex-wrap items-center gap-4 relative">
           {/* Buscador con sugerencias */}
           <div className="relative">
@@ -214,10 +324,11 @@ export default function PayrollContainer({}) {
           />
 
           {/* Filtro de conceptos */}
+          {/* 
           <select
             value={concepto}
             onChange={(e) => setConcepto(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="border rounded-md px-3 py-2 text-sm focus:outline-none"
           >
             <option value="">Todos los conceptos</option>
             {conceptos.map((c) => (
@@ -226,6 +337,7 @@ export default function PayrollContainer({}) {
               </option>
             ))}
           </select>
+          */}
 
           {/* Botón sincronizar */}
           <button
@@ -238,12 +350,14 @@ export default function PayrollContainer({}) {
 
         {/* Botones a la derecha */}
         <div className="flex gap-2 ml-auto">
+          {/*  
           <button
             onClick={handleProcesar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold"
           >
             Procesar
           </button>
+          */}
           <button
             onClick={handleExportarExcel}
             className="bg-emerald-400 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold"

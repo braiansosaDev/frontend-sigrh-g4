@@ -1,21 +1,26 @@
 import React from "react";
 
 const columns = [
-  "Id",
+  "Día",
   "Fecha",
-  "Concepto",
+  "Novedad",
+  "Entrada",
+  "Salida",
+  "Cant. fichadas",
   "Turno",
-  "Cant. Fichadas",
+  "Concepto",
+  "Horas",
   "Notas",
-  "register_type",
-  "Primer check in",
-  "Último check out",
-  "Tiempo trabajado",
-  "Pagar?",
-  "Salario diario",
+  "Pago",
 ];
 
 export default function PayrollTable({ data, employee }) {
+  //Para hacer la primera letra mayúscula
+  function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <div className="overflow-x-auto">
       {employee ? (
@@ -26,13 +31,13 @@ export default function PayrollTable({ data, employee }) {
           </h2>
         </div>
       ) : null}
-      <table className="min-w-full bg-white rounded-lg shadow">
-        <thead className="bg-gray-100">
+      <table className="min-w-full table-fixed border border-gray-200 bg-white rounded-lg shadow">
+        <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                className="py-2 px-4 text-left text-sm font-medium text-gray-600"
+                className="px-3 py-2 border-b bg-emerald-50 text-emerald-700 text-xs font-semibold text-center"
               >
                 {col}
               </th>
@@ -48,43 +53,61 @@ export default function PayrollTable({ data, employee }) {
               >
                 {employee
                   ? "No hay resultados para la búsqueda."
-                  : "Ingrese los campos de búsqueda y haga clic en buscar para ver los resultados."}
+                  : "Ingrese los campos de búsqueda y haga clic en sincronizar para ver los resultados."}
               </td>
             </tr>
           ) : (
             data?.map((row, idx) => (
               <tr key={idx} className="hover:bg-emerald-50">
-                <td className="px-3 py-2 border-b">{row.employee_hours.id}</td>
+                <td className="px-3 py-2 border-b">
+                  {capitalize(
+                    new Date(
+                      row.employee_hours.work_date + "T00:00:00"
+                    ).toLocaleDateString("es-AR", { weekday: "long" })
+                  )}
+                </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.work_date}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.concept.description}
-                </td>
-                <td className="px-3 py-2 border-b">{row.shift.description}</td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.check_count}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.notes}
                 </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.register_type}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.first_check_in}
+                  {row.employee_hours.first_check_in
+                    ? new Date(
+                        `1970-01-01T${row.employee_hours.first_check_in}`
+                      ).toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })
+                    : ""}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.last_check_out}
+                  {row.employee_hours.last_check_out
+                    ? new Date(
+                        `1970-01-01T${row.employee_hours.last_check_out}`
+                      ).toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })
+                    : ""}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.time_worked}
+                  {row.employee_hours.check_count}
                 </td>
-                <td className="px-3 py-2 border-b">{row.employee_hours.pay}</td>
+                <td className="px-3 py-2 border-b">{row.shift.description}</td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.daily_salary}
+                  {row.concept.description}
                 </td>
-                <td className="px-3 py-2 border-b">{row.hasta}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.sumary_time}
+                </td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.notes}
+                </td>
+                <td className="px-3 py-2 border-b">{row.pay ? "Si" : "No"}</td>
               </tr>
             ))
           )}

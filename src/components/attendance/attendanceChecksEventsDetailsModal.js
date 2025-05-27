@@ -138,8 +138,8 @@ export default function AttendanceChecksEventsDetailsModal({
           ✕
         </button>
         <h2 className="text-lg font-semibold mb-4">
-          Fichadas {`${employeeData.first_name} ${employeeData.last_name}`} ({new Date(fecha + "T12:00:00").toLocaleDateString()}
-          )
+          Fichadas {`${employeeData.first_name} ${employeeData.last_name}`} (
+          {new Date(fecha + "T12:00:00").toLocaleDateString()})
         </h2>
 
         {/* Formulario nueva fichada */}

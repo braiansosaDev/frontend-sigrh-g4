@@ -26,8 +26,14 @@ export default function ShortcutContainer() {
 
       {/* Contenido */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full space-y-8 p-6">
-        <div className="bg-white rounded-full shadow-md px-6 py-2 flex items-center justify-center"><h1 className="text-emerald-600 text-3xl font-semibold">SIGRH+</h1></div>
-        <div className="bg-white rounded-full shadow-md px-6 py-2 flex items-center justify-center"><h1 className="text-emerald-600 text-3xl font-semibold">Accesos directos</h1></div>
+        <div className="bg-white rounded-full shadow-md px-6 py-2 flex items-center justify-center">
+          <h1 className="text-emerald-600 text-3xl font-semibold">SIGRH+</h1>
+        </div>
+        <div className="bg-white rounded-full shadow-md px-6 py-2 flex items-center justify-center">
+          <h1 className="text-emerald-600 text-3xl font-semibold">
+            Accesos directos
+          </h1>
+        </div>
         <div className="grid grid-cols-4 md:grid-cols-4 gap-6">
           {shortcuts.map((shortcut, index) => (
             <Link
