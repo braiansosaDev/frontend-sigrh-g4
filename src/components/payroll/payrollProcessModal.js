@@ -30,6 +30,24 @@ export default function ProcessPayrollModal({
       return;
     }
 
+    if (!startDate || !endDate) {
+      alert("Seleccione un rango de fechas.");
+      return;
+    }
+    if (new Date(startDate) > new Date(endDate)) {
+      alert("La fecha inicial no puede ser mayor a la final.");
+      return;
+    }
+    
+    const today = new Date().toLocaleDateString("en-CA", {
+      timeZone: "America/Argentina/Buenos_Aires",
+    });
+
+    if (endDate > today) {
+      alert("La fecha final no puede ser futura.");
+      return;
+    }
+
     try {
       await axios.post(
         `${config.API_URL}/payroll/calculate`,

@@ -121,6 +121,15 @@ export default function PayrollContainer() {
       alert("La fecha inicial no puede ser mayor a la final.");
       return;
     }
+    
+    const today = new Date().toLocaleDateString("en-CA", {
+      timeZone: "America/Argentina/Buenos_Aires",
+    });
+
+    if (endDate > today) {
+      alert("La fecha final no puede ser futura.");
+      return;
+    }
 
     setSelectedEmployee(employeeFinded);
     fetchPayroll();
