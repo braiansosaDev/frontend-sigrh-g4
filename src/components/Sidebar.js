@@ -16,6 +16,7 @@ import {
   FaMoneyCheck,
   FaRegMoneyBillAlt,
   FaMoneyBillWave,
+  FaClock,
 } from "react-icons/fa";
 import { MdSecurity } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
@@ -46,6 +47,11 @@ const menuItems = [
         icon: <FaBriefcase />,
       },
       { label: "Sectores", path: "/sigrh/sectors", icon: <FaUsers /> },
+      {
+        label: "Turnos",
+        path: "/sigrh/shifts",
+        icon: <FaClock />,
+      },
       {
         label: "Roles",
         path: "/sigrh/roles",

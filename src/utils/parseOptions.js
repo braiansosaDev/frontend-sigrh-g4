@@ -5,4 +5,11 @@ export function parseOptionsToRelationalInput(options) {
       label: option.name,
     }));
   }
+
+export function parseOptionsToRelationalInputDescription(options) {
+    return options.map((option) => ({
+      value: option.id,
+      label: option.description,
+    }));
+  }
   

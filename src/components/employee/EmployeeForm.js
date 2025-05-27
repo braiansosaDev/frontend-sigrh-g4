@@ -8,7 +8,7 @@ import SelectActiveChip from "./SelectActiveChip";
 import { defaultEmployeeDataForm } from "@/constants/defaultEmployeeForm";
 import { useCountries } from "@/hooks/useCountries";
 import { useJob } from "@/hooks/useJob";
-import { parseOptionsToRelationalInput } from "@/utils/parseOptions";
+import { parseOptionsToRelationalInput, parseOptionsToRelationalInputDescription } from "@/utils/parseOptions";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import EmployeePhoto from "./EmployeePhoto";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás bootstrap
 import * as faceapi from "face-api.js";
 import Cookies from "js-cookie";
+import { useShifts } from "@/hooks/useShifts";
 
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
@@ -94,8 +95,10 @@ export default function EmployeeForm({ employeeData, id }) {
     error: errorStatesCountry,
   } = useStatesCountry();
   const { jobs, loading: loadingJobs, error: errorJobs } = useJob();
+  const { shifts, loading: loadingShifts, error: errorShifts} = useShifts()
   const router = useRouter();
 
+  const shiftsParsed = parseOptionsToRelationalInputDescription(shifts);
   const jobsParsed = parseOptionsToRelationalInput(jobs);
   const countriesParsed = parseOptionsToRelationalInput(countries);
   const statesParsed = parseOptionsToRelationalInput(states);
@@ -373,6 +376,7 @@ export default function EmployeeForm({ employeeData, id }) {
                     alert(`Detalles del cargo:\n${cargo.name}`);
                   }
                 }}
+                resourceUrl={`/sigrh/jobs`}
                 onCrearNuevo={() => {
                   alert("Abrir modal para crear nuevo cargo");
                 }}
@@ -398,6 +402,43 @@ export default function EmployeeForm({ employeeData, id }) {
               )}
             </div>
           </div>
+          <div className="flex flex-col w-full">
+              <label className="text-sm text-gray-500">Turno</label>
+
+              <RelationalInput
+                label={"Turno"}
+                options={shiftsParsed}
+                value={
+                  shiftsParsed.find((c) => c.value === formData.shift_id) || null
+                }
+                onChange={(selectedCargo) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    shift_id: selectedCargo ? selectedCargo.value : null,
+                    shift_description: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
+                    shift: shifts.find((shift) => {
+                      return shift.id == selectedCargo.value;
+                    }),
+                  }));
+                  setEditing(true);
+                }}
+                verDetalles={() => {
+                  const shift = shifts.find(
+                    (c) => c.value === formData.shift_id
+                  );
+                  if (shift) {
+                    alert(`Detalles del shift:\n${shift.description}`);
+                  }
+                }}
+                resourceUrl={`/sigrh/shifts`}
+                onCrearNuevo={() => {
+                  alert("Abrir modal para crear nuevo shift");
+                }}
+              />
+              {errors.shift_id && (
+                <span className="text-red-500 text-sm">{errors.shift_id}</span>
+              )}
+            </div>
         </div>
 
         <div className="flex justify-between gap-2">

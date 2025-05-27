@@ -82,13 +82,13 @@ export default function RelationalInput({
             onFocus={() => setIsOpen(true)}
             onKeyDown={manejarTeclas}
           />
-          <button
+          {/* <button
             onClick={verDetalles}
             disabled={!value}
             className="gap-1 px-2 py-1 text-sm cursor-pointer disabled:opacity-50"
           >
             <IoMdArrowRoundForward size={16} />
-          </button>
+          </button> */}
         </div>
         {isOpen && (
           <ul className="absolute z-10 bg-white border rounded mt-1 w-full max-h-40 overflow-auto shadow min-w-full">
@@ -113,12 +113,12 @@ export default function RelationalInput({
             {filteredOptions.length === 0 && (
               <>
                 <li className="px-2 py-1 text-gray-400">No hay resultados</li>
-                <li
+                {/* <li
                   onClick={onCrearNuevo}
                   className="px-2 py-1 text-gray-400 flex items-center gap-1 cursor-pointer hover:bg-gray-100"
                 >
                   <AiOutlinePlus size={16} /> Nuevo
-                </li>
+                </li> */}
               </>
             )}
             <li className="px-2 py-1 text-emerald-500 hover:bg-gray-100 cursor-pointer text-sm">
