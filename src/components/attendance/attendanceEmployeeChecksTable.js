@@ -10,7 +10,7 @@ import AttendanceChecksEventsDetailsModal from "./attendanceChecksEventsDetailsM
 export default function AttendanceEmployeeChecksTable() {
   const [resumeData, setResumeData] = useState([]);
   const [filters, setFilters] = useState(() => {
-    const today = new Date().toISOString().split("T")[0]; // formato YYYY-MM-DD
+    const today = new Date().toLocaleDateString("sv-SE"); // "YYYY-MM-DD"
     return {
       searchTerm: "",
       startDate: today,
