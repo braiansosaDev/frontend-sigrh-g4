@@ -107,7 +107,9 @@ export default function PayrollTable({ data, employee }) {
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.notes}
                 </td>
-                <td className="px-3 py-2 border-b">{row.pay ? "Si" : "No"}</td>
+                <td className="px-3 py-2 border-b">
+                  {row.employee_hours.pay ? "Si" : "No"}
+                </td>
               </tr>
             ))
           )}

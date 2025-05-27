@@ -145,7 +145,7 @@ export default function PayrollContainer() {
       Concepto: row.concept?.description || "",
       Horas: row.employee_hours.sumary_time,
       Notas: row.employee_hours.notes,
-      Pago: row.pay ? "Si" : "No",
+      Pago: row.employee_hours.pay ? "Si" : "No",
     }));
 
     const ws = XLSX.utils.json_to_sheet(excelPayroll);
