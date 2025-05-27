@@ -15,6 +15,12 @@ const columns = [
 ];
 
 export default function PayrollTable({ data, employee }) {
+  //Para hacer la primera letra mayúscula
+  function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <div className="overflow-x-auto">
       {employee ? (
@@ -54,9 +60,10 @@ export default function PayrollTable({ data, employee }) {
             data?.map((row, idx) => (
               <tr key={idx} className="hover:bg-emerald-50">
                 <td className="px-3 py-2 border-b">
-                  {new Date(row.employee_hours.work_date).toLocaleDateString(
-                    "es-AR",
-                    { weekday: "long" }
+                  {capitalize(
+                    new Date(
+                      row.employee_hours.work_date + "T00:00:00"
+                    ).toLocaleDateString("es-AR", { weekday: "long" })
                   )}
                 </td>
                 <td className="px-3 py-2 border-b">
@@ -66,10 +73,26 @@ export default function PayrollTable({ data, employee }) {
                   {row.employee_hours.register_type}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.first_check_in}
+                  {row.employee_hours.first_check_in
+                    ? new Date(
+                        `1970-01-01T${row.employee_hours.first_check_in}`
+                      ).toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })
+                    : ""}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.last_check_out}
+                  {row.employee_hours.last_check_out
+                    ? new Date(
+                        `1970-01-01T${row.employee_hours.last_check_out}`
+                      ).toLocaleTimeString("es-AR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })
+                    : ""}
                 </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.check_count}
@@ -79,12 +102,12 @@ export default function PayrollTable({ data, employee }) {
                   {row.concept.description}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {row.employee_hours.time_worked}
+                  {row.employee_hours.sumary_time}
                 </td>
                 <td className="px-3 py-2 border-b">
                   {row.employee_hours.notes}
                 </td>
-                <td className="px-3 py-2 border-b">{row.employee_hours.pay}</td>
+                <td className="px-3 py-2 border-b">{row.pay ? "Si" : "No"}</td>
               </tr>
             ))
           )}
