@@ -22,17 +22,17 @@ export default function PayrollTable({ data, employee }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      {employee ? (
+    <div className="overflow-auto h-[70vh]">
+      {/* {employee ? (
         <div>
           <h2 className="font-semibold mb-4 ml-4">
             {" "}
             Asistencia de {employee.first_name + " " + employee.last_name}
           </h2>
         </div>
-      ) : null}
+      ) : null} */}
       <table className="min-w-full table-fixed border border-gray-200 bg-white rounded-lg shadow">
-        <thead>
+        <thead className="sticky top-0">
           <tr>
             {columns.map((col) => (
               <th
@@ -53,7 +53,7 @@ export default function PayrollTable({ data, employee }) {
               >
                 {employee
                   ? "No hay resultados para la búsqueda."
-                  : "Ingrese los campos de búsqueda y haga clic en sincronizar para ver los resultados."}
+                  : "Ingrese los campos de búsqueda y haga clic en buscar para ver los resultados."}
               </td>
             </tr>
           ) : (
@@ -66,7 +66,7 @@ export default function PayrollTable({ data, employee }) {
                     ).toLocaleDateString("es-AR", { weekday: "long" })
                   )}
                 </td>
-                <td className="px-3 py-2 border-b">
+                <td className="px-3 py-2 border-b whitespace-nowrap">
                   {row.employee_hours.work_date}
                 </td>
                 <td className="px-3 py-2 border-b">
