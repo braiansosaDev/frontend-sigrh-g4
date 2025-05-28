@@ -76,7 +76,7 @@ export default function EmployeeForm({ employeeData, id }) {
     if (!formData.address_country_id)
       newErrors.address_country_id = "Debe seleccionar un país";
 
-    if (!formData.salary) newErrors.salary = "Debe indicar al menos un salario";
+    // if (!formData.salary) newErrors.salary = "Debe indicar al menos un salario";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -149,7 +149,7 @@ export default function EmployeeForm({ employeeData, id }) {
       } else {
         res = await axios.post(
           `${config.API_URL}/employees/register`,
-          cleanedData
+          {...cleanedData, salary: 1}
         );
       }
 
@@ -676,7 +676,7 @@ export default function EmployeeForm({ employeeData, id }) {
             )}
           </div>
 
-          <div className="flex flex-col justify-center ">
+          {/* <div className="flex flex-col justify-center ">
             <label className="text-sm text-gray-500">Salario</label>
             <input
               name="salary"
@@ -688,7 +688,7 @@ export default function EmployeeForm({ employeeData, id }) {
             {errors.salary && (
               <span className="text-red-500 text-sm">{errors.salary}</span>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 
