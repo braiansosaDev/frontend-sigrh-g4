@@ -121,7 +121,7 @@ export default function PayrollContainer() {
       alert("La fecha inicial no puede ser mayor a la final.");
       return;
     }
-    
+
     const today = new Date().toLocaleDateString("en-CA", {
       timeZone: "America/Argentina/Buenos_Aires",
     });
