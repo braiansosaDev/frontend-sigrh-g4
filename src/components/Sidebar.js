@@ -18,7 +18,7 @@ import {
   FaMoneyBillWave,
   FaClock,
 } from "react-icons/fa";
-import { MdSecurity } from "react-icons/md";
+import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
@@ -77,6 +77,11 @@ const menuItems = [
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
     requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA]
+  },
+   {
+    label: "Ajustes",
+    icon: <MdSettings className="text-2xl" />,
+    path: "/sigrh/settings"
   },
 ];
 
