@@ -249,7 +249,7 @@ export default function JobOpportunitiesTags({
               : "desirablePercentage"
           }
           type="number"
-          value={percentage}
+          value={percentage ?? ""}
           onChange={(e) => setPercentage(e.target.value)}
           className="block w-1/3 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
           placeholder=" % Porcentaje de habilidades que se deben encontrar"
