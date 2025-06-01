@@ -269,34 +269,20 @@ export default function JobOpportunityOptions({
             otherTags={formData.desirable_abilities}
             setFormData={setFormData}
             type="required_abilities"
-          />
-          <input
-            name="requiredPercentage"
-            type="number"
-            value={formData.requiredPercentage}
-            className="mt-1 block w-39 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-            placeholder=" % de cumplimiento"
-            onChange={checkRegion}
-            min={0}
-            max={100}
-            required
+            percentage={formData.requiredPercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, requiredPercentage: value }))
+            }
           />
           <JobOpportunitiesTags
             tags={formData.desirable_abilities}
             otherTags={formData.required_abilities}
             setFormData={setFormData}
             type="desirable_abilities"
-          />
-          <input
-            name="desirablePercentage"
-            type="number"
-            value={formData.desirablePercentage}
-            className="mt-1 block w-39 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-            placeholder=" % de cumplimiento"
-            onChange={checkRegion}
-            min={0}
-            max={100}
-            required
+            percentage={formData.desirablePercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, desirablePercentage: value }))
+            }
           />
 
           <div className="flex justify-end space-x-4">
