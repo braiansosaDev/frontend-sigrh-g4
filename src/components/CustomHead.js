@@ -21,7 +21,7 @@ export default function CustomHead() {
 
     // ✅ FAVICON dinámico
     let favicon = document.querySelector("link[rel~='icon']");
-    if (favicon) {
+    if (favicon && favicon_url) {
       favicon.href = favicon_url;
     } else {
       favicon = document.createElement("link");

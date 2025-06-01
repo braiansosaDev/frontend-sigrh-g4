@@ -1,5 +1,7 @@
 "use client";
-import { useState, useRef } from "react";
+import config from "@/config";
+import axios from "axios";
+import { useState, useRef, useEffect } from "react";
 import { FaFileUpload } from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -16,9 +18,31 @@ export default function SettingsContainer() {
   const MAX_LOGO_MB = 1;
   const MAX_LOGO_WIDTH = 1024;
   const MAX_LOGO_HEIGHT = 300;
-  const FAVICON_SIZE = 32;
+  const FAVICON_SIZE = 300;
 
   const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  // dentro del componente
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await axios.post(
+          `${config.API_URL}/configurations/getConfigurations`
+        );
+        const data = res.data;
+
+        setCompanyName(data.company_name);
+        setEmail(data.email);
+        setPhone(data.phone);
+        setLogoPreview(data.logo);
+        setFaviconPreview(data.favicon);
+      } catch (e) {
+        console.error(`No se pudo obtener la configuración: ${e.message}`);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -56,9 +80,9 @@ export default function SettingsContainer() {
     reader.onloadend = () => {
       const img = new Image();
       img.onload = () => {
-        if (img.width !== FAVICON_SIZE || img.height !== FAVICON_SIZE) {
+        if (img.width > FAVICON_SIZE || img.height > FAVICON_SIZE) {
           alert(
-            `El favicon debe ser exactamente ${FAVICON_SIZE}x${FAVICON_SIZE}px`
+            `El favicon debe ser menor a ${FAVICON_SIZE}x${FAVICON_SIZE}px`
           );
           faviconInputRef.current.value = "";
         } else {
@@ -70,9 +94,9 @@ export default function SettingsContainer() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = () => {
-    if (!companyName || !logoPreview || !faviconPreview || !email || !phone) {
-      alert("Completá todos los campos");
+  const handleSubmit = async () => {
+    if (!companyName || !email || !phone) {
+      alert("Completá todos los campos necesarios: Compañia, Mail, Telefono");
       return;
     }
 
@@ -85,12 +109,47 @@ export default function SettingsContainer() {
       company_name: companyName,
       email,
       phone,
-      logo_base64: logoPreview.split(",")[1],
-      favicon_base64: faviconPreview.split(",")[1],
+      logo: logoPreview,
+      favicon: faviconPreview,
     };
 
     console.log("Payload listo para guardar:", payload);
     // axios.post('/api/settings', payload)...
+
+    try {
+      const res = await axios.post(
+        `${config.API_URL}/configurations/setConfigurations`,
+        payload
+      );
+
+      if (res.status === 201) {
+        alert(
+          "Configuraciones guardadas correctamente. Recarga la pagina para ver reflejados los cambios!"
+        );
+      } else {
+        throw new Error(
+          `Ha ocurrido un error al guardar las configuraciones: ${res.statusText}`
+        );
+      }
+    } catch (e) {
+      alert(
+        `Ha ocurrido un error al guardar las configuraciones: ${e.message}`
+      );
+    }
+  };
+
+  const handleClearLogo = () => {
+    setLogoPreview(null);
+    if (logoInputRef.current) {
+      logoInputRef.current.value = "";
+    }
+  };
+
+  const handleClearFavicon = () => {
+    setFaviconPreview(null);
+    if (faviconInputRef.current) {
+      faviconInputRef.current.value = "";
+    }
   };
 
   return (
@@ -149,12 +208,22 @@ export default function SettingsContainer() {
               className="hidden"
             />
           </div>
+          {/* Logo */}
           {logoPreview && (
-            <img
-              src={logoPreview}
-              alt="Preview Logo"
-              className="mt-2 max-h-32 object-contain border border-gray-300 p-1"
-            />
+            <div className="mt-2">
+              <img
+                src={logoPreview}
+                alt="Preview Logo"
+                className="max-h-32 object-contain border border-gray-300 p-1"
+              />
+              <button
+                type="button"
+                onClick={handleClearLogo}
+                className="text-sm text-red-600 underline mt-1"
+              >
+                Eliminar logo
+              </button>
+            </div>
           )}
         </label>
 
@@ -178,12 +247,22 @@ export default function SettingsContainer() {
               className="hidden"
             />
           </div>
+          {/* Favicon */}
           {faviconPreview && (
-            <img
-              src={faviconPreview}
-              alt="Preview Favicon"
-              className="mt-2 w-16 h-16 border border-gray-300 p-1"
-            />
+            <div className="mt-2">
+              <img
+                src={faviconPreview}
+                alt="Preview Favicon"
+                className="w-16 h-16 border border-gray-300 p-1"
+              />
+              <button
+                type="button"
+                onClick={handleClearFavicon}
+                className="text-sm text-red-600 underline mt-1"
+              >
+                Eliminar favicon
+              </button>
+            </div>
           )}
         </label>
       </div>

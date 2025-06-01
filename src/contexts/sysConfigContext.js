@@ -1,13 +1,16 @@
 "use client";
+import config from "@/config";
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const SystemConfigContext = createContext();
 
 export function SystemConfigProvider({ children }) {
-  const [config, setConfig] = useState(null);
+  const [sysConfig, setSysconfig] = useState(null);
 
   useEffect(() => {
-    loadMockConfig();
+    //loadMockConfig();
+    loadBackendConfig();
   }, []);
 
   async function loadMockConfig() {
@@ -32,7 +35,34 @@ export function SystemConfigProvider({ children }) {
     mockConfig.logo_url = `data:image/png;base64,${logoBase64}`;
     mockConfig.favicon_url = `data:image/x-icon;base64,${faviconBase64}`;
 
-    setConfig(mockConfig);
+    setSysconfig(mockConfig);
+  }
+
+  async function loadBackendConfig() {
+    let sysConfigFetched;
+
+    try {
+      const res = await axios.post(
+        `${config.API_URL}/configurations/getConfigurations`
+      );
+
+      if (res.status == 200) {
+        sysConfigFetched = res.data;
+        sysConfigFetched.logo_url = res.data.logo;
+        sysConfigFetched.favicon_url = res.data.favicon;
+
+        setSysconfig(sysConfigFetched);
+      } else {
+        throw new Error(
+          "Hubo un error al obtener las configuraciones",
+          res.statusText
+        );
+      }
+    } catch (e) {
+      console.error(
+        `Hubo un error al obtener las configuraciones: ${e.message}`
+      );
+    }
   }
 
   // Función auxiliar para cargar imágenes de /public como base64
@@ -50,7 +80,7 @@ export function SystemConfigProvider({ children }) {
   }
 
   return (
-    <SystemConfigContext.Provider value={config}>
+    <SystemConfigContext.Provider value={sysConfig}>
       {children}
     </SystemConfigContext.Provider>
   );
