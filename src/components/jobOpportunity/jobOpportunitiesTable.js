@@ -156,6 +156,10 @@ export default function JobOpportunityTable() {
           description: ability.description || "",
           id: ability.id || 0,
         })),
+        required_skill_percentage:
+          jobOpportunityNewData.requiredPercentage || 0,
+        desirable_skill_percentage:
+          jobOpportunityNewData.desirablePercentage || 0,
       };
 
       const res = await axios.post(

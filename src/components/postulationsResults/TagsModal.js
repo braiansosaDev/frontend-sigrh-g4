@@ -7,52 +7,24 @@ import axios from "axios";
 export default function TagsModal({
   open,
   onClose,
-  abilities,
   title,
-  jobOpportunityId,
+  matcherResults,
+  postulationId,
 }) {
-  const token = Cookies.get("token");
-  const [wantedAbilities, setWantedAbilities] = useState([]);
-
   const handleClose = () => {
-    setWantedAbilities([]);
     onClose();
   };
 
-  const fetchJobOpportunityAbilities = async () => {
-    if (!jobOpportunityId || !token) return;
-
-    try {
-      const res = await axios.get(
-        `${config.API_URL}/opportunities/${jobOpportunityId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.status !== 200)
-        throw new Error("Error al traer las postulaciones");
-
-      if (title == "Habilidades requeridas") {
-        setWantedAbilities(
-          res.data.required_abilities.map((abil) => abil.name)
-        );
-      } else if (title == "Habilidades deseables") {
-        setWantedAbilities(
-          res.data.desirable_abilities.map((abil) => abil.name)
-        );
-      }
-    } catch (error) {
-      throw new Error(`Error al obtener habilidades: ${error.message}`);
-    }
-  };
-
-  useEffect(() => {
-    if (open && jobOpportunityId) {
-      fetchJobOpportunityAbilities();
-    }
-  }, [open, jobOpportunityId]);
-
   if (!open) return null;
+
+  const postulationMatch = Array.isArray(matcherResults)
+    ? matcherResults.find((p) => p.postulation_id === postulationId) || {}
+    : matcherResults || {};
+
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -72,38 +44,82 @@ export default function TagsModal({
               </tr>
             </thead>
             <tbody>
-              {wantedAbilities && wantedAbilities.length > 0 ? (
-                wantedAbilities.map((ability, idx) => {
-                  const match =
-                    abilities && abilities.includes(ability.toLowerCase());
-                  return (
-                    <tr key={idx}>
-                      <td
-                        className={`${
-                          match ? "bg-emerald-300" : "bg-red-300"
-                        } py-2 px-4 border-b font-semibold cursor-default`}
-                      >
-                        {ability}
-                      </td>
-                      <td
-                        className={`${
-                          match ? "bg-emerald-300" : "bg-red-300"
-                        } py-2 px-4 border-b text-center cursor-default`}
-                      >
-                        {match ? "✅" : "❌"}
-                      </td>
-                    </tr>
-                  );
-                })
+              {title === "Habilidades deseables" ? (
+                <>
+                  {(postulationMatch.desired_words_found || []).map(
+                    (ability, idx) => (
+                      <tr key={`des-found-${idx}`}>
+                        <td className="bg-emerald-300 py-2 px-4 border-b font-semibold">
+                          {capitalizeFirstLetter(ability)}
+                        </td>
+                        <td className="bg-emerald-300 py-2 px-4 border-b text-center text-xl">
+                          ✔️
+                        </td>
+                      </tr>
+                    )
+                  )}
+                  {(postulationMatch.desired_words_not_found || []).map(
+                    (ability, idx) => (
+                      <tr key={`des-notfound-${idx}`}>
+                        <td className="bg-red-300 py-2 px-4 border-b font-semibold">
+                          {capitalizeFirstLetter(ability)}
+                        </td>
+                        <td className="bg-red-300 py-2 px-4 border-b text-center text-xl">
+                          ❌
+                        </td>
+                      </tr>
+                    )
+                  )}
+                  {!postulationMatch.desired_words_found?.length &&
+                    !postulationMatch.desired_words_not_found?.length && (
+                      <tr>
+                        <td
+                          colSpan={2}
+                          className="py-2 px-4 text-center text-gray-500"
+                        >
+                          No hay habilidades deseables para mostrar
+                        </td>
+                      </tr>
+                    )}
+                </>
               ) : (
-                <tr>
-                  <td
-                    colSpan={2}
-                    className="py-2 px-4 text-center text-gray-500"
-                  >
-                    Ninguna habilidad encontrada
-                  </td>
-                </tr>
+                <>
+                  {(postulationMatch.required_words_found || []).map(
+                    (ability, idx) => (
+                      <tr key={`req-found-${idx}`}>
+                        <td className="bg-emerald-300 py-2 px-4 border-b font-semibold">
+                          {capitalizeFirstLetter(ability)}
+                        </td>
+                        <td className="bg-emerald-300 py-2 px-4 border-b text-center text-xl">
+                          ✔️
+                        </td>
+                      </tr>
+                    )
+                  )}
+                  {(postulationMatch.required_words_not_found || []).map(
+                    (ability, idx) => (
+                      <tr key={`req-notfound-${idx}`}>
+                        <td className="bg-red-300 py-2 px-4 border-b font-semibold">
+                          {capitalizeFirstLetter(ability)}
+                        </td>
+                        <td className="bg-red-300 py-2 px-4 border-b text-center text-xl">
+                          ❌
+                        </td>
+                      </tr>
+                    )
+                  )}
+                  {!postulationMatch.required_words_found?.length &&
+                    !postulationMatch.required_words_not_found?.length && (
+                      <tr>
+                        <td
+                          colSpan={2}
+                          className="py-2 px-4 text-center text-gray-500"
+                        >
+                          No hay habilidades requeridas para mostrar
+                        </td>
+                      </tr>
+                    )}
+                </>
               )}
             </tbody>
           </table>

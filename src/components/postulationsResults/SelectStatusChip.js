@@ -13,11 +13,11 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
         return "bg-yellow-200 text-yellow-700 border-yellow-400";
       case "aceptada":
         return "bg-green-200 text-green-700 border-green-400";
-      case "no aceptada":
+      case "rechazado":
         return "bg-red-200 text-red-700 border-red-400";
       case "contratado":
         return "bg-blue-200 text-blue-700 border-blue-400";
-      case "Rechazado":
+      case "no aceptada":
         return "bg-red-400 text-red-900 border-red-600";
       default:
         return "bg-gray-200 text-gray-600 border-gray-400";
@@ -26,16 +26,17 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
 
   const handleChange = async (e) => {
     const newValue = e.target.value;
-    if (newValue !== "Rechazado") {
-      try {
-        await axios.patch(`${config.API_URL}/postulations/${postulation.id}`, {
-          status: newValue,
-        });
-        onChange();
-      } catch (error) {
-        console.error("Error al actualizar el estado:", error);
-      }
-    } else {
+
+    try {
+      await axios.patch(`${config.API_URL}/postulations/${postulation.id}`, {
+        status: newValue,
+      });
+      onChange();
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+    }
+
+    if (newValue === "no aceptada") {
       setPendingStatus(newValue);
       setShowModal(true);
     }
@@ -62,7 +63,7 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
         <option value="contratado" className="bg-white text-black">
           Contratado
         </option>
-        <option value="Rechazado" className="bg-white text-black">
+        <option value="rechazado" className="bg-white text-black">
           Rechazado
         </option>
       </select>

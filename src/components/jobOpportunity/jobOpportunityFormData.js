@@ -92,9 +92,9 @@ export default function JobOpportunityFormData({
         country_id: countryId ? countryId : "",
         state_id: jobOpportunity.state_id || "",
         required_abilities: jobOpportunity.required_abilities || [],
-        requiredPercentage: jobOpportunity.requiredPercentage || "",
+        requiredPercentage: jobOpportunity.required_skill_percentage || "",
         desirable_abilities: jobOpportunity.desirable_abilities || [],
-        desirablePercentage: jobOpportunity.desirablePercentage || "",
+        desirablePercentage: jobOpportunity.desirable_skill_percentage || "",
       });
     }
   }, [jobOpportunity, states]);

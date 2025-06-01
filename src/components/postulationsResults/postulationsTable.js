@@ -14,13 +14,14 @@ export default function PostulationsTable({
   jobOpportunityId,
   filter,
   searchInput,
+  matcherResults,
 }) {
   const [postulations, setPostulations] = useState([]);
   const [filteredPostulations, setFilteredPostulations] = useState([]);
   const token = Cookies.get("token");
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalTags, setModalTags] = useState([]);
   const [modalTitle, setModalTitle] = useState("");
+  const [selectedPostulationId, setSelectedPostulationId] = useState(null); // Estado para almacenar el ID de la postulación seleccionada
 
   // Obtener países y estados desde los hooks
   const { countries } = useCountries();
@@ -236,10 +237,8 @@ export default function PostulationsTable({
                         <button
                           className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
                           onClick={() => {
-                            setModalTags(
-                              postulation.ability_match.required_words
-                            );
                             setModalTitle("Habilidades requeridas");
+                            setSelectedPostulationId(postulation.id);
                             setModalOpen(true);
                           }}
                         >
@@ -257,10 +256,8 @@ export default function PostulationsTable({
                         <button
                           className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
                           onClick={() => {
-                            setModalTags(
-                              postulation.ability_match.desired_words
-                            );
                             setModalTitle("Habilidades deseables");
+                            setSelectedPostulationId(postulation.id);
                             setModalOpen(true);
                           }}
                         >
@@ -310,9 +307,9 @@ export default function PostulationsTable({
       <TagsModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        abilities={modalTags}
         title={modalTitle}
-        jobOpportunityId={jobOpportunityId}
+        matcherResults={matcherResults}
+        postulationId={selectedPostulationId}
       />
     </div>
   );
