@@ -11,18 +11,13 @@ import {
   FaHome,
   FaSignOutAlt,
   FaChevronRight,
-  FaCashRegister,
-  FaMoneyBill,
   FaMoneyCheck,
-  FaRegMoneyBillAlt,
-  FaMoneyBillWave,
   FaClock,
 } from "react-icons/fa";
 import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
-import { FaMoneyBillTransfer, FaRegMoneyBill1 } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -114,7 +109,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <div className="relative">
-      <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-16 left-0 p-4 z-20">
+      <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-22 left-0 p-4 z-20">
         <ul className="space-y-2">
           {menuItems.map((item, idx) => {
             if (!canAccess(item.requiredPermissions, permissionIds)) return null;

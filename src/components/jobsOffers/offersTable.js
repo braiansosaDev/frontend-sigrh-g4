@@ -9,6 +9,7 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
+import { useSystemConfig } from "@/contexts/sysConfigContext";
 
 export default function OffersTable() {
   const [jobOpportunities, setJobOpportunities] = useState([]); // Estado para las ofertas de trabajo
@@ -27,6 +28,35 @@ export default function OffersTable() {
   const [states, setStates] = useState([]); // Estado para los estados
 
   const token = Cookies.get("token"); // Token de autenticación
+
+  const configBrand = useSystemConfig(); // Usar configBranduración del sistema
+
+  const getTitleElement = (isMobile = false) => {
+    if (configBrand?.logo_url) {
+      return (
+        <Link href="/" className="bg-white px-4 py-2 rounded-full flex">
+          <img
+            src={configBrand.logo_url}
+            alt="Logo"
+            className={`h-10 cursor-pointer ${
+              isMobile ? "lg:hidden" : "hidden lg:block"
+            }`}
+          />
+        </Link>
+      );
+    }
+
+    const title = configBrand?.company_name || "SIGRH+";
+    return (
+      <span
+        className={`text-2xl font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full shadow-md ${
+          isMobile ? "lg:hidden" : "hidden lg:inline-block"
+        }`}
+      >
+        <Link href="/">{title}</Link>
+      </span>
+    );
+  };
 
   const fetchJobOpportunities = async () => {
     try {
@@ -153,15 +183,13 @@ export default function OffersTable() {
 
       {/* Contenedor principal */}
       <div className="relative z-20 p-8">
-        <h1 className="lg:hidden text-2xl text-center font-bold text-emerald-600 mb-4 bg-emerald-50 px-4 py-2 rounded-full shadow-md">
-          <Link href="/..">SIGRH</Link>
-        </h1>
+        <div className="lg:hidden text-2xl text-center font-bold text-emerald-600 mb-4 bg-emerald-50 px-4 py-2 rounded-full shadow-md">
+          {getTitleElement(true)}
+        </div>
         {/* Barra de búsqueda y título */}
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
           {/* Título "SIGRH" para pantallas grandes */}
-          <h1 className="hidden lg:block text-2xl font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full shadow-md mb-4 lg:mb-0 hover:scale-102 transition-transform">
-            <Link href="/..">SIGRH</Link>
-          </h1>
+          <div>{getTitleElement(false)}</div>
 
           {/* Buscador y botón de filtros para pantallas pequeñas */}
           <div className="flex justify-between items-center w-full lg:hidden">
@@ -169,11 +197,11 @@ export default function OffersTable() {
               type="text"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="px-6 py-3 border bg-white border-emerald-600 rounded-full w-3/4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-6 py-4 border bg-white border-gray-500 rounded-full w-3/4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder="🔍︎ Buscar por título..."
             />
             <button
-              className="ml-4 cursor-pointer border border-emerald-700 flex items-center gap-2 px-4 py-2 rounded-full text-emerald-50 border-2 border-emerald-500 font-semibold bg-emerald-500 hover:bg-emerald-600"
+              className="ml-4 cursor-pointer border border-emerald-700 flex items-center gap-2 px-4 py-3 rounded-full text-emerald-50 border-2 border-emerald-500 font-semibold bg-emerald-500 hover:bg-emerald-600"
               onClick={() => setIsFiltering(true)}
             >
               Filtros
@@ -186,14 +214,14 @@ export default function OffersTable() {
               type="text"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="px-6 py-3 border bg-white border-emerald-700 rounded-full w-full lg:w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:scale-102 hover:scale-102 transition-transform"
+              className="px-6 py-4 border bg-white border-gray-500 rounded-full w-full lg:w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:scale-102 hover:scale-102 transition-transform"
               placeholder="🔍︎ Buscar por título..."
             />
           </div>
 
           {/* Botón de filtros para pantallas grandes */}
           <button
-            className="hidden cursor-pointer lg:flex items-center border border-emerald-700 gap-2 px-4 py-2 rounded-full text-emerald-50 border-2 font-semibold bg-emerald-500 hover:bg-emerald-600 hover:scale-102 transition-transform"
+            className="hidden cursor-pointer lg:flex items-center border border-emerald-700 gap-2 px-4 py-3 rounded-full text-emerald-50 border-2 font-semibold bg-emerald-500 hover:bg-emerald-600 hover:scale-102 transition-transform"
             onClick={() => setIsFiltering(true)}
           >
             Filtros
@@ -208,7 +236,7 @@ export default function OffersTable() {
         </div>
 
         {filteredOffers.length === 0 && (
-          <div className="flex justify-center items-center mt-8 text-gray-500 text-2xl">
+          <div className="flex justify-center items-center mt-8 text-white text-2xl">
             No se encontraron ofertas que coincidan con tu búsqueda.
           </div>
         )}
@@ -226,7 +254,7 @@ export default function OffersTable() {
           >
             Anterior
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-white">
             Página {totalPages !== 0 ? currentPage + 1 : currentPage} de{" "}
             {totalPages}
           </span>

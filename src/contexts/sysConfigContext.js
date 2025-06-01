@@ -32,37 +32,6 @@ export function SystemConfigProvider({ children }) {
     mockConfig.logo_url = `data:image/png;base64,${logoBase64}`;
     mockConfig.favicon_url = `data:image/x-icon;base64,${faviconBase64}`;
 
-    // // Aplicar efectos globales
-    // const originalTitle = document.title.trim();
-    // const companyName = mockConfig.company_name;
-    // const hasCompanyInTitle = originalTitle.includes(companyName);
-
-    // document.title = hasCompanyInTitle
-    //   ? originalTitle
-    //   : originalTitle
-    //   ? `${originalTitle} | ${companyName}`
-    //   : companyName;
-
-    // document.documentElement.style.setProperty(
-    //   "--primary",
-    //   mockConfig.primary_color
-    // );
-    // document.documentElement.style.setProperty(
-    //   "--secondary",
-    //   mockConfig.secondary_color
-    // );
-
-    // // Favicon
-    // const existing = document.querySelector("link[rel~='icon']");
-    // if (existing) {
-    //   existing.href = mockConfig.favicon_url;
-    // } else {
-    //   const link = document.createElement("link");
-    //   link.rel = "icon";
-    //   link.href = mockConfig.favicon_url;
-    //   document.head.appendChild(link);
-    // }
-
     setConfig(mockConfig);
   }
 
