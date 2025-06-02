@@ -101,7 +101,7 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
         />
         <h1 className="text-2xl font-semibold">
           Convocatoria /{" "}
-          {jobOpportunityId == "new" ? "Nuevo" : `# ${jobOpportunityId}`}
+          {jobOpportunityId == "new" ? "Nuevo" : `# ${jobOpportunityId}`} 💼
         </h1>
       </div>
 

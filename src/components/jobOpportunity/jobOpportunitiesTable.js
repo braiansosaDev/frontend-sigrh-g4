@@ -185,9 +185,11 @@ export default function JobOpportunityTable() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 mt-6">
         <div className="flex gap-2 items-center">
-          <h1 className="text-2xl font-semibold">Convocatorias</h1>
+          <h1 className="text-2xl text-gray-800 font-bold cursor-default">
+            Convocatorias 💼
+          </h1>
           <button
             className="px-4 py-2 bg-emerald-500 rounded-full font-semibold text-white mt-2 hover:bg-emerald-600"
             onClick={() => {

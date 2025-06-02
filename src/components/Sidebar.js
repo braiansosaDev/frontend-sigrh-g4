@@ -13,6 +13,8 @@ import {
   FaChevronRight,
   FaMoneyCheck,
   FaClock,
+  FaFileAlt,
+  FaFileContract,
 } from "react-icons/fa";
 import { MdSecurity } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
@@ -75,6 +77,16 @@ const menuItems = [
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
     requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
+  },
+  {
+    label: "Mis Licencias",
+    icon: <FaFileAlt className="text-2xl" />,
+    path: "/sigrh/my_licenses",
+  },
+  {
+    label: "Licencias",
+    icon: <FaFileContract className="text-2xl" />,
+    path: "/sigrh/licenses",
   },
 ];
 
