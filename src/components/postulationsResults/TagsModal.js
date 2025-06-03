@@ -49,10 +49,10 @@ export default function TagsModal({
                   {(postulationMatch.desired_words_found || []).map(
                     (ability, idx) => (
                       <tr key={`des-found-${idx}`}>
-                        <td className="bg-emerald-300 py-2 px-4 border-b font-semibold">
+                        <td className="bg-emerald-200 py-2 px-4 border-b font-semibold">
                           {capitalizeFirstLetter(ability)}
                         </td>
-                        <td className="bg-emerald-300 py-2 px-4 border-b text-center text-xl">
+                        <td className="bg-emerald-200 py-2 px-4 border-b text-center text-xl">
                           ✔️
                         </td>
                       </tr>
@@ -61,10 +61,10 @@ export default function TagsModal({
                   {(postulationMatch.desired_words_not_found || []).map(
                     (ability, idx) => (
                       <tr key={`des-notfound-${idx}`}>
-                        <td className="bg-red-300 py-2 px-4 border-b font-semibold">
+                        <td className="bg-red-200 py-2 px-4 border-b font-semibold">
                           {capitalizeFirstLetter(ability)}
                         </td>
-                        <td className="bg-red-300 py-2 px-4 border-b text-center text-xl">
+                        <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
                           ❌
                         </td>
                       </tr>
@@ -87,10 +87,10 @@ export default function TagsModal({
                   {(postulationMatch.required_words_found || []).map(
                     (ability, idx) => (
                       <tr key={`req-found-${idx}`}>
-                        <td className="bg-emerald-300 py-2 px-4 border-b font-semibold">
+                        <td className="bg-emerald-200 py-2 px-4 border-b font-semibold">
                           {capitalizeFirstLetter(ability)}
                         </td>
-                        <td className="bg-emerald-300 py-2 px-4 border-b text-center text-xl">
+                        <td className="bg-emerald-200 py-2 px-4 border-b text-center text-xl">
                           ✔️
                         </td>
                       </tr>
@@ -99,10 +99,10 @@ export default function TagsModal({
                   {(postulationMatch.required_words_not_found || []).map(
                     (ability, idx) => (
                       <tr key={`req-notfound-${idx}`}>
-                        <td className="bg-red-300 py-2 px-4 border-b font-semibold">
+                        <td className="bg-red-200 py-2 px-4 border-b font-semibold">
                           {capitalizeFirstLetter(ability)}
                         </td>
-                        <td className="bg-red-300 py-2 px-4 border-b text-center text-xl">
+                        <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
                           ❌
                         </td>
                       </tr>
@@ -126,7 +126,7 @@ export default function TagsModal({
         </div>
         <div className="flex justify-end">
           <button
-            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+            className="px-4 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold transition-colors"
             onClick={handleClose}
           >
             Cerrar

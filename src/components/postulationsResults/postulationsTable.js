@@ -149,7 +149,7 @@ export default function PostulationsTable({
 
       {/* Contenedor de la tabla con scroll */}
       <div className="max-h-[70vh] max-w-[90%] rounded-lg">
-        <table className="min-w-full bg-white">
+        <table className="w-full bg-white">
           <thead className="bg-gray-100 top-0 z-10">
             <tr>
               <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
