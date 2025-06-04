@@ -1,24 +1,38 @@
 "use client";
 
 import { FaBars } from "react-icons/fa";
-import { usePathname } from "next/navigation";
 import { useUser } from "@/contexts/userContext";
-
-const routeTitles = {
-  "/sigrh/employees": "Empleados",
-  "/sigrh/vacancies": "Vacantes",
-  "/sigrh/attendance": "Asistencia",
-  "/sigrh/login": "Login",
-};
+import { useSystemConfig } from "@/contexts/sysConfigContext";
 
 export default function Navbar({ onToggleSidebar }) {
-  const pathname = usePathname();
   const { user } = useUser();
+  const config = useSystemConfig();
 
-  const pageTitle = routeTitles[pathname] || "SIGRH+";
+  const getTitleElement = (isMobile = false) => {
+    if (config?.logo_url) {
+      return (
+        <img
+          src={config.logo_url}
+          alt="Logo"
+          className={`h-14 ${isMobile ? "block md:hidden" : "hidden md:block"}`}
+        />
+      );
+    }
+
+    const title = config?.company_name || "SIGRH+";
+    return (
+      <span
+        className={`font-bold text-emerald-500 text-xl ${
+          isMobile ? "block md:hidden" : "hidden md:inline"
+        }`}
+      >
+        {title}
+      </span>
+    );
+  };
 
   return (
-    <nav className="flex justify-between items-center bg-white p-4 fixed top-0 left-0 w-full z-20 border-b border-gray-100">
+    <nav className="flex justify-between items-center bg-white p-4 fixed top-0 left-0 w-full z-10 border-b border-gray-100">
       {/* Botón Hamburguesa + Título */}
       <div className="flex items-center space-x-2">
         <button
@@ -27,15 +41,13 @@ export default function Navbar({ onToggleSidebar }) {
         >
           <FaBars />
         </button>
-        <span className="font-bold text-emerald-500 text-xl hidden md:inline">
-          SIGRH+
-        </span>
+
+        {/* Logo o título en escritorio */}
+        {getTitleElement(false)}
       </div>
 
-      {/* Título móvil */}
-      <h1 className="md:hidden font-bold text-emerald-500 text-xl">
-        {pageTitle}
-      </h1>
+      {/* Logo o título en móvil */}
+      {getTitleElement(true)}
 
       {/* Foto de usuario y nombre */}
       {user && (
@@ -55,14 +67,9 @@ export default function Navbar({ onToggleSidebar }) {
                 </span>
               )}
             </div>
-            {user.role?.description ? (
-              <span className="text-xs text-gray-400 italic font-semibold">
-                {" "}
-                 {user.role?.description} (Rol)
-              </span>
-            ) : (<span className="text-xs text-gray-400 italic font-semibold">
-                Invitado (Rol)
-              </span>)}
+            <span className="text-xs text-gray-400 italic font-semibold">
+              {user.role?.description || "Invitado"} (Rol)
+            </span>
           </div>
           <img
             src={user.photo}
