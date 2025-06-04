@@ -55,10 +55,10 @@ export default function Navbar({ onToggleSidebar }) {
                 </span>
               )}
             </div>
-            {user.role_entity?.description ? (
+            {user.role?.description ? (
               <span className="text-xs text-gray-400 italic font-semibold">
                 {" "}
-                 {user.role_entity?.description} (Rol)
+                 {user.role?.description} (Rol)
               </span>
             ) : (<span className="text-xs text-gray-400 italic font-semibold">
                 Invitado (Rol)
