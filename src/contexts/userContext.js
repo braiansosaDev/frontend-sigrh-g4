@@ -27,7 +27,7 @@ export const UserProvider = ({ children }) => {
 
       const userData = res.data;
       setUser(userData);
-      setRole(userData.role_entity);
+      setRole(userData.role);
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
       setUser(null);
