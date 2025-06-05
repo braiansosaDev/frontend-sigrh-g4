@@ -21,7 +21,7 @@ export default function LicensesContainer() {
         </button>
       </div>
       <hr className="border-gray-200 mb-6" />
-      <div className="min-h-[200px] bg-white rounded shadow-sm flex items-center justify-center">
+      <div>
         <LicensesTable />
         {openModal && (
           <LicenseModal open={openModal} onClose={() => setOpenModal(false)} />
