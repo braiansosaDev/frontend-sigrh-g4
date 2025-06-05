@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import axios from "axios";
 import config from "@/config";
+import { useSystemConfig } from "@/contexts/sysConfigContext";
 
 export default function LoginPage() {
   const router = useRouter();
   const [usuarioId, setUsuarioId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const configSys = useSystemConfig();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,12 +47,20 @@ export default function LoginPage() {
       {/* Formulario: visible siempre */}
       <div className="flex flex-1 items-center justify-center p-8 bg-[url('/pattern-sigrh.svg')] bg-cover bg-center md:bg-none">
         <div className="w-full max-w-4xl bg-white p-8 rounded-2xl">
-          <h2 className="mb-6 text-center text-5xl font-bold text-gray-800">
-            SIGRH+
-          </h2>
-          <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">
+          <div className="mb-6 text-center flex flex-col items-center">
+            <h2 className="text-3xl font-bold text-gray-600">SIGRH+</h2>
+            {configSys?.logo_url ? (
+              <img src={configSys.logo_url} alt="Logo" className="h-32 mb-2" />
+            ) : configSys?.company_name ? (
+              <span className="text-lg font-semibold text-gray-600 mb-1">
+                {configSys.company_name}
+              </span>
+            ) : null}
+          </div>
+
+          {/* <h2 className="mb-6 text-2xl font-bold text-gray-800 text-center">
             Iniciar sesión
-          </h2>
+          </h2> */}
 
           {/* Mensaje de error */}
           {errorMessage && (
