@@ -118,12 +118,12 @@ export default function EmployeeUser({ employeeData, id }) {
               <RelationalInput
                 options={mappedRoles}
                 value={
-                  mappedRoles.find((r) => r.value === formData.role) || null
+                  mappedRoles.find((r) => r.value === formData.role_id) || null
                 }
                 onChange={(selected) => {
                   setFormData((prev) => ({
                     ...prev,
-                    role: selected?.value || "",
+                    role_id: selected?.value || "",
                     role_name: selected?.label || "",
                   }));
                   setEditing(true);
