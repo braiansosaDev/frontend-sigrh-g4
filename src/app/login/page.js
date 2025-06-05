@@ -19,9 +19,9 @@ export default function LoginPage() {
 
     try {
       setErrorMessage(""); // Limpiar error anterior
-      const res = await axios.post(`${config.API_URL}/auth/login`, {
-        user_id: usuarioId,
-        password,
+      const res = await axios.postForm(`${config.API_URL}/auth/login`, {
+          username: usuarioId,
+          password: password
       });
 
       if (res.status !== 200) throw new Error("Login fallido");
