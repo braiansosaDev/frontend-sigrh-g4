@@ -1,4 +1,9 @@
-import React from "react";
+import { useState } from "react";
+import SelectPayrollStatusChip from "./selectPayrollStatusChip";
+import { capitalize } from "@/utils/capitalize";
+import axios from "axios";
+import config from "@/config";
+import EditPayrollNotesModal from "./editPayrollNotesModal";
 
 const columns = [
   "Día",
@@ -11,40 +16,66 @@ const columns = [
   "Concepto",
   "Horas",
   "Notas",
-  "Pago",
+  "Estado",
 ];
 
-export default function PayrollTable({ data, employee }) {
-  //Para hacer la primera letra mayúscula
-  function capitalize(str) {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+export default function PayrollTable({ data, employee, onUpdateData }) {
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const openEditModal = (note, id) => {
+    setSelectedNote(note);
+    setSelectedRowId(id);
+    setOpenModal(true);
+  };
+
+  const closeModal = () => {
+    setOpenModal(false);
+    setSelectedNote(null);
+    setSelectedRowId(null);
+  };
+
+  const handlePayrollStatusChange = async (payrollRowId, newState) => {
+    // alert(`Cambio de estado row ${payrollRowId} -> Estado: ${newState}`);
+
+    try {
+      const res = await axios.patch(
+        `${config.API_URL}/employee_hours/${payrollRowId}`,
+        { payroll_status: newState }
+      );
+
+      if (res.status === 200) {
+        alert("Registro de horas actualizado correctamente!");
+        onUpdateData();
+      } else {
+        throw Error(
+          `Ha ocurrido un error al actualizar el registro de horas: COD. ${res.status} ${res.statusText}`
+        );
+      }
+    } catch (e) {
+      alert(
+        `Ha ocurrido un error al actualizar el registro de horas: ${e.message}`
+      );
+    }
+  };
 
   return (
     <div className="overflow-auto h-[70vh]">
-      {/* {employee ? (
-        <div>
-          <h2 className="font-semibold mb-4 ml-4">
-            {" "}
-            Asistencia de {employee.first_name + " " + employee.last_name}
-          </h2>
-        </div>
-      ) : null} */}
-      <table className="min-w-full table-fixed border border-gray-200 bg-white rounded-lg shadow">
+      <table className="min-w-full table-fixed bg-white rounded-lg shadow">
         <thead className="sticky top-0">
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                className="px-3 py-2 border-b bg-emerald-50 text-emerald-700 text-xs font-semibold text-center"
+                className="px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold text-center"
               >
                 {col}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-xs">
           {data?.length === 0 ? (
             <tr>
               <td
@@ -58,21 +89,26 @@ export default function PayrollTable({ data, employee }) {
             </tr>
           ) : (
             data?.map((row, idx) => (
-              <tr key={idx} className="hover:bg-emerald-50">
-                <td className="px-3 py-2 border-b">
+              <tr
+                key={idx}
+                className="border-b border-gray-300 hover:bg-gray-100"
+              >
+                <td className="px-3 py-2">
                   {capitalize(
                     new Date(
                       row.employee_hours.work_date + "T00:00:00"
                     ).toLocaleDateString("es-AR", { weekday: "long" })
                   )}
                 </td>
-                <td className="px-3 py-2 border-b whitespace-nowrap">
-                  {row.employee_hours.work_date}
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {new Date(
+                    row.employee_hours.work_date + "T00:00:00"
+                  ).toLocaleDateString()}
                 </td>
-                <td className="px-3 py-2 border-b">
+                <td className="px-3 py-2">
                   {row.employee_hours.register_type}
                 </td>
-                <td className="px-3 py-2 border-b">
+                <td className="px-3 py-2">
                   {row.employee_hours.first_check_in
                     ? new Date(
                         `1970-01-01T${row.employee_hours.first_check_in}`
@@ -83,7 +119,7 @@ export default function PayrollTable({ data, employee }) {
                       })
                     : ""}
                 </td>
-                <td className="px-3 py-2 border-b">
+                <td className="px-3 py-2">
                   {row.employee_hours.last_check_out
                     ? new Date(
                         `1970-01-01T${row.employee_hours.last_check_out}`
@@ -94,27 +130,51 @@ export default function PayrollTable({ data, employee }) {
                       })
                     : ""}
                 </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.check_count}
+                <td className="px-3 py-2">{row.employee_hours.check_count}</td>
+                <td className="px-3 py-2">{row.shift.description}</td>
+                <td className="px-3 py-2">{row.concept.description}</td>
+                <td className="px-3 py-2">
+                  {row.employee_hours.sumary_time || "00:00"}
                 </td>
-                <td className="px-3 py-2 border-b">{row.shift.description}</td>
-                <td className="px-3 py-2 border-b">
-                  {row.concept.description}
+                <td className="px-3 py-2 max-w-[200px]">
+                  <div className="flex justify-between">
+                    <span className="truncate" title={row.employee_hours.notes}>
+                      {row.employee_hours.notes || "—"}
+                    </span>
+                    <button
+                      onClick={() =>
+                        openEditModal(
+                          row.employee_hours.notes,
+                          row.employee_hours.id
+                        )
+                      }
+                      className="text-emerald-600 text-[11px] underline hover:text-emerald-800 w-fit"
+                    >
+                      Editar
+                    </button>
+                  </div>
                 </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.sumary_time}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.notes}
-                </td>
-                <td className="px-3 py-2 border-b">
-                  {row.employee_hours.pay ? "Si" : "No"}
+
+                <td className="px-3 py-2">
+                  <SelectPayrollStatusChip
+                    value={row.employee_hours.payroll_status}
+                    rowId={row.employee_hours.id}
+                    onChange={handlePayrollStatusChange}
+                  />
                 </td>
               </tr>
             ))
           )}
         </tbody>
       </table>
+
+      <EditPayrollNotesModal
+        isOpen={openModal}
+        onClose={closeModal}
+        onSave={onUpdateData}
+        initialNote={selectedNote}
+        recordId={selectedRowId}
+      />
     </div>
   );
 }

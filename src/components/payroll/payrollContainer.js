@@ -268,7 +268,7 @@ export default function PayrollContainer() {
       </div>
 
       <div className="flex-grow overflow-auto">
-        <PayrollTable data={payroll} employee={selectedEmployee} />
+        <PayrollTable data={payroll} employee={selectedEmployee} onUpdateData={() => {fetchPayroll()}} />
       </div>
 
       <ProcessPayrollModal
