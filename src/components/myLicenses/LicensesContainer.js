@@ -11,6 +11,7 @@ export default function LicensesContainer() {
   const [openModal, setOpenModal] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({});
+  const [updateLicenses, setUpdateLicenses] = useState(false);
 
   const steps = [
     {
@@ -101,6 +102,8 @@ export default function LicensesContainer() {
         setFiltersOpen={setFiltersOpen}
         filters={filters}
         setFilters={setFilters}
+        updateLicenses={updateLicenses}
+        setUpdateLicenses={setUpdateLicenses}
       />
     </TourProvider>
   );
@@ -113,6 +116,8 @@ function InnerLicensesContainer({
   setFiltersOpen,
   filters,
   setFilters,
+  updateLicenses,
+  setUpdateLicenses,
 }) {
   const { setIsOpen, setCurrentStep, isOpen } = useTour();
 
@@ -170,7 +175,12 @@ function InnerLicensesContainer({
       <hr className="border-gray-200 mb-6" />
       <div>
         <div className="licenses-table">
-          <LicensesTable disabled={isOpen} filters={filters} />
+          <LicensesTable
+            disabled={isOpen}
+            filters={filters}
+            updatedLicense={updateLicenses}
+            setUpdatedLicense={setUpdateLicenses}
+          />
         </div>
         {filtersOpen && (
           <FiltersModal
@@ -186,7 +196,10 @@ function InnerLicensesContainer({
         {openModal && (
           <LicenseModal
             open={openModal}
-            onClose={() => setOpenModal(false)}
+            onClose={() => {
+              setOpenModal(false);
+              setUpdateLicenses(true);
+            }}
             disabled={isOpen}
           />
         )}

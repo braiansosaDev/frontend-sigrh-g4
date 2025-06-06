@@ -12,7 +12,12 @@ function splitEveryNChars(str, n) {
   return str.match(regex)?.join("\n") ?? str;
 }
 
-export default function LicensesTable({ disabled, filters = {} }) {
+export default function LicensesTable({
+  disabled,
+  filters = {},
+  updatedLicense,
+  setUpdatedLicense,
+}) {
   const token = Cookies.get("token");
   const [allLicenses, setAllLicenses] = useState([]);
   const { user } = useUser();
@@ -54,9 +59,10 @@ export default function LicensesTable({ disabled, filters = {} }) {
     if (user && token) {
       fetchUserLicenses();
       fetchLicensesTypes();
+      setUpdatedLicense(false);
     }
     // eslint-disable-next-line
-  }, [user, token]);
+  }, [user, token, updatedLicense]);
 
   // Filtrado en frontend
   const filteredLicenses = allLicenses.filter((lic) => {

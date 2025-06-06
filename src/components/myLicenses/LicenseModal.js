@@ -156,7 +156,12 @@ export default function LicenseModal({ open, onClose }) {
               </div>
             ) : (
               <p className="text-gray-500">
-                🗃️ Adjunte la documentación correspodiente aquí
+                🗃️ Adjunte la documentación correspodiente aquí{" "}
+                {typeSelected
+                  ? typeSelected.justification_required
+                    ? "(Obligatorio)"
+                    : "(Opcional)"
+                  : ""}
               </p>
             )}
           </div>
