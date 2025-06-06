@@ -8,6 +8,8 @@ export default function JobOpportunitiesTags({
   setFormData,
   type,
   otherTags,
+  percentage,
+  setPercentage,
 }) {
   const [availableTags, setAvailableTags] = useState([]);
   const [inputValue, setInputValue] = useState("");
@@ -228,18 +230,35 @@ export default function JobOpportunitiesTags({
           </span>
         ))}
       </div>
-      <div className="relative mt-4">
+      <div className="flex items-center gap-2 mt-4">
         <input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           placeholder={
             type === "required_abilities"
-              ? "Escribe para buscar o crear una etiqueta de habilidad excluyente"
-              : "Escribe para buscar o crear una etiqueta de habilidad deseable"
+              ? "Buscar o crear habilidad"
+              : "Buscar o crear habilidad"
           }
-          className="block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+          className="block w-2/3 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
         />
+        <input
+          name={
+            type === "required_abilities"
+              ? "requiredPercentage"
+              : "desirablePercentage"
+          }
+          type="number"
+          value={percentage ?? ""}
+          onChange={(e) => setPercentage(e.target.value)}
+          className="block w-1/3 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+          placeholder=" % Porcentaje de habilidades que se deben encontrar"
+          min={0}
+          max={100}
+          required
+        />
+      </div>
+      <div className="relative mt-4">
         <div className="absolute z-10 bg-white rounded-md shadow-lg mt-1 max-h-40 overflow-y-auto w-full">
           {/* Mostrar sugerencias */}
           {suggestions.length > 0 && (

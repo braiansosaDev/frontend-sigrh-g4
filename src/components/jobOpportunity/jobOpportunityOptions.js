@@ -20,7 +20,9 @@ export default function JobOpportunityOptions({
     country_id: "",
     state_id: "",
     required_abilities: [],
+    requiredPercentage: "",
     desirable_abilities: [],
+    desirablePercentage: "",
   });
 
   const [countries, setCountries] = useState([]);
@@ -89,7 +91,9 @@ export default function JobOpportunityOptions({
         country_id: countryId ? countryId : "",
         state_id: jobOpportunity.state_id || "",
         required_abilities: jobOpportunity.required_abilities || [],
+        requiredPercentage: jobOpportunity.required_skill_percentage ?? "",
         desirable_abilities: jobOpportunity.desirable_abilities || [],
+        desirablePercentage: jobOpportunity.desirable_skill_percentage ?? "",
       });
     }
   }, [jobOpportunity, states]);
@@ -98,56 +102,6 @@ export default function JobOpportunityOptions({
     fetchCountries();
     fetchStates();
   }, []);
-
-  const handleCreateJobOpportunityForm = async (jobOpportunityNewData) => {
-    try {
-      const payload = {
-        owner_employee_id: jobOpportunityNewData.owner_employee_id || 1,
-        status: jobOpportunityNewData.status || "activo",
-        work_mode: jobOpportunityNewData.work_mode.toLowerCase() || "remoto",
-        title: jobOpportunityNewData.title || "", //
-        description: jobOpportunityNewData.description || "",
-        budget: jobOpportunityNewData.budget || 1,
-        budget_currency_id: jobOpportunityNewData.budget_currency_id || "USD",
-        state_id: jobOpportunityNewData.state_id || 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        required_abilities: (
-          jobOpportunityNewData.required_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-        desirable_abilities: (
-          jobOpportunityNewData.desirable_abilities || []
-        ).map((ability) => ({
-          name: ability.name || "",
-          description: ability.description || "",
-          id: ability.id || 0,
-        })),
-      };
-
-      console.log(JSON.stringify(payload));
-
-      const res = await axios.post(
-        `${config.API_URL}/opportunities/create`,
-        JSON.stringify(payload),
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (res.status != 201) throw new Error("Error al crear la convocatoria");
-      onClose();
-    } catch (e) {
-      console.error(e);
-      alert("Ocurrió un error al crear la convocatoria");
-    }
-  };
 
   const checkRegion = (e) => {
     const { name, value } = e.target;
@@ -315,12 +269,20 @@ export default function JobOpportunityOptions({
             otherTags={formData.desirable_abilities}
             setFormData={setFormData}
             type="required_abilities"
+            percentage={formData.requiredPercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, requiredPercentage: value }))
+            }
           />
           <JobOpportunitiesTags
             tags={formData.desirable_abilities}
             otherTags={formData.required_abilities}
             setFormData={setFormData}
             type="desirable_abilities"
+            percentage={formData.desirablePercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, desirablePercentage: value }))
+            }
           />
 
           <div className="flex justify-end space-x-4">

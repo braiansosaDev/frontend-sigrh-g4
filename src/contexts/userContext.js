@@ -26,6 +26,7 @@ export const UserProvider = ({ children }) => {
       });
 
       const userData = res.data;
+
       setUser(userData);
       setRole(userData.role);
     } catch (error) {

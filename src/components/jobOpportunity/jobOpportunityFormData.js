@@ -19,7 +19,9 @@ export default function JobOpportunityFormData({
     country_id: "",
     state_id: "",
     required_abilities: [],
+    requiredPercentage: "",
     desirable_abilities: [],
+    desirablePercentage: "",
   });
 
   const [countries, setCountries] = useState([]);
@@ -90,7 +92,9 @@ export default function JobOpportunityFormData({
         country_id: countryId ? countryId : "",
         state_id: jobOpportunity.state_id || "",
         required_abilities: jobOpportunity.required_abilities || [],
+        requiredPercentage: jobOpportunity.required_skill_percentage ?? "",
         desirable_abilities: jobOpportunity.desirable_abilities || [],
+        desirablePercentage: jobOpportunity.desirable_skill_percentage ?? "",
       });
     }
   }, [jobOpportunity, states]);
@@ -172,6 +176,8 @@ export default function JobOpportunityFormData({
           state_id: jobOpportunity.state_id || "",
           required_abilities: jobOpportunity.required_abilities || [],
           desirable_abilities: jobOpportunity.desirable_abilities || [],
+          requiredPercentage: jobOpportunity.required_skill_percentage ?? "",
+          desirablePercentage: jobOpportunity.desirable_skill_percentage ?? "",
         });
       } else {
         onClose();
@@ -292,12 +298,20 @@ export default function JobOpportunityFormData({
             otherTags={formData.desirable_abilities}
             setFormData={setFormData}
             type="required_abilities"
+            percentage={formData.requiredPercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, requiredPercentage: value }))
+            }
           />
           <JobOpportunitiesTags
             tags={formData.desirable_abilities}
             otherTags={formData.required_abilities}
             setFormData={setFormData}
             type="desirable_abilities"
+            percentage={formData.desirablePercentage}
+            setPercentage={(value) =>
+              setFormData((prev) => ({ ...prev, desirablePercentage: value }))
+            }
           />
 
           <div className="flex justify-end space-x-4">

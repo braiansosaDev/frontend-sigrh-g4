@@ -8,15 +8,20 @@ import SelectStatusChip from "./SelectStatusChip";
 import { useCountries } from "@/hooks/useCountries";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import * as XLSX from "xlsx";
+import TagsModal from "./TagsModal";
 
 export default function PostulationsTable({
   jobOpportunityId,
   filter,
   searchInput,
+  matcherResults,
 }) {
   const [postulations, setPostulations] = useState([]);
   const [filteredPostulations, setFilteredPostulations] = useState([]);
   const token = Cookies.get("token");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [selectedPostulationId, setSelectedPostulationId] = useState(null); // Estado para almacenar el ID de la postulación seleccionada
 
   // Obtener países y estados desde los hooks
   const { countries } = useCountries();
@@ -143,41 +148,41 @@ export default function PostulationsTable({
       )}
 
       {/* Contenedor de la tabla con scroll */}
-      <div className="overflow-x-auto max-h-[70vh] max-w-[90%] overflow-y-auto rounded-lg">
+      <div className="max-h-[70vh] max-w-[90%] rounded-lg">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-100 top-0 z-10">
             <tr>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 ID
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Nombre
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Apellido
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Email
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Teléfono
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Ubicación
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Evaluación
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Habilidades Requeridas
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Habilidades Deseables
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Estado
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 CVs
               </th>
             </tr>
@@ -189,90 +194,90 @@ export default function PostulationsTable({
                   key={postulation.id}
                   className="border-b border-gray-100 hover:bg-gray-50"
                 >
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.id}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.name}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.surname}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.email}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.phone_number}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {getStateName(postulation.address_state_id)},{" "}
                     {getCountryName(postulation.address_country_id)}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     <span
                       className={`font-semibold ${
                         postulation.status === "pendiente"
                           ? "text-yellow-500"
                           : postulation.suitable
-                          ? "text-green-600"
-                          : "text-red-600"
+                            ? "text-green-600"
+                            : "text-red-600"
                       }`}
                     >
                       {postulation.status === "pendiente"
                         ? "Pendiente"
                         : postulation.suitable
-                        ? "Apta"
-                        : "No apta"}
+                          ? "Apta"
+                          : "No apta"}
                     </span>
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {/* Habilidades requeridas */}
                     {postulation.ability_match?.required_words?.length > 0 ? (
-                      <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 max-w-[200px]">
-                        {postulation.ability_match.required_words.map(
-                          (word, index) => (
-                            <span
-                              key={index}
-                              className="bg-emerald-100 text-emerald-700 font-semibold px-3 py-1 rounded-full text-sm whitespace-nowrap"
-                            >
-                              {word}
-                            </span>
-                          )
-                        )}
-                      </div>
+                      <>
+                        <button
+                          className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
+                          onClick={() => {
+                            setModalTitle("Habilidades requeridas");
+                            setSelectedPostulationId(postulation.id);
+                            setModalOpen(true);
+                          }}
+                        >
+                          Revisar
+                        </button>
+                      </>
                     ) : (
                       <span className="text-gray-500 text-sm">Ninguna</span>
                     )}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {/* Habilidades deseables */}
                     {postulation.ability_match?.desired_words?.length > 0 ? (
-                      <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 max-w-[200px]">
-                        {postulation.ability_match.desired_words.map(
-                          (word, index) => (
-                            <span
-                              key={index}
-                              className="bg-gray-100 text-gray-700 px-3 py-1 font-semibold rounded-full text-sm whitespace-nowrap"
-                            >
-                              {word}
-                            </span>
-                          )
-                        )}
-                      </div>
+                      <>
+                        <button
+                          className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
+                          onClick={() => {
+                            setModalTitle("Habilidades deseables");
+                            setSelectedPostulationId(postulation.id);
+                            setModalOpen(true);
+                          }}
+                        >
+                          Revisar
+                        </button>
+                      </>
                     ) : (
                       <span className="text-gray-500 text-sm">Ninguna</span>
                     )}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700 text-left">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     <SelectStatusChip
                       value={postulation.status}
-                      postulationId={postulation.id}
+                      postulation={postulation}
                       onChange={() => {
                         fetchPostulations();
                       }}
                     />
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     <button
                       onClick={() =>
                         handleDownloadCV(
@@ -280,7 +285,7 @@ export default function PostulationsTable({
                           `cv_${postulation.id}.pdf`
                         )
                       }
-                      className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600"
+                      className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer"
                     >
                       Descargar CV
                     </button>
@@ -297,6 +302,15 @@ export default function PostulationsTable({
           </tbody>
         </table>
       </div>
+
+      {/* Modal para mostrar habilidades */}
+      <TagsModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={modalTitle}
+        matcherResults={matcherResults}
+        postulationId={selectedPostulationId}
+      />
     </div>
   );
 }

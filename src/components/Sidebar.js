@@ -13,6 +13,8 @@ import {
   FaChevronRight,
   FaMoneyCheck,
   FaClock,
+  FaFileAlt,
+  FaFileContract,
 } from "react-icons/fa";
 import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
@@ -59,19 +61,34 @@ const menuItems = [
     label: "Convocatorias",
     icon: <FaBriefcase className="text-2xl" />,
     path: "/sigrh/job_opportunities",
-    requiredPermissions: [PermissionIds.ABM_POSTULACIONES_CARGA, PermissionIds.ABM_POSTULACIONES_APROBACIONES],
+    requiredPermissions: [
+      PermissionIds.ABM_POSTULACIONES_CARGA,
+      PermissionIds.ABM_POSTULACIONES_APROBACIONES,
+    ],
   },
   {
     label: "Asistencia",
     icon: <FaRegClock className="text-2xl" />,
     path: "/sigrh/attendance",
-    requiredPermissions: [PermissionIds.ABM_FICHADAS]
+    requiredPermissions: [PermissionIds.ABM_FICHADAS],
   },
   {
     label: "Nómina",
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
-    requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA]
+    requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
+  },
+  {
+    label: "Mis Licencias",
+    icon: <FaFileAlt className="text-2xl" />,
+    path: "/sigrh/my_licenses",
+    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
+  },
+  {
+    label: "Licencias",
+    icon: <FaFileContract className="text-2xl" />,
+    path: "/sigrh/licenses",
+    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_APROBACIONES],
   },
    {
     label: "Ajustes",
@@ -112,7 +129,8 @@ export default function Sidebar({ isOpen, onClose }) {
       <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-22 left-0 p-4 z-20">
         <ul className="space-y-2">
           {menuItems.map((item, idx) => {
-            if (!canAccess(item.requiredPermissions, permissionIds)) return null;
+            if (!canAccess(item.requiredPermissions, permissionIds))
+              return null;
 
             const isParentActive = pathname.startsWith(item.path);
             const hasSubmenus = Array.isArray(item.submenus);

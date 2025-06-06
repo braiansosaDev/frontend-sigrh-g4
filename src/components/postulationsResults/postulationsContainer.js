@@ -12,6 +12,8 @@ export default function PostulationsContainer({ jobOpportunityId }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const token = Cookies.get("token");
+  const savedResults = localStorage.getItem("matcherResults");
+  const matcherResults = savedResults ? JSON.parse(savedResults) : [];
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
@@ -32,6 +34,8 @@ export default function PostulationsContainer({ jobOpportunityId }) {
       );
 
       if (res.status !== 200) throw new Error("Error al procesar los CVs");
+
+      localStorage.setItem("matcherResults", JSON.stringify(res.data));
     } catch (error) {
       console.error("Error al procesar los CVs:", error);
     } finally {
@@ -110,6 +114,7 @@ export default function PostulationsContainer({ jobOpportunityId }) {
             jobOpportunityId={jobOpportunityId}
             searchInput={searchTerm}
             filter={filter}
+            matcherResults={matcherResults}
           />
         )}
       </div>
