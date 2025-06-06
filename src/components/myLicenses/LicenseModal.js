@@ -40,6 +40,7 @@ export default function LicenseModal({ open, onClose }) {
     }
 
     createLicense();
+    onClose();
   };
 
   const createLicense = async () => {
@@ -135,9 +136,16 @@ export default function LicenseModal({ open, onClose }) {
               type="file"
               ref={fileInputRef}
               className="hidden"
+              accept="application/pdf"
               onChange={(e) => {
                 const file = e.target.files[0];
-                if (file) setFile(file);
+                if (file) {
+                  if (file.type !== "application/pdf") {
+                    alert("Solo se permiten archivos PDF.");
+                    return;
+                  }
+                  setFile(file);
+                }
               }}
             />
 

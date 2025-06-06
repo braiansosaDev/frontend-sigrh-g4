@@ -110,7 +110,13 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files[0];
-                if (file) setFile(file);
+                if (file) {
+                  if (file.type !== "application/pdf") {
+                    alert("Solo se permiten archivos PDF.");
+                    return;
+                  }
+                  setFile(file);
+                }
               }}
             />
             {file ? (
