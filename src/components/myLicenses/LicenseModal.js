@@ -101,6 +101,7 @@ export default function LicenseModal({ open, onClose }) {
                 );
                 setTypeSelected(selected || null);
               }}
+              required
             >
               <option value="">Seleccionar tipo</option>
               {licensesTypes.map((type) => (
