@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { TourProvider, useTour } from "@reactour/tour";
 import LicenseModal from "./LicenseModal";
 import LicensesTable from "./LicensesTable";
+import FiltersModal from "./FiltersModal";
+import { FaFilter } from "react-icons/fa";
 
 export default function LicensesContainer() {
   const [openModal, setOpenModal] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({});
 
   const steps = [
     {
@@ -18,6 +22,11 @@ export default function LicensesContainer() {
       selector: ".licenses-table",
       content:
         "Esta tabla muestra todas las licencias que has solicitado junto con sus datos.",
+    },
+    {
+      selector: ".filters-modal-btn",
+      content:
+        "Si quieres solo ver ciertas licencias, puedes apretar este botón y seleccionar los filtros que desees.",
     },
     {
       selector: ".solicitar-licencia-btn",
@@ -88,12 +97,23 @@ export default function LicensesContainer() {
       <InnerLicensesContainer
         openModal={openModal}
         setOpenModal={setOpenModal}
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
+        filters={filters}
+        setFilters={setFilters}
       />
     </TourProvider>
   );
 }
 
-function InnerLicensesContainer({ openModal, setOpenModal }) {
+function InnerLicensesContainer({
+  openModal,
+  setOpenModal,
+  filtersOpen,
+  setFiltersOpen,
+  filters,
+  setFilters,
+}) {
   const { setIsOpen, setCurrentStep, isOpen } = useTour();
 
   useEffect(() => {
@@ -111,6 +131,7 @@ function InnerLicensesContainer({ openModal, setOpenModal }) {
           <h1 className="text-2xl font-bold text-gray-800 cursor-default">
             Mis Licencias 📄
           </h1>
+          {/* Botón de guía */}
           <button
             onClick={() => {
               setCurrentStep(0);
@@ -124,19 +145,44 @@ function InnerLicensesContainer({ openModal, setOpenModal }) {
             <span className="text-white text-xl font-bold">?</span>
           </button>
         </div>
-        <button
-          className="solicitar-licencia-btn bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-full shadow cursor-pointer"
-          onClick={() => setOpenModal(true)}
-          disabled={isOpen}
-        >
-          Solicitar licencia
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Botón de filtros */}
+          <button
+            onClick={() => setFiltersOpen(true)}
+            className="filters-modal-btn flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-gray-100 text-emerald-500 font-semibold shadow transition-colors"
+            title="Filtrar"
+            type="button"
+            disabled={isOpen}
+          >
+            <FaFilter className="text-lg" />
+            <span>Filtros</span>
+          </button>
+          {/* Botón de solicitar licencia */}
+          <button
+            className="solicitar-licencia-btn bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-full shadow cursor-pointer"
+            onClick={() => setOpenModal(true)}
+            disabled={isOpen}
+          >
+            Solicitar licencia
+          </button>
+        </div>
       </div>
       <hr className="border-gray-200 mb-6" />
       <div>
         <div className="licenses-table">
-          <LicensesTable disabled={isOpen} />
+          <LicensesTable disabled={isOpen} filters={filters} />
         </div>
+        {filtersOpen && (
+          <FiltersModal
+            open={filtersOpen}
+            onClose={() => setFiltersOpen(false)}
+            onApply={(f) => {
+              setFilters(f);
+              setFiltersOpen(false);
+            }}
+            initialFilters={filters}
+          />
+        )}
         {openModal && (
           <LicenseModal
             open={openModal}

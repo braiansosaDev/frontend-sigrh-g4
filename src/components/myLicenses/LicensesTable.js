@@ -12,13 +12,14 @@ function splitEveryNChars(str, n) {
   return str.match(regex)?.join("\n") ?? str;
 }
 
-export default function LicensesTable({ disabled }) {
+export default function LicensesTable({ disabled, filters = {} }) {
   const token = Cookies.get("token");
-  const [licenses, setLicenses] = useState([]);
+  const [allLicenses, setAllLicenses] = useState([]);
   const { user } = useUser();
   const [expandedRows, setExpandedRows] = useState({});
   const [revisionOpen, setRevisionOpen] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
+  const [licensesTypes, setLicensesTypes] = useState([]);
 
   const fetchUserLicenses = async () => {
     try {
@@ -29,7 +30,20 @@ export default function LicensesTable({ disabled }) {
         }
       );
       if (res.status !== 200) throw new Error("Error al obtener licencias");
-      setLicenses(res.data);
+      setAllLicenses(res.data);
+    } catch (error) {
+      console.error("Error al traer licenses:", error);
+      alert("No se pudieron obtener las licencias");
+    }
+  };
+
+  const fetchLicensesTypes = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/leaves/types`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status !== 200) throw new Error("Error al obtener licencias");
+      setLicensesTypes(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
       alert("No se pudieron obtener las licencias");
@@ -38,10 +52,32 @@ export default function LicensesTable({ disabled }) {
 
   useEffect(() => {
     if (user && token) {
-      // Esto lo hago para evitar que busque sin user o token
       fetchUserLicenses();
+      fetchLicensesTypes();
     }
+    // eslint-disable-next-line
   }, [user, token]);
+
+  // Filtrado en frontend
+  const filteredLicenses = allLicenses.filter((lic) => {
+    let match = true;
+    if (filters.type && String(lic.leave_type_id) !== String(filters.type))
+      match = false;
+    if (
+      filters.status &&
+      lic.request_status.toLowerCase() !== filters.status.toLowerCase()
+    )
+      match = false;
+    if (filters.month) {
+      const month = new Date(lic.request_date).getMonth() + 1;
+      if (Number(filters.month) !== month) match = false;
+    }
+    if (filters.year) {
+      const year = new Date(lic.request_date).getFullYear();
+      if (Number(filters.year) !== year) match = false;
+    }
+    return match;
+  });
 
   const adaptText = (text) => {
     if (!text) return "";
@@ -80,7 +116,7 @@ export default function LicensesTable({ disabled }) {
       alert("No se pudieron obtener las licencias");
     }
 
-    setLicenses((prev) =>
+    setAllLicenses((prev) =>
       prev.map((lic) => (lic.id === updatedLicense.id ? updatedLicense : lic))
     );
     setRevisionOpen(false);
@@ -94,6 +130,9 @@ export default function LicensesTable({ disabled }) {
           <tr>
             <th className="py-2 px-4 text-left border-b font-semibold">
               Fecha Solicitud
+            </th>
+            <th className="py-2 px-4 text-left border-b font-semibold">
+              Tipo de licencia
             </th>
             <th className="py-2 px-4 text-left border-b font-semibold">
               Motivo
@@ -119,10 +158,19 @@ export default function LicensesTable({ disabled }) {
           </tr>
         </thead>
         <tbody>
-          {licenses.length > 0 ? (
-            licenses.map((lic) => (
+          {filteredLicenses.length > 0 ? (
+            filteredLicenses.map((lic) => (
               <tr key={lic.id}>
                 <td className="py-2 px-4 border-b">{lic.request_date}</td>
+                <td className="py-2 px-4 border-b">
+                  {adaptText(
+                    lic.leave_type_id
+                      ? licensesTypes?.find(
+                          (lic2) => lic.leave_type_id === lic2.id
+                        )?.type
+                      : "Tipo no encontrado"
+                  )}
+                </td>
                 <td className="py-2 px-4 border-b align-top">
                   {lic.reason && lic.reason.length > 40 ? (
                     <>

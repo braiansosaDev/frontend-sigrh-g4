@@ -5,15 +5,16 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 import { useEmployees } from "@/hooks/useEmployees";
-import LicenseModal from "./LicenseModal"; // Importa el modal
+import LicenseModal from "./LicenseModal";
 
-export default function LicensesTable() {
+export default function LicensesTable({ filters = {} }) {
   const token = Cookies.get("token");
   const [licenses, setLicenses] = useState([]);
   const { employees } = useEmployees();
   const [expandedRows, setExpandedRows] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
+  const [licensesTypes, setLicensesTypes] = useState([]);
 
   function splitEveryNChars(str, n) {
     //Esto para que el texto quede mejor en la tabla, hago que las palabras largas se dividan en líneas de n caracteres
@@ -40,8 +41,22 @@ export default function LicensesTable() {
     }
   };
 
+  const fetchLicensesTypes = async () => {
+    try {
+      const res = await axios.get(`${config.API_URL}/leaves/types`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status !== 200) throw new Error("Error al obtener licencias");
+      setLicensesTypes(res.data);
+    } catch (error) {
+      console.error("Error al traer licenses:", error);
+      alert("No se pudieron obtener las licencias");
+    }
+  };
+
   useEffect(() => {
     fetchLicenses();
+    fetchLicensesTypes();
   }, []);
 
   const adaptText = (text) => {
@@ -104,6 +119,41 @@ export default function LicensesTable() {
     setSelectedLicense(null);
   };
 
+  const filteredLicenses = licenses.filter((lic) => {
+    let match = true;
+
+    if (filters.employeeName) {
+      const emp = employees.find((emp) => emp.id === lic.employee_id);
+      const fullName = emp
+        ? `${emp.first_name} ${emp.last_name}`.toLowerCase()
+        : "";
+      if (!fullName.includes(filters.employeeName.toLowerCase())) match = false;
+    }
+
+    if (filters.type && String(lic.leave_type_id) !== String(filters.type)) {
+      match = false;
+    }
+
+    if (
+      filters.status &&
+      lic.request_status.toLowerCase() !== filters.status.toLowerCase()
+    ) {
+      match = false;
+    }
+
+    if (filters.month) {
+      const month = new Date(lic.request_date).getMonth() + 1;
+      if (Number(filters.month) !== month) match = false;
+    }
+
+    if (filters.year) {
+      const year = new Date(lic.request_date).getFullYear();
+      if (Number(filters.year) !== year) match = false;
+    }
+
+    return match;
+  });
+
   return (
     <>
       <table className="w-full bg-white rounded shadow-sm">
@@ -117,6 +167,9 @@ export default function LicensesTable() {
             </th>
             <th className="py-2 px-4 text-left border-b font-semibold">
               Fecha Solicitud
+            </th>
+            <th className="py-2 px-4 text-left border-b font-semibold">
+              Tipo de licencia
             </th>
             <th className="py-2 px-4 text-left border-b font-semibold">
               Motivo
@@ -142,7 +195,7 @@ export default function LicensesTable() {
           </tr>
         </thead>
         <tbody>
-          {licenses.map((lic) => (
+          {filteredLicenses.map((lic) => (
             <tr key={lic.id}>
               <td className="py-2 px-4 border-b">
                 {employees.find((emp) => emp.id === lic.employee_id)?.user_id ||
@@ -159,6 +212,15 @@ export default function LicensesTable() {
                 })()}
               </td>
               <td className="py-2 px-4 border-b">{lic.request_date}</td>
+              <td className="py-2 px-4 border-b">
+                {adaptText(
+                  lic.leave_type_id
+                    ? licensesTypes?.find(
+                        (lic2) => lic.leave_type_id === lic2.id
+                      )?.type
+                    : "Tipo no encontrado"
+                )}
+              </td>
               <td className="py-2 px-4 border-b align-top">
                 {lic.reason && lic.reason.length > 30 ? (
                   <>
