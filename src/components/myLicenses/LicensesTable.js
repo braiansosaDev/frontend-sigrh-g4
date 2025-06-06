@@ -12,7 +12,7 @@ function splitEveryNChars(str, n) {
   return str.match(regex)?.join("\n") ?? str;
 }
 
-export default function LicensesTable() {
+export default function LicensesTable({ disabled }) {
   const token = Cookies.get("token");
   const [licenses, setLicenses] = useState([]);
   const { user } = useUser();
@@ -151,6 +151,7 @@ export default function LicensesTable() {
                             className="ml-0 mt-1 text-emerald-600 underline text-xs block"
                             onClick={() => handleToggleReason(lic.id)}
                             type="button"
+                            disabled={disabled}
                           >
                             Ver menos
                           </button>
@@ -191,6 +192,7 @@ export default function LicensesTable() {
                   <button
                     className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-3 py-1 rounded-full"
                     onClick={() => handleRevision(lic)}
+                    disabled={disabled}
                   >
                     Revisar
                   </button>

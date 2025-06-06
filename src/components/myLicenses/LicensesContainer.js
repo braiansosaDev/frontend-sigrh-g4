@@ -10,17 +10,29 @@ export default function LicensesContainer() {
 
   const steps = [
     {
+      selector: "body",
       content:
         "Bienvenido a la sección de licencias. Aquí puedes gestionar todas tus licencias.",
     },
     {
       selector: ".licenses-table",
-      content: "Esta tabla muestra todas las licencias que has solicitado.",
+      content:
+        "Esta tabla muestra todas las licencias que has solicitado junto con sus datos.",
     },
     {
       selector: ".solicitar-licencia-btn",
       content:
-        "Si necesitas una nueva licencia, haz clic aquí para solicitarla.",
+        "Si necesitas una nueva licencia, debes clickear en este botón de aquí y se abrirá un modal donde puedas cargar tus datos.",
+    },
+    {
+      selector: ".interrogation-button",
+      content:
+        "Si necesitas ayuda, puedes hacer click en este botón de interrogación para ver esta guía nuevamente.",
+    },
+    {
+      selector: "body",
+      content:
+        "¡Eso es todo! Ahora puedes gestionar tus licencias de manera eficiente.",
     },
   ];
 
@@ -28,43 +40,48 @@ export default function LicensesContainer() {
     <TourProvider
       steps={steps}
       styles={{
-        maskWrapper: (base) => ({
-          ...base,
-          backgroundColor: "rgba(16, 185, 129, 0.3)",
-        }),
         popover: (base) => ({
           ...base,
           borderRadius: 12,
-          background: "#fff",
           color: "#047857",
           boxShadow: "0 4px 24px 0 rgba(0,0,0,0.15)",
-          fontFamily: "inherit",
-          padding: "1.5rem",
+          padding: "3rem",
         }),
         badge: (base) => ({
           ...base,
           background: "#10b981",
           color: "#fff",
+          fontWeight: "bold",
+        }),
+        dot: (base) => ({
+          ...base,
+          background: "#10b981",
+          border: "1px solid #047857",
         }),
         close: (base) => ({
           ...base,
-          color: "#10b981",
-        }),
-        dot: (base, state) => ({
-          ...base,
-          background: state.active ? "#10b981" : "#d1fae5",
+          padding: 5,
+          width: 20,
+          height: 20,
+          color: "#047857",
         }),
         controls: (base) => ({
           ...base,
           marginTop: 16,
         }),
-        button: (base, { primary }) => ({
+        arrow: (base) => ({
           ...base,
-          background: primary ? "#10b981" : "#fff",
-          color: primary ? "#fff" : "#10b981",
-          border: "1px solid #10b981",
-          borderRadius: 8,
-          padding: "0.5rem 1.2rem",
+          padding: 0,
+          margin: 10,
+          color: "#047857",
+        }),
+        button: (base) => ({
+          ...base,
+          background: "#fff",
+          color: "#10b981",
+          borderRadius: 10,
+          fontWeight: "bold",
+          border: "2px solid #10b981",
         }),
       }}
     >
@@ -77,10 +94,10 @@ export default function LicensesContainer() {
 }
 
 function InnerLicensesContainer({ openModal, setOpenModal }) {
-  const { setIsOpen } = useTour();
+  const { setIsOpen, setCurrentStep, isOpen } = useTour();
 
   useEffect(() => {
-    const alreadySeen = false; //localStorage.getItem("seenLicensesTour");
+    const alreadySeen = localStorage.getItem("seenLicensesTour");
     if (!alreadySeen) {
       setIsOpen(true);
       localStorage.setItem("seenLicensesTour", "true");
@@ -95,10 +112,14 @@ function InnerLicensesContainer({ openModal, setOpenModal }) {
             Mis Licencias 📄
           </h1>
           <button
-            onClick={() => setIsOpen(true)}
-            className="ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors"
+            onClick={() => {
+              setCurrentStep(0);
+              setIsOpen(true);
+            }}
+            className="interrogation-button ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors"
             title="Ver guía"
             type="button"
+            disabled={isOpen}
           >
             <span className="text-white text-xl font-bold">?</span>
           </button>
@@ -106,6 +127,7 @@ function InnerLicensesContainer({ openModal, setOpenModal }) {
         <button
           className="solicitar-licencia-btn bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-full shadow cursor-pointer"
           onClick={() => setOpenModal(true)}
+          disabled={isOpen}
         >
           Solicitar licencia
         </button>
@@ -113,10 +135,14 @@ function InnerLicensesContainer({ openModal, setOpenModal }) {
       <hr className="border-gray-200 mb-6" />
       <div>
         <div className="licenses-table">
-          <LicensesTable />
+          <LicensesTable disabled={isOpen} />
         </div>
         {openModal && (
-          <LicenseModal open={openModal} onClose={() => setOpenModal(false)} />
+          <LicenseModal
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            disabled={isOpen}
+          />
         )}
       </div>
     </div>
