@@ -4,6 +4,8 @@ import { capitalize } from "@/utils/capitalize";
 import axios from "axios";
 import config from "@/config";
 import EditPayrollNotesModal from "./editPayrollNotesModal";
+import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
+import AttendanceChecksEventsDetailsModal from "../attendance/attendanceChecksEventsDetailsModal";
 
 const columns = [
   "Día",
@@ -11,7 +13,7 @@ const columns = [
   "Novedad",
   "Entrada",
   "Salida",
-  "Cant. fichadas",
+  "Fichadas",
   "Turno",
   "Concepto",
   "Horas",
@@ -23,11 +25,18 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
   const [selectedNote, setSelectedNote] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
 
   const openEditModal = (note, id) => {
     setSelectedNote(note);
     setSelectedRowId(id);
     setOpenModal(true);
+  };
+
+  const openAttendanceModal = (workDate) => {
+    setSelectedDate(workDate);
+    setAttendanceModalOpen(true);
   };
 
   const closeModal = () => {
@@ -58,6 +67,26 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
         `Ha ocurrido un error al actualizar el registro de horas: ${e.message}`
       );
     }
+  };
+
+  const getConceptComponentDescription = (row) => {
+    const concept = row?.concept?.description;
+
+    const isAlarm =
+      CONCEPTS_ALARM.includes(concept) &&
+      row.employee_hours.payroll_status != "archived";
+
+    return (
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          isAlarm
+            ? "bg-red-100 text-red-700 border border-red-300"
+            : "bg-gray-100 text-gray-700 border border-gray-300"
+        }`}
+      >
+        {concept || "—"}
+      </span>
+    );
   };
 
   return (
@@ -130,9 +159,21 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
                       })
                     : ""}
                 </td>
-                <td className="px-3 py-2">{row.employee_hours.check_count}</td>
+                <td className="px-3 py-2 flex gap-2">
+                  {row.employee_hours.check_count}{" "}
+                  <button
+                    onClick={() =>
+                      openAttendanceModal(row.employee_hours.work_date)
+                    }
+                    className="text-emerald-500 underline text-xs"
+                  >
+                    Ver
+                  </button>
+                </td>
                 <td className="px-3 py-2">{row.shift.description}</td>
-                <td className="px-3 py-2">{row.concept.description}</td>
+                <td className="px-3 py-2">
+                  {getConceptComponentDescription(row)}
+                </td>
                 <td className="px-3 py-2">
                   {row.employee_hours.sumary_time || "00:00"}
                 </td>
@@ -167,6 +208,14 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
           )}
         </tbody>
       </table>
+      <AttendanceChecksEventsDetailsModal
+        open={attendanceModalOpen}
+        onClose={() => setAttendanceModalOpen(false)}
+        employeeId={employee?.id}
+        employeeData={employee}
+        fecha={selectedDate}
+        onFichadasChanged={onUpdateData}
+      />
 
       <EditPayrollNotesModal
         isOpen={openModal}
