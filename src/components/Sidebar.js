@@ -82,11 +82,13 @@ const menuItems = [
     label: "Mis Licencias",
     icon: <FaFileAlt className="text-2xl" />,
     path: "/sigrh/my_licenses",
+    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
   },
   {
     label: "Licencias",
     icon: <FaFileContract className="text-2xl" />,
     path: "/sigrh/licenses",
+    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_APROBACIONES],
   },
 ];
 

@@ -61,8 +61,6 @@ export default function LicenseModal({ open, onClose }) {
       file: fileBase64 || null,
     };
 
-    console.log("Payload to create license:", payload);
-
     try {
       const res = await axios.put(`${config.API_URL}/leaves/`, payload, {
         headers: {
@@ -149,7 +147,7 @@ export default function LicenseModal({ open, onClose }) {
               </div>
             ) : (
               <p className="text-gray-500">
-                📎 Adjunte la documentación correspodiente aquí
+                🗃️ Adjunte la documentación correspodiente aquí
               </p>
             )}
           </div>
