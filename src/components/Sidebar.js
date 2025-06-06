@@ -79,24 +79,31 @@ const menuItems = [
     requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
   },
   {
-    label: "Mis Licencias",
+    label: "Licencias",
     icon: <FaFileAlt className="text-2xl" />,
     path: "/sigrh/my_licenses",
     requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
+    submenus: [
+      {
+        label: "Mis Licencias",
+        icon: <FaFileAlt className="text-2xl" />,
+        path: "/sigrh/my_licenses",
+        requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
+      },
+      {
+        label: "Admin. Licencias",
+        icon: <FaFileContract className="text-2xl" />,
+        path: "/sigrh/licenses",
+        requiredPermissions: [PermissionIds.GESTION_LICENCIAS_APROBACIONES],
+      },
+    ],
   },
   {
-    label: "Licencias",
-    icon: <FaFileContract className="text-2xl" />,
-    path: "/sigrh/licenses",
-    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_APROBACIONES],
-  },
-   {
     label: "Ajustes",
     icon: <MdSettings className="text-2xl" />,
-    path: "/sigrh/settings"
+    path: "/sigrh/settings",
   },
 ];
-
 export default function Sidebar({ isOpen, onClose }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -126,7 +133,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <div className="relative">
-      <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-22 left-0 p-4 z-20">
+      <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-16 left-0 p-4 z-20">
         <ul className="space-y-2">
           {menuItems.map((item, idx) => {
             if (!canAccess(item.requiredPermissions, permissionIds))
