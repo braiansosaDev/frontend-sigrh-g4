@@ -85,7 +85,7 @@ export default function ProcessPayrollModal({
         <select
           value={employeeId}
           onChange={(e) => setEmployeeId(e.target.value)}
-          className="w-full mb-3 border rounded px-3 py-2"
+          className="w-full mb-3 border border-gray-300 rounded px-3 py-2"
         >
           <option value="">Seleccione empleado</option>
           {employees.map((emp) => (
@@ -99,25 +99,25 @@ export default function ProcessPayrollModal({
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="w-full mb-3 border rounded px-3 py-2"
+          className="w-full mb-3 border border-gray-300 rounded px-3 py-2"
         />
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="w-full mb-4 border rounded px-3 py-2"
+          className="w-full mb-4 border border-gray-300 rounded px-3 py-2"
         />
 
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="bg-gray-300 px-4 py-2 rounded-md"
+            className="bg-gray-300 px-4 py-2 rounded-full"
           >
             Cancelar
           </button>
           <button
             onClick={handleProcess}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md"
+            className="bg-blue-600 text-white px-4 py-2 rounded-full"
           >
             Procesar
           </button>
