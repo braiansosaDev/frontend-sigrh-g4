@@ -4,22 +4,12 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
 
-export default function TagsModal({
-  open,
-  onClose,
-  title,
-  matcherResults,
-  postulationId,
-}) {
+export default function TagsModal({ open, onClose, title, postulation }) {
   const handleClose = () => {
     onClose();
   };
 
   if (!open) return null;
-
-  const postulationMatch = Array.isArray(matcherResults)
-    ? matcherResults.find((p) => p.postulation_id === postulationId) || {}
-    : matcherResults || {};
 
   const capitalizeFirstLetter = (str) => {
     if (!str) return "";
@@ -46,7 +36,7 @@ export default function TagsModal({
             <tbody>
               {title === "Habilidades deseables" ? (
                 <>
-                  {(postulationMatch.desired_words_found || []).map(
+                  {(postulation?.ability_match?.desired_words_found || []).map(
                     (ability, idx) => (
                       <tr key={`des-found-${idx}`}>
                         <td className="bg-emerald-200 py-2 px-4 border-b font-semibold">
@@ -58,20 +48,21 @@ export default function TagsModal({
                       </tr>
                     )
                   )}
-                  {(postulationMatch.desired_words_not_found || []).map(
-                    (ability, idx) => (
-                      <tr key={`des-notfound-${idx}`}>
-                        <td className="bg-red-200 py-2 px-4 border-b font-semibold">
-                          {capitalizeFirstLetter(ability)}
-                        </td>
-                        <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
-                          ❌
-                        </td>
-                      </tr>
-                    )
-                  )}
-                  {!postulationMatch.desired_words_found?.length &&
-                    !postulationMatch.desired_words_not_found?.length && (
+                  {(
+                    postulation?.ability_match?.desired_words_not_found || []
+                  ).map((ability, idx) => (
+                    <tr key={`des-notfound-${idx}`}>
+                      <td className="bg-red-200 py-2 px-4 border-b font-semibold">
+                        {capitalizeFirstLetter(ability)}
+                      </td>
+                      <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
+                        ❌
+                      </td>
+                    </tr>
+                  ))}
+                  {!postulation?.ability_match?.desired_words_found?.length &&
+                    !postulation?.ability_match?.desired_words_not_found
+                      ?.length && (
                       <tr>
                         <td
                           colSpan={2}
@@ -84,7 +75,7 @@ export default function TagsModal({
                 </>
               ) : (
                 <>
-                  {(postulationMatch.required_words_found || []).map(
+                  {(postulation?.ability_match?.required_words_found || []).map(
                     (ability, idx) => (
                       <tr key={`req-found-${idx}`}>
                         <td className="bg-emerald-200 py-2 px-4 border-b font-semibold">
@@ -96,20 +87,21 @@ export default function TagsModal({
                       </tr>
                     )
                   )}
-                  {(postulationMatch.required_words_not_found || []).map(
-                    (ability, idx) => (
-                      <tr key={`req-notfound-${idx}`}>
-                        <td className="bg-red-200 py-2 px-4 border-b font-semibold">
-                          {capitalizeFirstLetter(ability)}
-                        </td>
-                        <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
-                          ❌
-                        </td>
-                      </tr>
-                    )
-                  )}
-                  {!postulationMatch.required_words_found?.length &&
-                    !postulationMatch.required_words_not_found?.length && (
+                  {(
+                    postulation?.ability_match?.required_words_not_found || []
+                  ).map((ability, idx) => (
+                    <tr key={`req-notfound-${idx}`}>
+                      <td className="bg-red-200 py-2 px-4 border-b font-semibold">
+                        {capitalizeFirstLetter(ability)}
+                      </td>
+                      <td className="bg-red-200 py-2 px-4 border-b text-center text-xl">
+                        ❌
+                      </td>
+                    </tr>
+                  ))}
+                  {!postulation?.ability_match?.required_words_found?.length &&
+                    !postulation?.ability_match?.required_words_not_found
+                      ?.length && (
                       <tr>
                         <td
                           colSpan={2}
