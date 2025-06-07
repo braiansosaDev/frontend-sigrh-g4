@@ -179,7 +179,7 @@ export default function PayrollContainer() {
 
     // 1. Generar hoja de planilla normal
     const excelPayroll = payroll.map((row) => ({
-      Día: new Date(row.employee_hours.work_date).toLocaleDateString("es-AR", {
+      Día: new Date(row.employee_hours.work_date+"T00:00").toLocaleDateString("es-AR", {
         weekday: "long",
       }),
       Fecha: row.employee_hours.work_date,
