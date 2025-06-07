@@ -3,8 +3,8 @@ import { useEmployees } from "@/hooks/useEmployees";
 
 const REQUEST_STATUS_OPTIONS = ["pendiente", "aprobado", "rechazado"];
 const DOCUMENT_STATUS_OPTIONS = [
-  "no_requerido",
-  "validacion",
+  "pendiente_de_carga",
+  "pendiente_de_validacion",
   "aprobado",
   "rechazado",
 ];
@@ -84,12 +84,10 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
             </div>
           </div>
           {/* Botón de descarga si hay archivo */}
-          {license.file && (
+          {license.file ? (
             <div className="mb-3 flex gap-2 items-end">
               <div className="flex-1">
-                <label className="block font-semibold">
-                  🗃️ Archivo adjunto
-                </label>
+                <label className="block font-semibold">🗃️ Documentación</label>
                 <button
                   type="button"
                   onClick={handleDownload}
@@ -130,6 +128,13 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-3">
+              <label className="block font-semibold">🗃️ Documentación</label>
+              <div className="text-gray-500 italic mt-1">
+                No hay documentación cargada
               </div>
             </div>
           )}
