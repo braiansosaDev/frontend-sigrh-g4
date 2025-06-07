@@ -27,18 +27,22 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
   const handleChange = async (e) => {
     const newValue = e.target.value;
 
+    if (newValue === "no aceptada") {
+      setPendingStatus(newValue);
+      setShowModal(true);
+      return;
+    }
+
+    const motive = "";
+
     try {
       await axios.patch(`${config.API_URL}/postulations/${postulation.id}`, {
         status: newValue,
+        motive: motive,
       });
       onChange();
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
-    }
-
-    if (newValue === "no aceptada") {
-      setPendingStatus(newValue);
-      setShowModal(true);
     }
   };
 
@@ -62,9 +66,6 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
         </option>
         <option value="contratado" className="bg-white text-black">
           Contratado
-        </option>
-        <option value="rechazado" className="bg-white text-black">
-          Rechazado
         </option>
       </select>
 

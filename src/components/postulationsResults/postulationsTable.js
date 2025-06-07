@@ -14,14 +14,13 @@ export default function PostulationsTable({
   jobOpportunityId,
   filter,
   searchInput,
-  matcherResults,
 }) {
   const [postulations, setPostulations] = useState([]);
   const [filteredPostulations, setFilteredPostulations] = useState([]);
   const token = Cookies.get("token");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
-  const [selectedPostulationId, setSelectedPostulationId] = useState(null); // Estado para almacenar el ID de la postulación seleccionada
+  const [selectedPostulation, setSelectedPostulation] = useState(null); // Estado para almacenar el ID de la postulación seleccionada
 
   // Obtener países y estados desde los hooks
   const { countries } = useCountries();
@@ -54,9 +53,11 @@ export default function PostulationsTable({
         Evaluación: postulation.suitable ? "Apta" : "No apta",
         Estado: postulation.status,
         "Habilidades Requeridas":
-          postulation.ability_match?.required_words?.join(", ") || "Ninguna",
+          postulation.ability_match?.required_words_found?.join(", ") ||
+          "Ninguna",
         "Habilidades Deseables":
-          postulation.ability_match?.desired_words?.join(", ") || "Ninguna",
+          postulation.ability_match?.desired_words_found?.join(", ") ||
+          "Ninguna",
       }))
     );
 
@@ -149,7 +150,7 @@ export default function PostulationsTable({
 
       {/* Contenedor de la tabla con scroll */}
       <div className="max-h-[70vh] max-w-[90%] rounded-lg">
-        <table className="min-w-full bg-white">
+        <table className="w-full bg-white">
           <thead className="bg-gray-100 top-0 z-10">
             <tr>
               <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
@@ -157,9 +158,6 @@ export default function PostulationsTable({
               </th>
               <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Nombre
-              </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
-                Apellido
               </th>
               <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
                 Email
@@ -198,10 +196,7 @@ export default function PostulationsTable({
                     {postulation.id}
                   </td>
                   <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
-                    {postulation.name}
-                  </td>
-                  <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
-                    {postulation.surname}
+                    {postulation.name} {postulation.surname}
                   </td>
                   <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {postulation.email}
@@ -216,29 +211,30 @@ export default function PostulationsTable({
                   <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     <span
                       className={`font-semibold ${
-                        postulation.status === "pendiente"
-                          ? "text-yellow-500"
-                          : postulation.suitable
+                        postulation.evaluated_at
+                          ? postulation.suitable
                             ? "text-green-600"
                             : "text-red-600"
+                          : "text-yellow-500"
                       }`}
                     >
-                      {postulation.status === "pendiente"
-                        ? "Pendiente"
-                        : postulation.suitable
+                      {postulation.evaluated_at
+                        ? postulation.suitable
                           ? "Apta"
-                          : "No apta"}
+                          : "No apta"
+                        : "Pendiente"}
                     </span>
                   </td>
                   <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {/* Habilidades requeridas */}
-                    {postulation.ability_match?.required_words?.length > 0 ? (
+                    {postulation.ability_match?.required_words_found?.length >
+                    0 ? (
                       <>
                         <button
                           className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
                           onClick={() => {
                             setModalTitle("Habilidades requeridas");
-                            setSelectedPostulationId(postulation.id);
+                            setSelectedPostulation(postulation);
                             setModalOpen(true);
                           }}
                         >
@@ -251,13 +247,14 @@ export default function PostulationsTable({
                   </td>
                   <td className="py-2 px-2 md:px-4 text-xs md:text-sm text-gray-700 whitespace-normal break-words text-center">
                     {/* Habilidades deseables */}
-                    {postulation.ability_match?.desired_words?.length > 0 ? (
+                    {postulation.ability_match?.desired_words_found?.length >
+                    0 ? (
                       <>
                         <button
                           className="flex justify-center items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-full text-sm hover:bg-emerald-600 cursor-pointer mx-auto"
                           onClick={() => {
                             setModalTitle("Habilidades deseables");
-                            setSelectedPostulationId(postulation.id);
+                            setSelectedPostulation(postulation);
                             setModalOpen(true);
                           }}
                         >
@@ -308,8 +305,7 @@ export default function PostulationsTable({
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         title={modalTitle}
-        matcherResults={matcherResults}
-        postulationId={selectedPostulationId}
+        postulation={selectedPostulation}
       />
     </div>
   );
