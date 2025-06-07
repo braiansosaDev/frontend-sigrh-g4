@@ -6,11 +6,14 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import { useEmployees } from "@/hooks/useEmployees";
 import LicenseModal from "./LicenseModal";
+import { useUser } from "@/contexts/userContext";
+import { FiInfo } from "react-icons/fi";
 
 export default function LicensesTable({ filters = {} }) {
   const token = Cookies.get("token");
   const [licenses, setLicenses] = useState([]);
   const { employees } = useEmployees();
+  const { user } = useUser();
   const [expandedRows, setExpandedRows] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
@@ -112,9 +115,8 @@ export default function LicensesTable({ filters = {} }) {
       alert("No se pudieron obtener las licencias");
     }
 
-    setLicenses((prev) =>
-      prev.map((lic) => (lic.id === updatedLicense.id ? updatedLicense : lic))
-    );
+    fetchLicenses();
+    fetchLicensesTypes();
     setModalOpen(false);
     setSelectedLicense(null);
   };
@@ -272,13 +274,30 @@ export default function LicensesTable({ filters = {} }) {
               <td className="py-2 px-4 border-b">
                 {adaptText(lic.request_status)}
               </td>
-              <td className="py-2 px-4 border-b text-center">
-                <button
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-3 py-1 rounded-full"
-                  onClick={() => handleManageLicense(lic)}
-                >
-                  Gestionar
-                </button>
+              <td
+                className="py-2 px-4 border-b text-center"
+                style={{ position: "relative" }}
+              >
+                {user &&
+                lic.employee_id !== user.id &&
+                !["aprobado", "rechazado"].includes(
+                  String(lic.request_status).toLowerCase()
+                ) ? (
+                  <button
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-3 py-1 rounded-full"
+                    onClick={() => handleManageLicense(lic)}
+                  >
+                    Gestionar
+                  </button>
+                ) : (
+                  <InfoPopup
+                    reason={
+                      user && lic.employee_id === user.id
+                        ? "No puedes gestionar tus propias licencias, solicita a un supervisor/gerente que lo haga por ti"
+                        : "La solicitud ya está finalizada, no puedes modificarla"
+                    }
+                  />
+                )}
               </td>
             </tr>
           ))}
@@ -291,5 +310,37 @@ export default function LicensesTable({ filters = {} }) {
         onSave={handleSave}
       />
     </>
+  );
+}
+
+function InfoPopup({ reason }) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <span className="relative">
+      <button
+        className="flex items-center justify-center hover:bg-gray-100 text-emerald-600 font-semibold px-3 py-1 rounded-full"
+        onClick={() => setShow((v) => !v)}
+        type="button"
+        title="Información"
+      >
+        <FiInfo className="text-xl" />
+      </button>
+      {show && (
+        <div
+          className="absolute z-50 right-0 bottom-full mb-2 w-56 bg-white border border-gray-300 rounded shadow-lg p-3 text-sm text-gray-700"
+          style={{ minWidth: "180px" }}
+        >
+          <p className="text-emerald-800">{reason}</p>
+          <button
+            className="block ml-auto mt-2 text-emerald-600 hover:underline text-xs"
+            onClick={() => setShow(false)}
+            type="button"
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
+    </span>
   );
 }
