@@ -8,6 +8,8 @@ import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
 import ProcessPayrollModal from "./payrollProcessModal";
+import { FiAlertTriangle } from "react-icons/fi";
+import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
 
 function stringSimilarity(a, b) {
   if (a.toLowerCase() === b.toLowerCase()) return 1;
@@ -36,6 +38,25 @@ export default function PayrollContainer() {
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const inputRef = useRef();
   const token = Cookies.get("token");
+  const [hasAlarmRows, setHasAlarmRows] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
+
+  const filteredPayroll = showArchived
+    ? payroll
+    : payroll.filter(
+        (row) => row.employee_hours?.payroll_status !== "archived"
+      );
+
+  const hasAlarms = (payrollData) => {
+    return payrollData.some((row) => {
+      const concept = row?.concept?.description;
+      const status = row?.employee_hours?.payroll_status;
+      return (
+        status === "pending validation" ||
+        (CONCEPTS_ALARM.includes(concept) && status !== "archived")
+      );
+    });
+  };
 
   const fetchPayroll = async () => {
     if (!selectedEmployee || !startDate || !endDate) return;
@@ -55,6 +76,7 @@ export default function PayrollContainer() {
 
       if (res.status === 200) {
         setPayroll(res.data);
+        setHasAlarmRows(hasAlarms(res.data)); // 👈 actualizamos estado de alarma
       } else {
         alert("Error al obtener los datos de la planilla");
       }
@@ -121,7 +143,7 @@ export default function PayrollContainer() {
       alert("La fecha inicial no puede ser mayor a la final.");
       return;
     }
-    
+
     const today = new Date().toLocaleDateString("en-CA", {
       timeZone: "America/Argentina/Buenos_Aires",
     });
@@ -135,12 +157,27 @@ export default function PayrollContainer() {
     fetchPayroll();
   };
 
+  // Función auxiliar para convertir HH:MM a horas decimales
+  function parseTimeToDecimal(timeStr) {
+    if (!timeStr) return 0;
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours + minutes / 60;
+  }
+
   const handleExportarExcel = () => {
     if (payroll.length === 0) {
       alert("No hay datos para exportar.");
       return;
     }
 
+    if (hasAlarmRows) {
+      alert(
+        "No se puede exportar calculo de nomina hasta resolver las acciones requeridas."
+      );
+      return;
+    }
+
+    // 1. Generar hoja de planilla normal
     const excelPayroll = payroll.map((row) => ({
       Día: new Date(row.employee_hours.work_date).toLocaleDateString("es-AR", {
         weekday: "long",
@@ -152,15 +189,81 @@ export default function PayrollContainer() {
       "Cant. fichadas": row.employee_hours.check_count,
       Turno: row.shift?.description || "",
       Concepto: row.concept?.description || "",
-      Horas: row.employee_hours.sumary_time,
+      Horas: row.employee_hours.sumary_time || row.employee_hours.extra_hours || "00:00:00",
       Notas: row.employee_hours.notes,
-      Pago: row.employee_hours.pay ? "Si" : "No",
+      Estado: row.employee_hours.payroll_status,
     }));
 
-    const ws = XLSX.utils.json_to_sheet(excelPayroll);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Planilla");
-    XLSX.writeFile(wb, "planilla.xlsx");
+    const ws1 = XLSX.utils.json_to_sheet(excelPayroll);
+    XLSX.utils.book_append_sheet(wb, ws1, "Planilla");
+
+    // 2. Filtrar registros válidos
+    const validRows = payroll.filter(
+      (row) =>
+        row.employee_hours?.payroll_status !== "archived" &&
+        row.employee_hours?.payroll_status !== "not payable"
+    );
+
+    // 3. Recuento y horas por concepto
+    const conceptSummary = {};
+    validRows.forEach((row) => {
+      const concept = row.concept?.description || "Sin concepto";
+      const timeStr =
+        row.employee_hours?.sumary_time ||
+        row.employee_hours?.extra_hours ||
+        "00:00";
+      const time = parseTimeToDecimal(timeStr);
+
+      if (!conceptSummary[concept]) {
+        conceptSummary[concept] = { cantidad: 0, horas: 0 };
+      }
+
+      conceptSummary[concept].cantidad += 1;
+      conceptSummary[concept].horas += time;
+    });
+
+    const resumenConceptos = Object.entries(conceptSummary).map(
+      ([concepto, data]) => ({
+        Concepto: concepto,
+        Cantidad: data.cantidad,
+        "Horas totales": parseFloat(data.horas.toFixed(2)), // redondeo a 2 decimales
+      })
+    );
+
+    // 4. Datos del empleado
+    const employeeData = selectedEmployee
+      ? [
+          { Campo: "Nombre", Valor: selectedEmployee.first_name },
+          { Campo: "Apellido", Valor: selectedEmployee.last_name },
+          { Campo: "User ID", Valor: selectedEmployee.user_id },
+          { Campo: "Email", Valor: selectedEmployee.email || "" },
+          { Campo: "DNI", Valor: selectedEmployee.dni || "" },
+          { Campo: "Teléfono", Valor: selectedEmployee.phone || "" },
+        ]
+      : [];
+
+    // 5. Crear hoja resumen
+    const ws2 = XLSX.utils.book_new();
+
+    const resumenSheet = XLSX.utils.json_to_sheet([
+      { Concepto: "Resumen por concepto" },
+      ...resumenConceptos,
+      {},
+      { Concepto: "Datos del empleado" },
+      ...employeeData.map((item) => ({
+        Concepto: item.Campo,
+        Cantidad: item.Valor,
+      })),
+    ]);
+
+    XLSX.utils.book_append_sheet(wb, resumenSheet, "Resumen");
+
+    // 6. Exportar archivo
+    XLSX.writeFile(
+      wb,
+      `exportacion_nomina_${selectedEmployee.first_name}_${selectedEmployee.last_name}.xlsx`
+    );
   };
 
   const handleSelectSuggestion = (emp) => {
@@ -194,8 +297,8 @@ export default function PayrollContainer() {
 
   return (
     <div className="flex flex-col h-screen p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white py-4">
-        <div className="flex flex-wrap items-center gap-4 relative">
+      <div className="flex  items-center justify-between gap-4 bg-white py-4">
+        <div className="flex  items-center gap-4 relative">
           <div className="relative">
             <input
               ref={inputRef}
@@ -249,6 +352,45 @@ export default function PayrollContainer() {
           >
             Buscar
           </button>
+
+          <button
+            onClick={() => setShowArchived(!showArchived)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-full border text-sm transition-colors
+            ${
+              showArchived
+                ? "bg-yellow-100 text-yellow-800 border-yellow-400"
+                : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200"
+            }`}
+            title="Mostrar/ocultar archivados"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0H4"
+              />
+            </svg>
+            {showArchived ? "Ocultar Archivados" : "Ver Archivados"}
+          </button>
+
+          {hasAlarmRows && (
+            <div className="text-red-500 flex gap-2 items-center ">
+              <FiAlertTriangle />
+              <p
+                className="max-w-[150px] truncate"
+                title="Hay registros que requieren acciones"
+              >
+                Hay registros que requieren acciones
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-2 ml-auto">
@@ -268,7 +410,13 @@ export default function PayrollContainer() {
       </div>
 
       <div className="flex-grow overflow-auto">
-        <PayrollTable data={payroll} employee={selectedEmployee} onUpdateData={() => {fetchPayroll()}} />
+        <PayrollTable
+          data={filteredPayroll}
+          employee={selectedEmployee}
+          onUpdateData={() => {
+            fetchPayroll();
+          }}
+        />
       </div>
 
       <ProcessPayrollModal

@@ -6,6 +6,7 @@ import config from "@/config";
 import EditPayrollNotesModal from "./editPayrollNotesModal";
 import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
 import AttendanceChecksEventsDetailsModal from "../attendance/attendanceChecksEventsDetailsModal";
+import { FiAlertTriangle } from "react-icons/fi";
 
 const columns = [
   "Día",
@@ -77,6 +78,7 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
       row.employee_hours.payroll_status != "archived";
 
     return (
+      <div className="flex gap-2 items-center">
       <span
         className={`px-2 py-1 rounded-full text-xs font-medium ${
           isAlarm
@@ -86,6 +88,7 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
       >
         {concept || "—"}
       </span>
+       {isAlarm && (<FiAlertTriangle className="text-red-500"/>)}</div>
     );
   };
 
@@ -175,7 +178,7 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
                   {getConceptComponentDescription(row)}
                 </td>
                 <td className="px-3 py-2">
-                  {row.employee_hours.sumary_time || "00:00"}
+                  {row.employee_hours.sumary_time || row.employee_hours.extra_hours || "00:00:00"}
                 </td>
                 <td className="px-3 py-2 max-w-[200px]">
                   <div className="flex justify-between">
@@ -196,12 +199,14 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
                   </div>
                 </td>
 
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 flex gap-2 items-center">
+                  
                   <SelectPayrollStatusChip
                     value={row.employee_hours.payroll_status}
                     rowId={row.employee_hours.id}
                     onChange={handlePayrollStatusChange}
                   />
+                  {row.employee_hours.payroll_status === "pending validation" && (<FiAlertTriangle className="text-red-500"/>)}
                 </td>
               </tr>
             ))
