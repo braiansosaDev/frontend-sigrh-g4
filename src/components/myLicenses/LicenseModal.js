@@ -69,7 +69,7 @@ export default function LicenseModal({ open, onClose }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (res.status !== 200) throw new Error("Error al crear la licencia");
+      if (res.status !== 201) throw new Error("Error al crear la licencia");
       alert("Licencia creada exitosamente");
     } catch (error) {
       console.error("Error al crear licencia:", error);
