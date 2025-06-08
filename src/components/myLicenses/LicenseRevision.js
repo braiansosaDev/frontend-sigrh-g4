@@ -89,60 +89,112 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
               </div>
             </div>
           </div>
-          {/* Campo para cargar PDF (igual que LicenseModal, sin descarga) */}
-          <label className="block mb-2 font-semibold">
-            {file ? "📄 Agregar documento" : "📄 Editar documento"}
-          </label>
-          <div
-            className="mb-4 border-2 border-dashed border-gray-300 rounded p-4 text-center cursor-pointer hover:border-emerald-400"
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              const file = e.dataTransfer.files[0];
-              if (file) setFile(file);
-            }}
-          >
-            <input
-              type="file"
-              accept="application/pdf"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  if (file.type !== "application/pdf") {
-                    alert("Solo se permiten archivos PDF.");
-                    return;
+          {/* Campo para cargar o descargar PDF */}
+          {license.file ? (
+            <>
+              <label className="block mb-2 font-semibold">
+                📄 Documentación cargada
+              </label>
+              <button
+                type="button"
+                className="flex items-center gap-2 px-3 py-2 bg-emerald-100 hover:bg-emerald-200 rounded text-emerald-700 font-semibold w-full mb-4"
+                onClick={() => {
+                  // Descargar archivo base64 como PDF
+                  const byteCharacters = atob(license.file);
+                  const byteNumbers = new Array(byteCharacters.length);
+                  for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
                   }
-                  setFile(file);
-                }
-              }}
-            />
-            {file ? (
-              <div className="mt-2 text-emerald-700 font-medium">
-                {file.name}
+                  const byteArray = new Uint8Array(byteNumbers);
+                  const blob = new Blob([byteArray], {
+                    type: "application/pdf",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download = `licencia_${license.id}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  URL.revokeObjectURL(url);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                  />
+                </svg>
+                Descargar documento
+              </button>
+            </>
+          ) : (
+            <>
+              <label className="block mb-2 font-semibold">
+                📄 Cargar documentación
+              </label>
+              <div
+                className="mb-4 border-2 border-dashed border-gray-300 rounded p-4 text-center cursor-pointer hover:border-emerald-400"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file) setFile(file);
+                }}
+              >
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      if (file.type !== "application/pdf") {
+                        alert("Solo se permiten archivos PDF.");
+                        return;
+                      }
+                      setFile(file);
+                    }
+                  }}
+                />
+                {file ? (
+                  <div className="mt-2 text-emerald-700 font-medium">
+                    {file.name}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    🗃️ Adjunte la documentación correspondiente aquí
+                  </p>
+                )}
               </div>
-            ) : (
-              <p className="text-gray-500">
-                🗃️ Adjunte la documentación correspondiente aquí
-              </p>
-            )}
-          </div>
+            </>
+          )}
           <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
               onClick={onClose}
             >
-              Cancelar
+              {license.file ? "Cerrar" : "Cancelar"}
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-            >
-              Guardar
-            </button>
+            {!license.file && (
+              <button
+                type="submit"
+                className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              >
+                Guardar
+              </button>
+            )}
           </div>
         </form>
       </div>

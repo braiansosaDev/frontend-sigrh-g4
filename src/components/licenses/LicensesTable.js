@@ -192,7 +192,7 @@ export default function LicensesTable({ filters = {} }) {
               Estado Aceptación
             </th>
             <th className="py-2 px-4 text-center border-b font-semibold">
-              Modificar
+              Acciones
             </th>
           </tr>
         </thead>
@@ -290,13 +290,64 @@ export default function LicensesTable({ filters = {} }) {
                     Gestionar
                   </button>
                 ) : (
-                  <InfoPopup
-                    reason={
-                      user && lic.employee_id === user.id
-                        ? "No puedes gestionar tus propias licencias, solicita a un supervisor/gerente que lo haga por ti"
-                        : "La solicitud ya está finalizada, no puedes modificarla"
-                    }
-                  />
+                  <span className="flex items-center justify-center gap-2">
+                    <InfoPopup
+                      reason={
+                        user && lic.employee_id === user.id
+                          ? "No puedes gestionar tus propias licencias, solicita a un supervisor/gerente que lo haga por ti"
+                          : "La solicitud ya está finalizada, no puedes modificarla"
+                      }
+                    />
+                    {lic.file ? (
+                      <button
+                        className="flex items-center gap-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-semibold px-3 py-1 rounded-full"
+                        onClick={() => {
+                          const byteCharacters = atob(lic.file);
+                          const byteNumbers = new Array(byteCharacters.length);
+                          for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                          }
+                          const byteArray = new Uint8Array(byteNumbers);
+                          const blob = new Blob([byteArray], {
+                            type: "application/pdf",
+                          });
+                          const url = URL.createObjectURL(blob);
+                          const link = document.createElement("a");
+                          link.href = url;
+                          link.download = `licencia_${lic.id}.pdf`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          URL.revokeObjectURL(url);
+                        }}
+                        title="Descargar documentación"
+                        type="button"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                          />
+                        </svg>
+                        Licencia
+                      </button>
+                    ) : (
+                      <div
+                        className="flex items-center gap-1 bg-gray-200 text-gray-500 font-semibold px-3 py-1 rounded-full cursor-not-allowed select-none"
+                        title="No hay documentación disponible"
+                      >
+                        Sin doc.
+                      </div>
+                    )}
+                  </span>
                 )}
               </td>
             </tr>

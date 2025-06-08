@@ -122,9 +122,8 @@ export default function LicensesTable({
       alert("No se pudieron obtener las licencias");
     }
 
-    setAllLicenses((prev) =>
-      prev.map((lic) => (lic.id === updatedLicense.id ? updatedLicense : lic))
-    );
+    fetchLicensesTypes();
+    fetchUserLicenses();
     setRevisionOpen(false);
     setSelectedLicense(null);
   };
@@ -159,7 +158,7 @@ export default function LicensesTable({
               Estado Aceptación
             </th>
             <th className="py-2 px-4 text-center border-b font-semibold">
-              Modificar
+              Acciones
             </th>
           </tr>
         </thead>
