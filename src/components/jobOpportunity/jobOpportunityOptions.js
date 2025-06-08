@@ -3,6 +3,12 @@ import JobOpportunitiesTags from "./jobOpportunitiesTags";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
+import { useUser } from "@/contexts/userContext";
+import { canAccess } from "@/utils/permissions";
+import { PermissionIds } from "@/enums/permissions";
+
+const REQUIRED_PERMISSION = PermissionIds.ABM_POSTULACIONES_APROBACIONES;
+
 
 export default function JobOpportunityOptions({
   isAdding,
@@ -28,6 +34,10 @@ export default function JobOpportunityOptions({
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [statesAreLoaded, setStatesAreLoaded] = useState(false);
+  const { role } = useUser();
+  const permissionIds = role?.permissions?.map((p) => Number(p.id)) || [];
+  const canEditStatus = canAccess([REQUIRED_PERMISSION], permissionIds);
+
 
   const fetchCountries = async () => {
     try {
@@ -84,7 +94,7 @@ export default function JobOpportunityOptions({
       }
 
       setFormData({
-        status: jobOpportunity.status || "activo",
+        status: canEditStatus ? jobOpportunity.status || "activo" : "no_activo",
         work_mode: jobOpportunity.work_mode || "remoto",
         title: jobOpportunity.title || "",
         description: jobOpportunity.description || "",
@@ -97,6 +107,16 @@ export default function JobOpportunityOptions({
       });
     }
   }, [jobOpportunity, states]);
+
+  useEffect(() => {
+  if (isAdding) {
+    setFormData((prev) => ({
+      ...prev,
+      status: canEditStatus ? "activo" : "no_activo",
+    }));
+  }
+}, [isAdding, canEditStatus]);
+
 
   useEffect(() => {
     fetchCountries();
@@ -239,16 +259,26 @@ export default function JobOpportunityOptions({
                 <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🛑 Estado
                 </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={checkRegion}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                  required
-                >
-                  <option value="activo">Activa</option>
-                  <option value="no_activo">Inactiva</option>
-                </select>
+                {canEditStatus ? (
+  <select
+    name="status"
+    value={formData.status}
+    onChange={checkRegion}
+    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+    required
+  >
+    <option value="activo">Activa</option>
+    <option value="no_activo">Inactiva</option>
+  </select>
+) : (
+  <input
+    type="text"
+    value="Inactiva"
+    disabled
+    className="mt-1 block w-full p-2 bg-gray-100 border border-gray-300 rounded-md text-gray-500 sm:text-sm"
+  />
+)}
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">

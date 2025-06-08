@@ -48,6 +48,7 @@ const menuItems = [
         label: "Turnos",
         path: "/sigrh/shifts",
         icon: <FaClock />,
+        requiredPermissions: [PermissionIds.ABM_TURNOS],
       },
       {
         label: "Roles",
@@ -102,6 +103,7 @@ const menuItems = [
     label: "Ajustes",
     icon: <MdSettings className="text-2xl" />,
     path: "/sigrh/settings",
+    requiredPermissions: [PermissionIds.PERSONALIZACION_SISTEMA]
   },
 ];
 export default function Sidebar({ isOpen, onClose }) {

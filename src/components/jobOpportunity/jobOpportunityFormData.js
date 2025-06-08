@@ -3,6 +3,9 @@ import JobOpportunitiesTags from "./jobOpportunitiesTags";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
+import { useUser } from "@/contexts/userContext";
+import { canAccess } from "@/utils/permissions";
+import { PermissionIds } from "@/enums/permissions";
 
 export default function JobOpportunityFormData({
   onClose,
@@ -19,9 +22,9 @@ export default function JobOpportunityFormData({
     country_id: "",
     state_id: "",
     required_abilities: [],
-    requiredPercentage: "",
+    requiredPercentage: 0,
     desirable_abilities: [],
-    desirablePercentage: "",
+    desirablePercentage: 0,
   });
 
   const [countries, setCountries] = useState([]);
@@ -29,6 +32,11 @@ export default function JobOpportunityFormData({
   const [statesAreLoaded, setStatesAreLoaded] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
+
+  const REQUIRED_PERMISSION = PermissionIds.ABM_POSTULACIONES_APROBACIONES;
+  const { role } = useUser();
+  const permissionIds = role?.permissions?.map((p) => Number(p.id)) || [];
+  const canEditStatus = canAccess([REQUIRED_PERMISSION], permissionIds);
 
   const fetchCountries = async () => {
     try {
@@ -85,19 +93,25 @@ export default function JobOpportunityFormData({
       }
 
       setFormData({
-        status: jobOpportunity.status || "activo",
+        status: jobOpportunity.status,
         work_mode: jobOpportunity.work_mode || "remoto",
         title: jobOpportunity.title || "",
         description: jobOpportunity.description || "",
-        country_id: countryId ? countryId : "",
+        country_id: countryId || "",
         state_id: jobOpportunity.state_id || "",
         required_abilities: jobOpportunity.required_abilities || [],
         requiredPercentage: jobOpportunity.required_skill_percentage ?? "",
         desirable_abilities: jobOpportunity.desirable_abilities || [],
         desirablePercentage: jobOpportunity.desirable_skill_percentage ?? "",
       });
+    } else {
+      // Nueva convocatoria
+      setFormData((prev) => ({
+        ...prev,
+        status: jobOpportunity.status,
+      }));
     }
-  }, [jobOpportunity, states]);
+  }, [jobOpportunity, statesAreLoaded]);
 
   useEffect(() => {
     fetchCountries();
@@ -268,17 +282,29 @@ export default function JobOpportunityFormData({
                 <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   🛑 Estado
                 </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={checkRegion}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                  required
-                >
-                  <option value="activo">Activa</option>
-                  <option value="no_activo">Inactiva</option>
-                </select>
+                {canEditStatus ? (
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={checkRegion}
+                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                    required
+                  >
+                    <option value="activo">Activa</option>
+                    <option value="no_activo">Inactiva</option>
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={
+                      formData.status == "no_activo" ? "Inactiva" : "Activa"
+                    }
+                    disabled
+                    className="mt-1 block w-full p-2 bg-gray-100 border border-gray-300 rounded-md text-gray-500 sm:text-sm"
+                  />
+                )}
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 mt-1">
                   📃 Descripción
