@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 
@@ -10,7 +10,7 @@ export default function EditPayrollNotesModal({
   initialNote,
   recordId,
 }) {
-  const [note, setNote] = useState(initialNote || "");
+  const [note, setNote] = useState("");
 
   const handleSave = async () => {
     try {
@@ -31,6 +31,10 @@ export default function EditPayrollNotesModal({
       alert("Error al guardar la nota: " + error.message);
     }
   };
+
+  useEffect(() => {
+    setNote(initialNote);
+  }, [initialNote]);
 
   if (!isOpen) return null;
 

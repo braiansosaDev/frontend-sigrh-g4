@@ -20,6 +20,7 @@ import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
+import { FaCheck } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -77,7 +78,20 @@ const menuItems = [
     label: "Nómina",
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
-    requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
+    submenus: [
+      {
+        label: "Gestión de nomina",
+        icon: <FaFileAlt className="text-2xl" />,
+        path: "/sigrh/payroll",
+        requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
+      },
+      {
+        label: "Aprobaciones de nomina",
+        icon: <FaCheck className="text-xl" />,
+        path: "/sigrh/payroll_evaluation",
+        requiredPermissions: [PermissionIds.GESTION_NOMINA_APROBACIONES],
+      },
+    ]
   },
   {
     label: "Licencias",
