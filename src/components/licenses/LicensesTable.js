@@ -157,41 +157,41 @@ export default function LicensesTable({ filters = {} }) {
   });
 
   return (
-    <>
-      <table className="w-full bg-white rounded shadow-sm">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+    <div className="overflow-auto h-[70vh]">
+      <table className="min-w-full table-fixed bg-white rounded-lg shadow text-xs">
+         <thead className="sticky top-0">
+          <tr className="px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold text-center">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Usuario
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Nombre
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Fecha Solicitud
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Tipo de licencia
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Motivo
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Días hábiles
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Desde
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Hasta
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Estado doc.
             </th>
-            <th className="py-2 px-4 text-left border-b font-semibold">
+            <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Estado Aceptación
             </th>
-            <th className="py-2 px-4 text-center border-b font-semibold">
+            <th className="py-2 px-4 text-center border-b border-gray-300 font-semibold">
               Acciones
             </th>
           </tr>
@@ -199,11 +199,11 @@ export default function LicensesTable({ filters = {} }) {
         <tbody>
           {filteredLicenses.map((lic) => (
             <tr key={lic.id}>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300">
                 {employees.find((emp) => emp.id === lic.employee_id)?.user_id ||
                   "Desconocido"}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300">
                 {(() => {
                   const emp = employees.find(
                     (emp) => emp.id === lic.employee_id
@@ -213,8 +213,8 @@ export default function LicensesTable({ filters = {} }) {
                     : "Desconocido";
                 })()}
               </td>
-              <td className="py-2 px-4 border-b">{lic.request_date}</td>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.request_date}</td>
+              <td className="py-2 px-4 border-b border-gray-300">
                 {adaptText(
                   lic.leave_type_id
                     ? licensesTypes?.find(
@@ -223,7 +223,7 @@ export default function LicensesTable({ filters = {} }) {
                     : "Tipo no encontrado"
                 )}
               </td>
-              <td className="py-2 px-4 border-b align-top">
+              <td className="py-2 px-4 border-b border-gray-300 align-top">
                 {lic.reason && lic.reason.length > 30 ? (
                   <>
                     {!expandedRows[lic.id] ? (
@@ -263,19 +263,19 @@ export default function LicensesTable({ filters = {} }) {
                   </div>
                 )}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300">
                 {countBusinessDays(lic.start_date, lic.end_date)}
               </td>
-              <td className="py-2 px-4 border-b">{lic.start_date}</td>
-              <td className="py-2 px-4 border-b">{lic.end_date}</td>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.start_date}</td>
+              <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.end_date}</td>
+              <td className="py-2 px-4 border-b border-gray-300">
                 {adaptText(lic.document_status)}
               </td>
-              <td className="py-2 px-4 border-b">
+              <td className="py-2 px-4 border-b border-gray-300">
                 {adaptText(lic.request_status)}
               </td>
               <td
-                className="py-2 px-4 border-b text-center"
+                className="py-2 px-4 border-b border-gray-300 text-center"
                 style={{ position: "relative" }}
               >
                 {user &&
@@ -360,7 +360,7 @@ export default function LicensesTable({ filters = {} }) {
         license={selectedLicense}
         onSave={handleSave}
       />
-    </>
+    </div>
   );
 }
 
@@ -379,7 +379,7 @@ function InfoPopup({ reason }) {
       </button>
       {show && (
         <div
-          className="absolute z-50 right-0 bottom-full mb-2 w-56 bg-white border border-gray-300 rounded shadow-lg p-3 text-sm text-gray-700"
+          className="absolute z-[50] right-0 bottom-full mb-2 w-56 bg-white border border-gray-300 rounded shadow-lg p-3 text-sm text-gray-700"
           style={{ minWidth: "180px" }}
         >
           <p className="text-emerald-800">{reason}</p>
