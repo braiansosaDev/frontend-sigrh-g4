@@ -11,6 +11,7 @@ const DOCUMENT_STATUS_OPTIONS = [
 
 export default function LicenseModal({ open, onClose, license, onSave }) {
   const { employees } = useEmployees();
+  const employee = employees.find((emp) => emp.id === license?.employee_id);
   const [requestStatus, setRequestStatus] = useState(
     license?.request_status || ""
   );
@@ -54,15 +55,14 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
         <h2 className="text-xl font-bold mb-4">Gestionar Licencia</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="block font-semibold">👤 Usuario</label>
-            <div className="border rounded px-3 py-2 bg-gray-100">
-              {employees.find((emp) => emp.id === license.employee_id)
-                ?.user_id || "Usuario no encontrado"}
+            <label className="block font-semibold mb-2">👤 Empleado</label>
+            <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
+              {`${employee.first_name} ${employee.last_name} - DNI: ${employee.dni}`}
             </div>
           </div>
           <div className="mb-3">
-            <label className="block font-semibold">📝 Motivo</label>
-            <div className="border rounded px-3 py-2 bg-gray-100">
+            <label className="block font-semibold mb-2">📝 Motivo</label>
+            <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
               {license.reason.slice(0, 50)}
               {license.reason.length > 50 && (
                 <span className="text-gray-500">...</span>
@@ -71,14 +71,14 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
           </div>
           <div className="mb-3 flex gap-2">
             <div className="flex-1">
-              <label className="block font-semibold">📅 Desde</label>
-              <div className="border rounded px-3 py-2 bg-gray-100">
+              <label className="block font-semibold mb-2">📅 Desde</label>
+              <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
                 {license.start_date}
               </div>
             </div>
             <div className="flex-1">
-              <label className="block font-semibold">🗓️ Hasta</label>
-              <div className="border rounded px-3 py-2 bg-gray-100">
+              <label className="block font-semibold mb-2">🗓️ Hasta</label>
+              <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
                 {license.end_date}
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
           {license.file ? (
             <div className="mb-3 flex gap-2 items-end">
               <div className="flex-1">
-                <label className="block font-semibold">🗃️ Documentación</label>
+                <label className="block font-semibold mb-2">🗃️ Documentación</label>
                 <button
                   type="button"
                   onClick={handleDownload}
@@ -111,11 +111,11 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
                 </button>
               </div>
               <div className="w-1/2">
-                <label className="block font-semibold">
+                <label className="block font-semibold mb-2">
                   📑 Estado Documentación
                 </label>
                 <select
-                  className="border rounded px-2 py-2 w-full text-sm"
+                  className="border border-gray-300 rounded px-2 py-2 w-full text-sm"
                   value={documentStatus}
                   onChange={(e) => setDocumentStatus(e.target.value)}
                   required
@@ -132,18 +132,18 @@ export default function LicenseModal({ open, onClose, license, onSave }) {
             </div>
           ) : (
             <div className="mb-3">
-              <label className="block font-semibold">🗃️ Documentación</label>
+              <label className="block font-semibold mb-2">🗃️ Documentación</label>
               <div className="text-gray-500 italic mt-1">
                 No hay documentación cargada
               </div>
             </div>
           )}
           <div className="mb-3">
-            <label className="block font-semibold">
+            <label className="block font-semibold mb-2">
               📤 Estado de Solicitud
             </label>
             <select
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded px-3 py-2"
               value={requestStatus}
               onChange={(e) => setRequestStatus(e.target.value)}
               required

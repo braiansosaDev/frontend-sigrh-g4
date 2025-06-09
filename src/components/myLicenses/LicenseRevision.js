@@ -63,14 +63,14 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="block font-semibold">📂 Tipo de licencia</label>
-            <div className="border rounded px-3 py-2 bg-gray-100">
+            <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
               {licensesTypes.find((type) => type.id === license.leave_type_id)
                 ?.type || "Tipo no encontrado"}
             </div>
           </div>
           <div className="mb-3">
             <label className="block font-semibold">📝 Motivo</label>
-            <div className="border rounded px-3 py-2 bg-gray-100">
+            <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
               {license.reason.slice(0, 50)}
               {license.reason.length > 50 ? "..." : ""}
             </div>
@@ -78,13 +78,13 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
           <div className="mb-3 flex gap-2">
             <div className="flex-1">
               <label className="block font-semibold">📅 Desde</label>
-              <div className="border rounded px-3 py-2 bg-gray-100">
+              <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
                 {license.start_date}
               </div>
             </div>
             <div className="flex-1">
               <label className="block font-semibold">🗓️ Hasta</label>
-              <div className="border rounded px-3 py-2 bg-gray-100">
+              <div className="border border-gray-300 rounded px-3 py-2 bg-gray-100">
                 {license.end_date}
               </div>
             </div>
