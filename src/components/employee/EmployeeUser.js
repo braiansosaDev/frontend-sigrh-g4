@@ -8,6 +8,7 @@ import config from "@/config";
 import { useRoles } from "@/hooks/useRoles";
 import HasPermission from "../HasPermission";
 import { PermissionIds } from "@/enums/permissions";
+import EmployeeChangePasswordModal from "./EmployeeChangePasswordModal";
 
 export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export default function EmployeeUser({ employeeData, id }) {
     role_name: "",
   });
   const [editing, setEditing] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const { roles, loading, error } = useRoles();
   const mappedRoles = roles.map((r) => ({
     value: r.id,
@@ -34,13 +36,13 @@ export default function EmployeeUser({ employeeData, id }) {
     setEditing(true);
   }
 
+  const handleOpenChangePassword = () => {
+    setModalOpen(true);
+  };
+
   async function handleSave() {
     const dataToSend = { ...formData };
-
-    // Solo incluimos password si no está vacía
-    if (!dataToSend.password) {
-      delete dataToSend.password;
-    }
+    delete dataToSend.password;
 
     const cleanedData = cleanEmployeePayload(dataToSend);
 
@@ -102,13 +104,12 @@ export default function EmployeeUser({ employeeData, id }) {
             </div>
             <div className="flex flex-col w-full">
               <label className="text-sm text-gray-500">Password</label>
-              <input
-                name="password"
-                type="password"
-                value={formData.password || ""}
-                onChange={handleChange}
-                className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
-              />
+              <button
+                className="cursor-pointer bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                onClick={handleOpenChangePassword}
+              >
+                Cambiar contraseña
+              </button>
             </div>
           </div>
 
@@ -152,6 +153,12 @@ export default function EmployeeUser({ employeeData, id }) {
           </button>
         </div>
       )}
+
+      <EmployeeChangePasswordModal
+        employeeId={employeeData.id}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }
