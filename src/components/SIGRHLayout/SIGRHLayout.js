@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import Image from "next/image";
 
 export default function SIGRHLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

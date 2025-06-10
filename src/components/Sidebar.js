@@ -11,18 +11,16 @@ import {
   FaHome,
   FaSignOutAlt,
   FaChevronRight,
-  FaCashRegister,
-  FaMoneyBill,
   FaMoneyCheck,
-  FaRegMoneyBillAlt,
-  FaMoneyBillWave,
   FaClock,
+  FaFileAlt,
+  FaFileContract,
 } from "react-icons/fa";
-import { MdSecurity } from "react-icons/md";
+import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
-import { FaMoneyBillTransfer, FaRegMoneyBill1 } from "react-icons/fa6";
+import { FaCheck } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -51,6 +49,7 @@ const menuItems = [
         label: "Turnos",
         path: "/sigrh/shifts",
         icon: <FaClock />,
+        requiredPermissions: [PermissionIds.ABM_TURNOS],
       },
       {
         label: "Roles",
@@ -64,22 +63,63 @@ const menuItems = [
     label: "Convocatorias",
     icon: <FaBriefcase className="text-2xl" />,
     path: "/sigrh/job_opportunities",
-    requiredPermissions: [PermissionIds.ABM_POSTULACIONES_CARGA, PermissionIds.ABM_POSTULACIONES_APROBACIONES],
+    requiredPermissions: [
+      PermissionIds.ABM_POSTULACIONES_CARGA,
+      PermissionIds.ABM_POSTULACIONES_APROBACIONES,
+    ],
   },
   {
     label: "Asistencia",
     icon: <FaRegClock className="text-2xl" />,
     path: "/sigrh/attendance",
-    requiredPermissions: [PermissionIds.ABM_FICHADAS]
+    requiredPermissions: [PermissionIds.ABM_FICHADAS],
   },
   {
     label: "Nómina",
     icon: <FaMoneyCheck className="text-2xl" />,
     path: "/sigrh/payroll",
-    requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA]
+    submenus: [
+      {
+        label: "Gestión de nomina",
+        icon: <FaFileAlt className="text-2xl" />,
+        path: "/sigrh/payroll",
+        requiredPermissions: [PermissionIds.GESTION_NOMINA_CARGA],
+      },
+      {
+        label: "Aprobaciones de nomina",
+        icon: <FaCheck className="text-xl" />,
+        path: "/sigrh/payroll_evaluation",
+        requiredPermissions: [PermissionIds.GESTION_NOMINA_APROBACIONES],
+      },
+    ]
+  },
+  {
+    label: "Licencias",
+    icon: <FaFileAlt className="text-2xl" />,
+    path: "/sigrh/my_licenses",
+    requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
+    submenus: [
+      {
+        label: "Mis Licencias",
+        icon: <FaFileAlt className="text-2xl" />,
+        path: "/sigrh/my_licenses",
+        requiredPermissions: [PermissionIds.GESTION_LICENCIAS_CARGA],
+      },
+      {
+        label: "Admin. Licencias",
+        icon: <FaFileContract className="text-2xl" />,
+        path: "/sigrh/licenses",
+        requiredPermissions: [PermissionIds.GESTION_LICENCIAS_APROBACIONES],
+      },
+    ],
+  },
+  {
+    label: "Ajustes",
+    icon: <MdSettings className="text-2xl" />,
+    path: "/sigrh/settings",
+    requiredPermissions: [PermissionIds.PERSONALIZACION_SISTEMA]
   },
 ];
-
 export default function Sidebar({ isOpen, onClose }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -112,7 +152,8 @@ export default function Sidebar({ isOpen, onClose }) {
       <div className="hidden md:flex flex-col justify-between bg-white shadow-md w-64 h-[calc(100vh-4rem)] fixed top-16 left-0 p-4 z-20">
         <ul className="space-y-2">
           {menuItems.map((item, idx) => {
-            if (!canAccess(item.requiredPermissions, permissionIds)) return null;
+            if (!canAccess(item.requiredPermissions, permissionIds))
+              return null;
 
             const isParentActive = pathname.startsWith(item.path);
             const hasSubmenus = Array.isArray(item.submenus);

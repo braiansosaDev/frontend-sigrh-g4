@@ -65,6 +65,10 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
           description: ability.description || "",
           id: ability.id || 0,
         })),
+        required_skill_percentage:
+          jobOpportunityNewData.requiredPercentage || 0,
+        desirable_skill_percentage:
+          jobOpportunityNewData.desirablePercentage || 0,
       };
 
       const res = await axios.patch(
@@ -97,7 +101,7 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
         />
         <h1 className="text-2xl font-semibold">
           Convocatoria /{" "}
-          {jobOpportunityId == "new" ? "Nuevo" : `# ${jobOpportunityId}`}
+          {jobOpportunityId == "new" ? "Nuevo" : `# ${jobOpportunityId}`} 💼
         </h1>
       </div>
 
@@ -126,21 +130,19 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
           ))}
         </div>
 
-          
         {activeTab === 0 && (
           <div className="h-[70vh] overflow-y-auto">
-          <JobOpportunityFormData
-            jobOpportunity={opportunityData}
-            onSave={handleSaveJobOpportunityForm}
-            onClose={() => {}}
-          />
+            <JobOpportunityFormData
+              jobOpportunity={opportunityData}
+              onSave={handleSaveJobOpportunityForm}
+              onClose={() => {}}
+            />
           </div>
         )}
-        
 
         {activeTab === 1 && (
           <div className="h-[70vh] overflow-y-auto">
-          <PostulationsContainer jobOpportunityId={opportunityData.id} />
+            <PostulationsContainer jobOpportunityId={opportunityData.id} />
           </div>
         )}
       </div>

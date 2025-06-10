@@ -98,22 +98,22 @@ export default function EmployeesTable() {
 
       {/* Contenedor de la tabla con scroll */}
       <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-100 sticky top-0 z-10">
-            <tr>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+        <table className="min-w-full bg-white text-xs">
+          <thead className="sticky top-0 z-10">
+            <tr className="px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold text-center">
+              <th className="py-2 px-4 text-left font-medium">
                 ID
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium">
                 Nombre/s
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium">
                 Apellido/s
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium">
                 Fecha de Contratación
               </th>
-              <th className="py-2 px-4 text-sm text-center font-medium text-gray-600">
+              <th className="py-2 px-4 text-center font-medium">
                 Activo
               </th>
             </tr>
@@ -126,27 +126,27 @@ export default function EmployeesTable() {
                   className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(employee.id)}
                 >
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {employee.id}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {employee.first_name}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {employee.last_name}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {new Date(employee.hire_date).toLocaleDateString("es-AR", {
                       timeZone: "UTC",
                     })}
                   </td>
-                  <td className="py-2 px-4 text-sm text-center text-gray-700">
+                  <td className="py-2 px-4 text-center text-gray-700">
                     {employee.active ? (
-                      <div className="flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-green-200 text-green-600">
+                      <div className="flex justify-center rounded-full px-3 py-1 font-semibold border bg-green-200 text-green-600">
                         Activo
                       </div>
                     ) : (
-                      <div className="flex justify-center rounded-full px-3 py-1 text-sm font-semibold border bg-red-200 text-red-600">
+                      <div className="flex justify-center rounded-full px-3 py-1 font-semibold border bg-red-200 text-red-600">
                         Inactivo
                       </div>
                     )}

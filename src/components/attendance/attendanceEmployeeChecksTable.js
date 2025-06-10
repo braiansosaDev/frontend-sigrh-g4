@@ -70,7 +70,7 @@ export default function AttendanceEmployeeChecksTable() {
           onChange={(e) =>
             setFilters((prev) => ({ ...prev, searchTerm: e.target.value }))
           }
-          className="px-4 py-2 border border-gray-300 rounded-full w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="px-4 py-2 border border-gray-300 rounded-full w-80 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           placeholder="🔍︎ Buscar por nombre o apellido..."
         />
 
@@ -87,31 +87,31 @@ export default function AttendanceEmployeeChecksTable() {
       </div>
 
       <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-lg">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-100 sticky top-0 z-10">
+        <table className="min-w-full bg-white text-xs">
+          <thead className="bg-emerald-50 sticky top-0 z-10">
             <tr>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Legajo ID
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Nombre
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Apellido
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Sector
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Fecha
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Primera entrada
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Última salida
               </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+              <th className="py-2 px-4 text-left font-medium text-emerald-700">
                 Total fichadas
               </th>
             </tr>
@@ -127,45 +127,41 @@ export default function AttendanceEmployeeChecksTable() {
                     setModalOpen(true);
                   }}
                 >
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {item.employee_id}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
-                    {item.first_name}
-                  </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
-                    {item.last_name}
-                  </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">{item.first_name}</td>
+                  <td className="py-2 px-4 text-gray-700">{item.last_name}</td>
+                  <td className="py-2 px-4 text-gray-700">
                     {item.job || "Sin sector"}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {new Date(item.date + "T12:00:00").toLocaleDateString(
                       "es-AR"
                     )}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {item.first_in
                       ? new Date(item.first_in).toLocaleTimeString("es-AR", {
                           hour12: false,
                         })
                       : "—"}
                   </td>
-                  <td className="py-2 px-4 text-sm text-gray-700">
+                  <td className="py-2 px-4 text-gray-700">
                     {item.last_out
                       ? new Date(item.last_out).toLocaleTimeString("es-AR", {
                           hour12: false,
                         })
                       : "—"}
                   </td>
-                  <td className="py-2 px-4 text-sm text-center text-gray-700 flex gap-2">
+                  <td className="py-2 px-4 text-center text-gray-700 flex gap-2">
                     {item.total_events}
                     <button
                       onClick={() => {
                         setSelectedEmployee(item);
                         setModalOpen(true);
                       }}
-                      className="text-emerald-600 text-sm underline hover:text-emerald-800"
+                      className="text-emerald-600 underline hover:text-emerald-800"
                     >
                       Ver
                     </button>

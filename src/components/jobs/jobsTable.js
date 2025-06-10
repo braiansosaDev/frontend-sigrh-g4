@@ -56,17 +56,17 @@ export default function JobsTable() {
       </div>
 
       <div className="overflow-x-auto rounded-lg max-h-[70vh] overflow-y-auto">
-        <table className="min-w-full bg-white">
+        <table className="min-w-full bg-white text-xs">
           <thead className="bg-gray-100 sticky top-0">
-            <tr>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">ID</th>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">
+            <tr className="text-emerald-700 bg-emerald-50 font-semibold">
+              <th className="py-2 px-4 text-left">ID</th>
+              <th className="py-2 px-4 text-left">
                 Nombre
               </th>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">
+              <th className="py-2 px-4 text-left">
                 Sector
               </th>
-              <th className="py-2 px-4 text-center text-sm text-gray-600">
+              <th className="py-2 px-4 text-center">
                 Acciones
               </th>
             </tr>

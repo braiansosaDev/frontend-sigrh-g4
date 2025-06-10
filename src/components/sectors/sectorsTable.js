@@ -49,28 +49,28 @@ export default function SectorsTable() {
             setEditingSector(null);
             setModalOpen(true);
           }}
-          className="flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-full text-sm"
+          className="flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-full "
         >
           <FaPlus /> Agregar
         </button>
       </div>
 
       <div className="overflow-x-auto rounded-lg max-h-[70vh] overflow-y-auto">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-100 sticky top-0">
-            <tr>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">ID</th>
-              <th className="py-2 px-4 text-left text-sm text-gray-600">Nombre</th>
-              <th className="py-2 px-4 text-center text-sm text-gray-600">Acciones</th>
+        <table className="min-w-full bg-white text-xs">
+          <thead className="bg-emerald-50 sticky top-0">
+            <tr className="text-emerald-700 font-semibold">
+              <th className="py-2 px-4 text-left">ID</th>
+              <th className="py-2 px-4 text-left">Nombre</th>
+              <th className="py-2 px-4 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {sectors.length > 0 ? (
               sectors.map((sector) => (
                 <tr key={sector.id} className="border-b border-gray-100 hover:bg-gray-50 text-gray-700">
-                  <td className="py-2 px-4 text-sm">{sector.id}</td>
-                  <td className="py-2 px-4 text-sm">{sector.name}</td>
-                  <td className="py-2 px-4 text-sm text-center flex gap-3 justify-center">
+                  <td className="py-2 px-4 ">{sector.id}</td>
+                  <td className="py-2 px-4 ">{sector.name}</td>
+                  <td className="py-2 px-4  text-center flex gap-3 justify-center">
                     <button
                       className="cursor-pointer text-emerald-500 hover:text-emerald-600"
                       onClick={() => {
