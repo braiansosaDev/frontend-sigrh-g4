@@ -3,6 +3,7 @@
 
 import { useRef } from "react";
 import * as faceapi from "face-api.js";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeePhoto({ photoBase64, onPhotoChange }) {
   const fileInputRef = useRef(null);
@@ -29,7 +30,9 @@ export default function EmployeePhoto({ photoBase64, onPhotoChange }) {
           if (detection) {
             onPhotoChange(reader.result); // Cambia la foto si encuentra una cara
           } else {
-            alert("La imagen no contiene una cara reconocible.");
+            toastAlerts.showError(
+              "No se detectó una cara en la imagen. Por favor, intenta con otra foto."
+            );
           }
         };
       };

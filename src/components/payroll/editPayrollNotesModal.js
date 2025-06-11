@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EditPayrollNotesModal({
   isOpen,
@@ -28,7 +29,10 @@ export default function EditPayrollNotesModal({
         throw new Error("Error al actualizar nota");
       }
     } catch (error) {
-      alert("Error al guardar la nota: " + error.message);
+      console.error("Error al guardar la nota:", error);
+      toastAlerts.showError(
+        "Hubo un error al guardar la nota, intente nuevamente"
+      );
     }
   };
 

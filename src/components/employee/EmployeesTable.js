@@ -5,6 +5,7 @@ import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
 import EmployeeFilters from "./EmployeeFilters";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeesTable() {
   const [employees, setEmployees] = useState([]);
@@ -26,7 +27,9 @@ export default function EmployeesTable() {
       if (res.status !== 200) throw new Error("Error al traer los empleados");
       setEmployees(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los empleados");
+      toastAlerts.showError(
+        "Hubo un error al obtener los empleados, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -101,21 +104,13 @@ export default function EmployeesTable() {
         <table className="min-w-full bg-white text-xs">
           <thead className="sticky top-0 z-10">
             <tr className="px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold text-center">
-              <th className="py-2 px-4 text-left font-medium">
-                ID
-              </th>
-              <th className="py-2 px-4 text-left font-medium">
-                Nombre/s
-              </th>
-              <th className="py-2 px-4 text-left font-medium">
-                Apellido/s
-              </th>
+              <th className="py-2 px-4 text-left font-medium">ID</th>
+              <th className="py-2 px-4 text-left font-medium">Nombre/s</th>
+              <th className="py-2 px-4 text-left font-medium">Apellido/s</th>
               <th className="py-2 px-4 text-left font-medium">
                 Fecha de Contratación
               </th>
-              <th className="py-2 px-4 text-center font-medium">
-                Activo
-              </th>
+              <th className="py-2 px-4 text-center font-medium">Activo</th>
             </tr>
           </thead>
           <tbody>
@@ -126,9 +121,7 @@ export default function EmployeesTable() {
                   className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(employee.id)}
                 >
-                  <td className="py-2 px-4 text-gray-700">
-                    {employee.id}
-                  </td>
+                  <td className="py-2 px-4 text-gray-700">{employee.id}</td>
                   <td className="py-2 px-4 text-gray-700">
                     {employee.first_name}
                   </td>

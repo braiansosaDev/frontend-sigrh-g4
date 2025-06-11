@@ -8,6 +8,7 @@ import JobOpportunitiesFilter from "./jobOpportunitiesFilter";
 import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunityTable() {
   const [searchTerm, setSearchTerm] = useState(""); // Para guardar lo que se escribe en el buscador
@@ -106,7 +107,10 @@ export default function JobOpportunityTable() {
 
       setJobOpportunities(res.data);
     } catch (e) {
-      alert("No se pudieron obtener las convocatorias");
+      console.error(e);
+      toastAlerts.showError(
+        "Hubo un error al obtener las convocatorias, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -120,7 +124,10 @@ export default function JobOpportunityTable() {
 
       setStates(res.data);
     } catch (e) {
-      alert("No se pudieron obtener los estados");
+      console.error(e);
+      toastAlerts.showError(
+        "Hubo un error al obtener los estados, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -174,9 +181,13 @@ export default function JobOpportunityTable() {
       );
 
       if (res.status != 201) throw new Error("Error al crear la convocatoria");
+
+      toastAlerts.showSuccess("Convocatoria creada exitosamente");
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al crear la convocatoria");
+      toastAlerts.showError(
+        "Hubo un error al crear la convocatoria, recargue la página e intente nuevamente"
+      );
     }
 
     setIsAdding(false);

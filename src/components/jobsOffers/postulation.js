@@ -6,6 +6,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { toastAlerts } from "@/utils/toastAlerts";
+import { toast } from "react-toastify";
 
 export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const token = Cookies.get("token"); // Token de autenticación
@@ -31,6 +33,9 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       setCountries(data);
     } catch (error) {
       console.error("Error al obtener los países:", error);
+      toastAlerts.showError(
+        "Hubo un error al obtener los países, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -42,6 +47,9 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       setStates(data);
     } catch (error) {
       console.error("Error al obtener las provincias:", error);
+      toastAlerts.showError(
+        "Hubo un error al obtener las provincias, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -58,7 +66,10 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
 
       setCanCreate(res.data);
     } catch (e) {
-      alert("No se puedo obtener la capacidad de postulaciones: " + e);
+      toastAlerts.showError(
+        "Hubo un error al verificar la capacidad de postulaciones, recargue la página e intente nuevamente"
+      );
+      console.error("Error al verificar la capacidad de postulaciones:", e);
     }
   };
 
@@ -96,6 +107,9 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       setPostulations(res.data);
     } catch (error) {
       console.error("Error al obtener las postulaciones:", error);
+      toastAlerts.showError(
+        "Hubo un error al obtener las postulaciones, recargue la página e intente nuevamente"
+      );
       return []; // Devuelve un array vacío en caso de error
     }
   };
@@ -259,7 +273,9 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       setStep(4); // Confirmación de envío
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al crear la postulación");
+      toastAlerts.showError(
+        "Hubo un error al crear la postulación, recargue la página e intente nuevamente"
+      );
     }
   };
 

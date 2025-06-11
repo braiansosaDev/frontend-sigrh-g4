@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaFileUpload } from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function SettingsContainer() {
   const [companyName, setCompanyName] = useState("");
@@ -49,7 +50,7 @@ export default function SettingsContainer() {
     if (!file) return;
 
     if (file.size > MAX_LOGO_MB * 1024 * 1024) {
-      alert(`El logo no puede superar ${MAX_LOGO_MB}MB`);
+      toastAlerts.showWarning(`El logo debe ser menor a ${MAX_LOGO_MB}MB`);
       logoInputRef.current.value = "";
       return;
     }
@@ -59,7 +60,7 @@ export default function SettingsContainer() {
       const img = new Image();
       img.onload = () => {
         if (img.width > MAX_LOGO_WIDTH || img.height > MAX_LOGO_HEIGHT) {
-          alert(
+          toastAlerts.showWarning(
             `El logo debe tener máx ${MAX_LOGO_WIDTH}px x ${MAX_LOGO_HEIGHT}px`
           );
           logoInputRef.current.value = "";
@@ -81,7 +82,7 @@ export default function SettingsContainer() {
       const img = new Image();
       img.onload = () => {
         if (img.width > FAVICON_SIZE || img.height > FAVICON_SIZE) {
-          alert(
+          toastAlerts.showWarning(
             `El favicon debe ser menor a ${FAVICON_SIZE}x${FAVICON_SIZE}px`
           );
           faviconInputRef.current.value = "";
@@ -96,12 +97,14 @@ export default function SettingsContainer() {
 
   const handleSubmit = async () => {
     if (!companyName || !email || !phone) {
-      alert("Completá todos los campos necesarios: Compañia, Mail, Telefono");
+      toastAlerts.showWarning(
+        "Completá todos los campos necesarios: Compañia, Mail, Telefono"
+      );
       return;
     }
 
     if (!isValidEmail(email)) {
-      alert("El email no es válido");
+      toastAlerts.showWarning("El email no es válido");
       return;
     }
 
@@ -123,8 +126,8 @@ export default function SettingsContainer() {
       );
 
       if (res.status === 201) {
-        alert(
-          "Configuraciones guardadas correctamente. Recarga la pagina para ver reflejados los cambios!"
+        toastAlerts.showSuccess(
+          "Configuración guardada correctamente, recargue la página para ver los cambios"
         );
       } else {
         throw new Error(
@@ -132,8 +135,9 @@ export default function SettingsContainer() {
         );
       }
     } catch (e) {
-      alert(
-        `Ha ocurrido un error al guardar las configuraciones: ${e.message}`
+      console.error("Error al guardar la configuración:", e);
+      toastAlerts.showError(
+        "Hubo un error al guardar la configuración, intente nuevamente"
       );
     }
   };

@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
 import { useSystemConfig } from "@/contexts/sysConfigContext";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function OffersTable() {
   const [jobOpportunities, setJobOpportunities] = useState([]); // Estado para las ofertas de trabajo
@@ -67,7 +68,10 @@ export default function OffersTable() {
 
       setJobOpportunities(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer las ofertas de trabajo");
+      toastAlerts.showError(
+        "Ocurrió un error al traer las ofertas de trabajo, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener ofertas de trabajo:", e);
     }
   };
 
@@ -80,7 +84,10 @@ export default function OffersTable() {
 
       setStates(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los estados");
+      toastAlerts.showError(
+        "Ocurrió un error al traer los estados, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener estados:", e);
     }
   };
 

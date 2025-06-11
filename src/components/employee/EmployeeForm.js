@@ -8,7 +8,10 @@ import SelectActiveChip from "./SelectActiveChip";
 import { defaultEmployeeDataForm } from "@/constants/defaultEmployeeForm";
 import { useCountries } from "@/hooks/useCountries";
 import { useJob } from "@/hooks/useJob";
-import { parseOptionsToRelationalInput, parseOptionsToRelationalInputDescription } from "@/utils/parseOptions";
+import {
+  parseOptionsToRelationalInput,
+  parseOptionsToRelationalInputDescription,
+} from "@/utils/parseOptions";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import EmployeePhoto from "./EmployeePhoto";
 import { useRouter } from "next/navigation";
@@ -20,6 +23,7 @@ import "react-phone-input-2/lib/style.css"; // o /lib/bootstrap.css si usás boo
 import * as faceapi from "face-api.js";
 import Cookies from "js-cookie";
 import { useShifts } from "@/hooks/useShifts";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeForm({ employeeData, id }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
@@ -93,7 +97,7 @@ export default function EmployeeForm({ employeeData, id }) {
     error: errorStatesCountry,
   } = useStatesCountry();
   const { jobs, loading: loadingJobs, error: errorJobs } = useJob();
-  const { shifts, loading: loadingShifts, error: errorShifts} = useShifts()
+  const { shifts, loading: loadingShifts, error: errorShifts } = useShifts();
   const router = useRouter();
 
   const shiftsParsed = parseOptionsToRelationalInputDescription(shifts);
@@ -133,7 +137,9 @@ export default function EmployeeForm({ employeeData, id }) {
       );
 
       if (res.status === 200 && res.data.employee_id !== formData.id) {
-        alert("Un rostro similar ya está registrado");
+        toastAlerts.showError(
+          "Ya existe un rostro similar registrado para otro empleado."
+        );
         return;
       }
     } catch (e) {}
@@ -147,10 +153,10 @@ export default function EmployeeForm({ employeeData, id }) {
           cleanedData
         );
       } else {
-        res = await axios.post(
-          `${config.API_URL}/employees/register`,
-          {...cleanedData, salary: 1}
-        );
+        res = await axios.post(`${config.API_URL}/employees/register`, {
+          ...cleanedData,
+          salary: 1,
+        });
       }
 
       const expectedStatus = id !== "new" ? 200 : 201;
@@ -172,15 +178,16 @@ export default function EmployeeForm({ employeeData, id }) {
         const detail = error.response?.data?.detail;
 
         if (status === 400) {
-          alert(
-            detail ||
-              "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso."
+          toastAlerts.showError(
+            "Error de validación: El DNI, Teléfono, Mail o Usuario ya está en uso."
           );
           return;
         }
       }
 
-      alert("Ocurrió un error al guardar los datos del empleado");
+      toastAlerts.showError(
+        "Hubo un error al guardar el empleado, recargue la página e intente nuevamente"
+      );
     }
 
     console.log("Data:", employeeData);
@@ -216,7 +223,7 @@ export default function EmployeeForm({ employeeData, id }) {
         if (res.status != 201) throw new Error("Error al registrar rostro");
       } catch (e) {
         console.error(e);
-        alert("Ocurrió un error al registrar el rostro");
+        toastAlerts.showError("Ocurrió un error al registrar el rostro.");
         return;
       }
     } else {
@@ -242,11 +249,11 @@ export default function EmployeeForm({ employeeData, id }) {
         if (res.status != 200) throw new Error("Error al actualizar el rostro");
       } catch (e) {
         console.error(e);
-        alert("Ocurrió un error al actualizar el rostro");
+        toastAlerts.showError("Ocurrió un error al actualizar el rostro.");
         return;
       }
     }
-    alert("Cambios guardados exitosamente.");
+    toastAlerts.showSuccess("Cambios guardados con éxito");
   }
 
   function handleCancel() {
@@ -371,12 +378,14 @@ export default function EmployeeForm({ employeeData, id }) {
                     (c) => c.value === formData.job_id
                   );
                   if (cargo) {
-                    alert(`Detalles del cargo:\n${cargo.name}`);
+                    toastAlerts.showInfo(
+                      `Detalles del cargo:\n${cargo.description || "No hay descripción disponible"}`
+                    );
                   }
                 }}
                 resourceUrl={`/sigrh/jobs`}
                 onCrearNuevo={() => {
-                  alert("Abrir modal para crear nuevo cargo");
+                  toastAlerts.showInfo("Abrir modal para crear nuevo cargo");
                 }}
               />
               {errors.job_id && (
@@ -401,42 +410,42 @@ export default function EmployeeForm({ employeeData, id }) {
             </div>
           </div>
           <div className="flex flex-col w-full">
-              <label className="text-sm text-gray-500">Turno</label>
+            <label className="text-sm text-gray-500">Turno</label>
 
-              <RelationalInput
-                label={"Turno"}
-                options={shiftsParsed}
-                value={
-                  shiftsParsed.find((c) => c.value === formData.shift_id) || null
-                }
-                onChange={(selectedCargo) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    shift_id: selectedCargo ? selectedCargo.value : null,
-                    shift_description: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
-                    shift: shifts.find((shift) => {
-                      return shift.id == selectedCargo.value;
-                    }),
-                  }));
-                  setEditing(true);
-                }}
-                verDetalles={() => {
-                  const shift = shifts.find(
-                    (c) => c.value === formData.shift_id
+            <RelationalInput
+              label={"Turno"}
+              options={shiftsParsed}
+              value={
+                shiftsParsed.find((c) => c.value === formData.shift_id) || null
+              }
+              onChange={(selectedCargo) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  shift_id: selectedCargo ? selectedCargo.value : null,
+                  shift_description: selectedCargo ? selectedCargo.label : "", // Guardás el nombre también
+                  shift: shifts.find((shift) => {
+                    return shift.id == selectedCargo.value;
+                  }),
+                }));
+                setEditing(true);
+              }}
+              verDetalles={() => {
+                const shift = shifts.find((c) => c.value === formData.shift_id);
+                if (shift) {
+                  toastAlerts.showInfo(
+                    `Detalles del turno:\n${shift.description || "No hay descripción disponible"}`
                   );
-                  if (shift) {
-                    alert(`Detalles del shift:\n${shift.description}`);
-                  }
-                }}
-                resourceUrl={`/sigrh/shifts`}
-                onCrearNuevo={() => {
-                  alert("Abrir modal para crear nuevo shift");
-                }}
-              />
-              {errors.shift_id && (
-                <span className="text-red-500 text-sm">{errors.shift_id}</span>
-              )}
-            </div>
+                }
+              }}
+              resourceUrl={`/sigrh/shifts`}
+              onCrearNuevo={() => {
+                toastAlerts.showInfo("Abrir modal para crear nuevo turno");
+              }}
+            />
+            {errors.shift_id && (
+              <span className="text-red-500 text-sm">{errors.shift_id}</span>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-between gap-2">

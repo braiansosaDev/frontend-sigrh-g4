@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunitiesFilter({
   onFilter,
@@ -47,7 +48,9 @@ export default function JobOpportunitiesFilter({
 
       setCountries(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los países");
+      toastAlerts.showError(
+        "Hubo un error al obtener los países, recargue la página e intente nuevamente"
+      );
     }
   };
 

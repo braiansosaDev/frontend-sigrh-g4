@@ -6,6 +6,7 @@ import config from "@/config";
 import Cookies from "js-cookie";
 import { FaWandMagicSparkles } from "react-icons/fa6";
 import PostulationsTable from "./postulationsTable";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function PostulationsContainer({ jobOpportunityId }) {
   const [filter, setFilter] = useState("all");
@@ -34,6 +35,9 @@ export default function PostulationsContainer({ jobOpportunityId }) {
       if (res.status !== 200) throw new Error("Error al procesar los CVs");
     } catch (error) {
       console.error("Error al procesar los CVs:", error);
+      toastAlerts.showError(
+        "Hubo un error al evaluar los CVs, recargue la página e intente nuevamente"
+      );
     } finally {
       setLoading(false);
     }

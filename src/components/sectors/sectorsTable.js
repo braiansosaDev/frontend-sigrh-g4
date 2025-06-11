@@ -6,6 +6,7 @@ import config from "@/config";
 import { FaPlus } from "react-icons/fa";
 import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
 import SectorModal from "./sectorModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function SectorsTable() {
   const [sectors, setSectors] = useState([]);
@@ -20,7 +21,10 @@ export default function SectorsTable() {
       });
       setSectors(res.data);
     } catch {
-      alert("Error al obtener los sectores.");
+      console.error("Error al obtener los sectores");
+      toastAlerts.showError(
+        "Hubo un error al obtener los sectores, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -32,7 +36,10 @@ export default function SectorsTable() {
       });
       fetchSectors();
     } catch {
-      alert("Error al eliminar el sector");
+      console.error("Error al eliminar el sector");
+      toastAlerts.showError(
+        "Hubo un error al eliminar el sector, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -67,7 +74,10 @@ export default function SectorsTable() {
           <tbody>
             {sectors.length > 0 ? (
               sectors.map((sector) => (
-                <tr key={sector.id} className="border-b border-gray-100 hover:bg-gray-50 text-gray-700">
+                <tr
+                  key={sector.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 text-gray-700"
+                >
                   <td className="py-2 px-4 ">{sector.id}</td>
                   <td className="py-2 px-4 ">{sector.name}</td>
                   <td className="py-2 px-4  text-center flex gap-3 justify-center">

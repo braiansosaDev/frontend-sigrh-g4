@@ -8,6 +8,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import ProcessPayrollModal from "./payrollProcessModal";
 import PayrollEvaluationTable from "./payrollEvaluationTable";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 function getCurrentMonthRange() {
   const today = new Date();
@@ -51,9 +52,10 @@ export default function PayrollEvaluationContainer() {
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
 
-  const visibleEmployees = role?.id === 5
-    ? employees.filter(emp => emp?.job?.sector_id === user?.job?.sector_id)
-    : employees;
+  const visibleEmployees =
+    role?.id === 5
+      ? employees.filter((emp) => emp?.job?.sector_id === user?.job?.sector_id)
+      : employees;
 
   const fetchPayroll = async (empIds = []) => {
     try {
@@ -72,11 +74,15 @@ export default function PayrollEvaluationContainer() {
       if (res.status === 200) {
         setPayroll(res.data);
       } else {
-        alert("Error al obtener los datos de la planilla");
+        toastAlerts.showError(
+          "Hubo un error al obtener los datos de la planilla, recargue la página e intente nuevamente"
+        );
       }
     } catch (err) {
       console.error(err);
-      alert("Error al traer los datos de la planilla");
+      toastAlerts.showError(
+        "Hubo un error al obtener los datos de la planilla, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -100,7 +106,7 @@ export default function PayrollEvaluationContainer() {
   const handleSincronizar = () => {
     if (!search) {
       setSelectedEmployee(null);
-      const ids = visibleEmployees.map(e => e.id);
+      const ids = visibleEmployees.map((e) => e.id);
       fetchPayroll(ids);
       return;
     }
@@ -110,12 +116,16 @@ export default function PayrollEvaluationContainer() {
     );
 
     if (!matched) {
-      alert("Empleado no encontrado.");
+      toastAlerts.showWarning(
+        "No se encontró un empleado con ese nombre o ID."
+      );
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      alert("La fecha inicial no puede ser mayor a la final.");
+      toastAlerts.showWarning(
+        "La fecha de inicio no puede ser mayor que la de fin."
+      );
       return;
     }
 
@@ -131,7 +141,7 @@ export default function PayrollEvaluationContainer() {
       setSelectedEmployee(null);
       setSuggestions([]);
       setIsEmployeeFinded(false);
-      const ids = visibleEmployees.map(e => e.id);
+      const ids = visibleEmployees.map((e) => e.id);
       fetchPayroll(ids);
       return;
     }

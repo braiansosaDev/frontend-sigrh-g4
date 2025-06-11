@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import RejectModal from "./RejectModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 const SelectStatusChip = ({ value, postulation, onChange }) => {
   const [showModal, setShowModal] = useState(false);
@@ -43,6 +44,9 @@ const SelectStatusChip = ({ value, postulation, onChange }) => {
       onChange();
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
+      toastAlerts.showError(
+        "Hubo un error al actualizar el estado de la postulación, recargue la página e intente nuevamente"
+      );
     }
   };
 
