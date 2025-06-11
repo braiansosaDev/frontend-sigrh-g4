@@ -9,6 +9,7 @@ import { useCountries } from "@/hooks/useCountries";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import * as XLSX from "xlsx";
 import TagsModal from "./TagsModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function PostulationsTable({
   jobOpportunityId,
@@ -81,7 +82,10 @@ export default function PostulationsTable({
         throw new Error("Error al traer las postulaciones");
       setPostulations(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer las postulaciones");
+      console.error(e);
+      toastAlerts.showError(
+        "Hubo un error al obtener las postulaciones, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -131,6 +135,9 @@ export default function PostulationsTable({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error al descargar el CV:", error);
+      toastAlerts.showError(
+        "Hubo un error al descargar el CV, intente nuevamente"
+      );
     }
   };
 

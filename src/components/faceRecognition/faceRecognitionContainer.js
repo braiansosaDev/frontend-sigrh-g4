@@ -3,6 +3,7 @@ import FaceScan from "./faceScan";
 import Cookies from "js-cookie";
 import config from "@/config";
 import axios from "axios";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function FaceRecognitionContainer({ type }) {
   const [step, setStep] = useState("waiting"); // "waiting", "findingFace", "succesful", "error"
@@ -34,7 +35,9 @@ export default function FaceRecognitionContainer({ type }) {
       setEmpleado(res.data);
     } catch (err) {
       console.error(err);
-      alert("Ocurrió un error al traer los datos del empleado");
+      toastAlerts.showError(
+        "Hubo un error en la busqueda del empleado, refresque la página e intente nuevamente"
+      );
       return;
     }
   };

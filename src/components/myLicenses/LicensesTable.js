@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import { useUser } from "@/contexts/userContext";
 import LicenseRevision from "./LicenseRevision";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 function splitEveryNChars(str, n) {
   //Esto para que el texto quede mejor en la tabla, hago que las palabras largas se dividan en líneas de n caracteres
@@ -38,7 +39,9 @@ export default function LicensesTable({
       setAllLicenses(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al obtener las licencias, recargue la página e intente nuevamente."
+      );
     }
   };
 
@@ -51,7 +54,9 @@ export default function LicensesTable({
       setLicensesTypes(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente."
+      );
     }
   };
 
@@ -119,7 +124,9 @@ export default function LicensesTable({
       if (res.status !== 200) throw new Error("Error al modificar licencias");
     } catch (error) {
       console.error("Error al modificar licencias:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Error al modificar la licencia, intentelo nuevamente más tarde."
+      );
     }
 
     fetchLicensesTypes();
@@ -131,7 +138,7 @@ export default function LicensesTable({
   return (
     <div className="overflow-auto h-[70vh]">
       <table className="min-w-full table-fixed bg-white rounded-lg shadow text-xs">
-         <thead className="sticky top-0">
+        <thead className="sticky top-0">
           <tr className="px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold text-center">
             <th className="py-2 px-4 text-left border-b border-gray-300 font-semibold">
               Fecha Solicitud
@@ -166,7 +173,9 @@ export default function LicensesTable({
           {filteredLicenses.length > 0 ? (
             filteredLicenses.map((lic) => (
               <tr key={lic.id}>
-                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.request_date}</td>
+                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">
+                  {lic.request_date}
+                </td>
                 <td className="py-2 px-4 border-b border-gray-300">
                   {adaptText(
                     lic.leave_type_id
@@ -233,8 +242,12 @@ export default function LicensesTable({
                     return count;
                   })()}
                 </td>
-                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.start_date}</td>
-                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">{lic.end_date}</td>
+                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">
+                  {lic.start_date}
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300 whitespace-nowrap">
+                  {lic.end_date}
+                </td>
                 <td className="py-2 px-4 border-b border-gray-300">
                   {adaptText(lic.document_status)}
                 </td>

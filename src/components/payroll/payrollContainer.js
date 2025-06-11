@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import ProcessPayrollModal from "./payrollProcessModal";
 import { FiAlertTriangle } from "react-icons/fi";
 import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 function stringSimilarity(a, b) {
   if (a.toLowerCase() === b.toLowerCase()) return 1;
@@ -78,11 +79,15 @@ export default function PayrollContainer() {
         setPayroll(res.data);
         setHasAlarmRows(hasAlarms(res.data)); // 👈 actualizamos estado de alarma
       } else {
-        alert("Error al obtener los datos de la planilla");
+        toastAlerts.showError(
+          "Error al obtener los datos de la planilla, recargue la página e intente nuevamente"
+        );
       }
     } catch (err) {
       console.error(err);
-      alert("Error al traer los datos de la planilla");
+      toastAlerts.showError(
+        "Hubo un error al obtener los datos de la planilla, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -131,16 +136,22 @@ export default function PayrollContainer() {
         emp.first_name + " " + emp.last_name + " #" + emp.user_id === search
     );
     if (!employeeFinded) {
-      alert("Empleado no encontrado, verifique el nombre y user_id.");
+      toastAlerts.showWarning(
+        "Empleado no encontrado. Por favor, verifique el nombre y el ID."
+      );
       return;
     }
 
     if (!startDate || !endDate) {
-      alert("Seleccione un rango de fechas.");
+      toastAlerts.showWarning(
+        "Por favor, complete las fechas de inicio y fin."
+      );
       return;
     }
     if (new Date(startDate) > new Date(endDate)) {
-      alert("La fecha inicial no puede ser mayor a la final.");
+      toastAlerts.showWarning(
+        "La fecha de inicio no puede ser posterior a la fecha de fin."
+      );
       return;
     }
 
@@ -149,7 +160,9 @@ export default function PayrollContainer() {
     });
 
     if (endDate > today) {
-      alert("La fecha final no puede ser futura.");
+      toastAlerts.showWarning(
+        "La fecha de fin no puede ser posterior a la fecha actual."
+      );
       return;
     }
 
@@ -166,22 +179,25 @@ export default function PayrollContainer() {
 
   const handleExportarExcel = () => {
     if (payroll.length === 0) {
-      alert("No hay datos para exportar.");
+      toastAlerts.showWarning("No hay datos para exportar.");
       return;
     }
 
     if (hasAlarmRows) {
-      alert(
-        "No se puede exportar calculo de nomina hasta resolver las acciones requeridas."
+      toastAlerts.showWarning(
+        "Hay registros con alarmas pendientes. Por favor, resuélvelos antes de exportar."
       );
       return;
     }
 
     // 1. Generar hoja de planilla normal
     const excelPayroll = payroll.map((row) => ({
-      Día: new Date(row.employee_hours.work_date+"T00:00").toLocaleDateString("es-AR", {
-        weekday: "long",
-      }),
+      Día: new Date(row.employee_hours.work_date + "T00:00").toLocaleDateString(
+        "es-AR",
+        {
+          weekday: "long",
+        }
+      ),
       Fecha: row.employee_hours.work_date,
       Novedad: row.employee_hours.register_type,
       Entrada: row.employee_hours.first_check_in,
@@ -189,7 +205,10 @@ export default function PayrollContainer() {
       "Cant. fichadas": row.employee_hours.check_count,
       Turno: row.shift?.description || "",
       Concepto: row.concept?.description || "",
-      Horas: row.employee_hours.sumary_time || row.employee_hours.extra_hours || "00:00:00",
+      Horas:
+        row.employee_hours.sumary_time ||
+        row.employee_hours.extra_hours ||
+        "00:00:00",
       Notas: row.employee_hours.notes,
       Estado: row.employee_hours.payroll_status,
     }));

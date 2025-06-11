@@ -3,12 +3,16 @@ import { useEmployees } from "@/hooks/useEmployees";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function LicenseRevision({ open, onClose, license, onSave }) {
   const [file, setFile] = useState(null);
   const fileInputRef = useRef();
   const [licensesTypes, setLicensesTypes] = useState([]);
   const token = Cookies.get("token");
+  const [openFormAlert, setOpenFormAlert] = useState(false);
+  const [formAlertMessage, setFormAlertMessage] = useState("");
 
   useEffect(() => {
     const fetchLicensesTypes = async () => {
@@ -20,7 +24,9 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
         setLicensesTypes(res.data);
       } catch (error) {
         console.error("Error al traer licenses:", error);
-        alert("No se pudieron obtener las licencias");
+        toastAlerts.showError(
+          "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente"
+        );
       }
     };
     fetchLicensesTypes();
@@ -160,7 +166,8 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
                     const file = e.target.files[0];
                     if (file) {
                       if (file.type !== "application/pdf") {
-                        alert("Solo se permiten archivos PDF.");
+                        setFormAlertMessage("Solo se permiten archivos PDF.");
+                        setOpenFormAlert(true);
                         return;
                       }
                       setFile(file);
@@ -196,6 +203,11 @@ export default function LicenseRevision({ open, onClose, license, onSave }) {
               </button>
             )}
           </div>
+          <FormAlert
+            open={openFormAlert}
+            onClose={() => setOpenFormAlert(false)}
+            message={formAlertMessage}
+          />
         </form>
       </div>
     </div>

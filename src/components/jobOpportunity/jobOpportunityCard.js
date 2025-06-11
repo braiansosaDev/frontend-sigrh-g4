@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
-import { useRouter } from "next/navigation"; // Cambiar a `next/navigation` para usar el router en el app directory
+import { useRouter } from "next/navigation";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunityCard({ jobOpportunity, onModify }) {
   const [countries, setCountries] = useState([]);
@@ -20,7 +21,10 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
 
       setCountries(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los países");
+      toastAlerts.showError(
+        "Hubo un error al obtener los países, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener países:", e);
     }
   };
 
@@ -34,7 +38,10 @@ export default function JobOpportunityCard({ jobOpportunity, onModify }) {
 
       setStates(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los estados");
+      toastAlerts.showError(
+        "Hubo un error al obtener los estados, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener estados:", e);
     }
   };
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 const toCamelCase = (text) => {
   let result = "";
@@ -37,7 +38,10 @@ export default function OfferCard({ jobOpportunity, onApply }) {
 
       setCountries(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los países");
+      toastAlerts.showError(
+        "Ocurrió un error al traer los países, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener países:", e);
     }
   };
 
@@ -51,7 +55,10 @@ export default function OfferCard({ jobOpportunity, onApply }) {
 
       setStates(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los estados");
+      toastAlerts.showError(
+        "Ocurrió un error al traer los estados, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener estados:", e);
     }
   };
 
@@ -69,8 +76,8 @@ export default function OfferCard({ jobOpportunity, onApply }) {
         {showFullDescription
           ? jobOpportunity.description
           : jobOpportunity.description.length > 250
-          ? jobOpportunity.description.substring(0, 250) + "..."
-          : jobOpportunity.description}
+            ? jobOpportunity.description.substring(0, 250) + "..."
+            : jobOpportunity.description}
         {jobOpportunity.description.length > 250 && (
           <button
             onClick={toggleDescription}

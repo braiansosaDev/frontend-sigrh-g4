@@ -8,6 +8,7 @@ import { useEmployees } from "@/hooks/useEmployees";
 import LicenseModal from "./LicenseModal";
 import { useUser } from "@/contexts/userContext";
 import { FiInfo } from "react-icons/fi";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function LicensesTable({ filters = {} }) {
   const token = Cookies.get("token");
@@ -49,7 +50,9 @@ export default function LicensesTable({ filters = {} }) {
       setLicenses(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al obtener las licencias, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -62,7 +65,9 @@ export default function LicensesTable({ filters = {} }) {
       setLicensesTypes(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -121,7 +126,9 @@ export default function LicensesTable({ filters = {} }) {
       if (res.status !== 200) throw new Error("Error al modificar licencias");
     } catch (error) {
       console.error("Error al modificar licencias:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al modificar la licencia, recargue la página e intente nuevamente"
+      );
     }
 
     fetchLicenses();

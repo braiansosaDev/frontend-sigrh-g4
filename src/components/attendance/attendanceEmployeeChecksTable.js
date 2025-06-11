@@ -6,6 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import AttendanceEmployeeChecksFilter from "./attendanceEmployeeChecksFilter";
 import AttendanceChecksEventsDetailsModal from "./attendanceChecksEventsDetailsModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function AttendanceEmployeeChecksTable() {
   const [resumeData, setResumeData] = useState([]);
@@ -35,7 +36,9 @@ export default function AttendanceEmployeeChecksTable() {
       if (res.status !== 200) throw new Error("Error al traer resumen");
       setResumeData(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer el resumen de asistencia");
+      toastAlerts.showError(
+        "Hubo un error al obtener el resumen de asistencia, recargue la página e intente nuevamente"
+      );
     }
   };
 

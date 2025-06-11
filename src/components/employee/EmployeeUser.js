@@ -9,6 +9,7 @@ import { useRoles } from "@/hooks/useRoles";
 import HasPermission from "../HasPermission";
 import { PermissionIds } from "@/enums/permissions";
 import EmployeeChangePasswordModal from "./EmployeeChangePasswordModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
@@ -71,10 +72,12 @@ export default function EmployeeUser({ employeeData, id }) {
       }
 
       setEditing(false);
-      alert("Cambios guardados exitosamente.");
+      toastAlerts.showSuccess("Datos del empleado guardados correctamente");
     } catch (error) {
       console.error(error);
-      alert("Ocurrió un error al guardar los datos del empleado");
+      toastAlerts.showError(
+        "Hubo un error al guardar los datos del empleado, recargue la página e intente nuevamente"
+      );
     }
   }
 
@@ -130,7 +133,9 @@ export default function EmployeeUser({ employeeData, id }) {
                   setEditing(true);
                 }}
                 resourceUrl="/sigrh/roles"
-                onCrearNuevo={() => alert("Abrir modal para crear nuevo rol")}
+                onCrearNuevo={() =>
+                  toastAlerts.showInfo("Abrir modal para crear nuevo rol")
+                }
               />
             </div>
           </HasPermission>

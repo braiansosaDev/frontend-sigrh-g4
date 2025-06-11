@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function FiltersModal({
   open,
@@ -36,7 +37,12 @@ export default function FiltersModal({
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setLicensesTypes(res.data))
-        .catch(() => setLicensesTypes([]));
+        .catch(() => {
+          setLicensesTypes([]);
+          toastAlerts.showError(
+            "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente"
+          );
+        });
     }
   }, [open, token]);
 

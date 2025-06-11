@@ -4,6 +4,7 @@ import config from "@/config";
 import Select from "react-select";
 import { useJob } from "@/hooks/useJob";
 import { MdOutlineModeEdit, MdDeleteOutline } from "react-icons/md";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeWorkHistory({ employeeData }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -75,7 +76,9 @@ export default function EmployeeWorkHistory({ employeeData }) {
       }
       setIsOpenModal(false);
     } catch (error) {
-      alert("Error al guardar la historia laboral.");
+      toastAlerts.showError(
+        "Hubo un error al guardar la historia laboral. Por favor, inténtalo de nuevo."
+      );
       console.error(error);
     }
   };
@@ -93,7 +96,9 @@ export default function EmployeeWorkHistory({ employeeData }) {
         prev.filter((item) => item.id !== historyId)
       );
     } catch (error) {
-      alert("Error al eliminar la historia laboral.");
+      toastAlerts.showError(
+        "Hubo un error al eliminar la historia laboral. Por favor, inténtalo de nuevo."
+      );
       console.error(error);
     }
   };

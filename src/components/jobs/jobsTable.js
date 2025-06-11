@@ -6,6 +6,7 @@ import config from "@/config";
 import { FaPlus } from "react-icons/fa";
 import Modal from "./jobModal"; // nuevo componente modal
 import { MdDeleteOutline, MdOutlineModeEdit } from "react-icons/md";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobsTable() {
   const [jobs, setJobs] = useState([]);
@@ -20,7 +21,10 @@ export default function JobsTable() {
       });
       setJobs(res.data);
     } catch (error) {
-      alert("Error al obtener los puestos de trabajo.");
+      toastAlerts.showError(
+        "Hubo un error al obtener los puestos de trabajo, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener puestos de trabajo:", error);
     }
   };
 
@@ -32,7 +36,10 @@ export default function JobsTable() {
       });
       fetchJobs();
     } catch (err) {
-      alert("Error al eliminar el puesto");
+      toastAlerts.showError(
+        "Hubo un error al eliminar el puesto, recargue la página e intente nuevamente"
+      );
+      console.error("Error al eliminar puesto:", err);
     }
   };
 
@@ -60,15 +67,9 @@ export default function JobsTable() {
           <thead className="bg-gray-100 sticky top-0">
             <tr className="text-emerald-700 bg-emerald-50 font-semibold">
               <th className="py-2 px-4 text-left">ID</th>
-              <th className="py-2 px-4 text-left">
-                Nombre
-              </th>
-              <th className="py-2 px-4 text-left">
-                Sector
-              </th>
-              <th className="py-2 px-4 text-center">
-                Acciones
-              </th>
+              <th className="py-2 px-4 text-left">Nombre</th>
+              <th className="py-2 px-4 text-left">Sector</th>
+              <th className="py-2 px-4 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>

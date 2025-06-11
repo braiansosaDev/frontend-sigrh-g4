@@ -4,6 +4,7 @@ import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
 import { MdOutlineModeEdit, MdDeleteOutline } from "react-icons/md";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function AttendanceChecksEventsDetailsModal({
   open,
@@ -33,7 +34,9 @@ export default function AttendanceChecksEventsDetailsModal({
       });
       setFichadas(res.data);
     } catch {
-      alert("Error al traer las fichadas");
+      toastAlerts.showError(
+        "Hubo un error al obtener las fichadas, recargue la página e intente nuevamente"
+      );
     } finally {
       setLoading(false);
     }
@@ -74,7 +77,9 @@ export default function AttendanceChecksEventsDetailsModal({
       fetchFichadas();
       onFichadasChanged();
     } catch {
-      alert("Error al eliminar fichada");
+      toastAlerts.showError(
+        "Hubo un error al eliminar la fichada, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -101,7 +106,9 @@ export default function AttendanceChecksEventsDetailsModal({
       fetchFichadas();
       onFichadasChanged();
     } catch {
-      alert("Error al actualizar fichada");
+      toastAlerts.showError(
+        "Hubo un error al actualizar la fichada, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -121,7 +128,9 @@ export default function AttendanceChecksEventsDetailsModal({
       fetchFichadas();
       onFichadasChanged();
     } catch {
-      alert("Error al crear fichada");
+      toastAlerts.showError(
+        "Hubo un error al crear la fichada, recargue la página e intente nuevamente"
+      );
     }
   };
 

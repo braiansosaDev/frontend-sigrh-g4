@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import HasPermission from "../HasPermission";
 import { PermissionIds } from "@/enums/permissions";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function HomeContainer() {
   const { user } = useUser();
@@ -46,6 +47,9 @@ export default function HomeContainer() {
         setConvocatoriasAbiertas(convocatoriasRes.data.active_count);
       } catch (error) {
         console.error("Error al obtener datos del dashboard", error);
+        toastAlerts.showError(
+          "Hubo un error al obtener los datos del dashboard, recargue la página e intente nuevamente"
+        );
       }
     };
 

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import { MdDeleteOutline, MdOutlineFileDownload } from "react-icons/md";
+import Cookies from "js-cookie";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeDocuments({ employeeData }) {
   const [documents, setDocuments] = useState([]);
@@ -64,7 +66,9 @@ export default function EmployeeDocuments({ employeeData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.file) {
-      alert("Debes seleccionar un archivo");
+      toastAlerts.showError(
+        "Debe seleccionar un archivo para agregar el documento."
+      );
       return;
     }
 
