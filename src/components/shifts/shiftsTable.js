@@ -32,7 +32,7 @@ export default function ShiftsTable() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Turnos</h1>
+      <h1 className="text-2xl font-semibold mb-4">⏰ Turnos</h1>
       <div className="overflow-x-auto rounded-lg max-h-[70vh] overflow-y-auto">
         <table className="min-w-full bg-white text-xs">
           <thead className="bg-emerald-50  sticky top-0 ">
