@@ -85,7 +85,11 @@ export default function EmployeeContainer({ id }) {
         </div>
 
         {activeTab === 0 && (
-          <EmployeeForm employeeData={employeeData} id={id} />
+          <EmployeeForm
+            employeeData={employeeData}
+            onSave={() => fetchEmployeeData()}
+            id={id}
+          />
         )}
 
         {/* Historial Laboral */}
