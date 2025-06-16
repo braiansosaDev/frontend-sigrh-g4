@@ -89,7 +89,11 @@ export default function FaceScan({ onFoundFace, onError, type }) {
           { embedding: embedding },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        onFoundFace(res.data.employee_id);
+        if (res.data.success) {
+          onFoundFace(res.data.employee_id);
+        } else {
+          onError(new Error("No se encontró un rostro coincidente"));
+        }
       } catch (e) {
         onError(e);
       }
@@ -100,7 +104,11 @@ export default function FaceScan({ onFoundFace, onError, type }) {
           { embedding: embedding },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        onFoundFace(res.data.employee_id);
+        if (res.data.success) {
+          onFoundFace(res.data.employee_id);
+        } else {
+          onError(new Error("No se encontró un rostro coincidente"));
+        }
       } catch (e) {
         onError(e);
       }
