@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="relative w-full h-screen">
-      {/* Imagen de fondo */}
+      {/* Imagen de fondo a*/}
       <Image
         src="/imagen-oficina.png"
         alt="Fondo Imagen Oficina"
