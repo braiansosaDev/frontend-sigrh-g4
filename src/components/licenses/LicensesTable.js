@@ -38,7 +38,7 @@ export default function LicensesTable({ filters = {} }) {
 
       // Si el usuario es supervisor, filtrar por su sector_id
       if (role?.id == 5 && user?.job?.sector_id) {
-        params.sector_ids = user.job.sector_id;
+        params.sector_id = user.job.sector_id;
       }
 
       const res = await axios.get(`${config.API_URL}/leaves`, {
