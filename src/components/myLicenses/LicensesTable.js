@@ -30,7 +30,7 @@ export default function LicensesTable({
   const fetchUserLicenses = async () => {
     try {
       const res = await axios.get(
-        `${config.API_URL}/leaves/?employee_id=${user.id}`,
+        `${config.API_URL}/leaves/?employee_ids=${user.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
