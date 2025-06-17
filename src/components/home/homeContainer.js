@@ -60,7 +60,7 @@ export default function HomeContainer() {
     <div className="bg-white w-full h-full p-6">
       {/* Bienvenida */}
       <h1 className="text-2xl font-semibold text-gray-800 mb-2">
-        ¡Bienvenido{user?.first_name ? `, ${user.first_name}` : ""}!
+        🏠 ¡Bienvenido{user?.first_name ? `, ${user.first_name}` : ""}!
       </h1>
       <p className="text-sm text-gray-600 mb-6">Hoy es {fechaHoy}</p>
 

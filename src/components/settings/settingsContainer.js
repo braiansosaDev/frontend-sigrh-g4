@@ -158,7 +158,7 @@ export default function SettingsContainer() {
 
   return (
     <div className="p-6 bg-white rounded-xl space-y-4">
-      <h2 className="text-2xl font-semibold">Configuración del sistema</h2>
+      <h2 className="text-2xl font-semibold">⚙️ Configuración del sistema</h2>
 
       <label className="block text-gray-600">
         Nombre de la empresa

@@ -122,6 +122,7 @@ export default function LicensesTable({
         }
       );
       if (res.status !== 200) throw new Error("Error al modificar licencias");
+      toastAlerts.showSuccess("Licencia modificada correctamente.");
     } catch (error) {
       console.error("Error al modificar licencias:", error);
       toastAlerts.showError(

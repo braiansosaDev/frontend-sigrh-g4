@@ -76,7 +76,7 @@ export default function EmployeesTable() {
     <div className="p-6">
       <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
         <div className="flex gap-2 items-center">
-          <h1 className="text-2xl font-semibold">Empleados</h1>
+          <h1 className="text-2xl font-semibold">👥 Empleados</h1>
           <button
             onClick={() => router.push("employees/new")}
             className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"

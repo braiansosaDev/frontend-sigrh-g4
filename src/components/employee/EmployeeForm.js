@@ -25,7 +25,7 @@ import Cookies from "js-cookie";
 import { useShifts } from "@/hooks/useShifts";
 import { toastAlerts } from "@/utils/toastAlerts";
 
-export default function EmployeeForm({ employeeData, id }) {
+export default function EmployeeForm({ employeeData, id, onSave }) {
   const [formData, setFormData] = useState(defaultEmployeeDataForm);
   const [editing, setEditing] = useState(false);
   const [errors, setErrors] = useState({});
@@ -136,7 +136,11 @@ export default function EmployeeForm({ employeeData, id }) {
         }
       );
 
-      if (res.status === 200 && res.data.employee_id !== formData.id) {
+      if (
+        res.status === 200 &&
+        res.data.employee_id !== formData.id &&
+        res.data.success
+      ) {
         toastAlerts.showError(
           "Ya existe un rostro similar registrado para otro empleado."
         );
@@ -192,67 +196,71 @@ export default function EmployeeForm({ employeeData, id }) {
 
     console.log("Data:", employeeData);
 
-    if (!employeeData || !employeeData.photo) {
-      try {
-        let payload = {};
-        if (new_id) {
-          payload = {
-            employee_id: new_id,
-            embedding: facialRegister,
-          };
-        } else {
-          payload = {
+    if (formData.photo) {
+      if (!employeeData || !employeeData.photo) {
+        try {
+          let payload = {};
+          if (new_id) {
+            payload = {
+              employee_id: new_id,
+              embedding: facialRegister,
+            };
+          } else {
+            payload = {
+              employee_id: id,
+              embedding: facialRegister,
+            };
+          }
+
+          console.log("Registrando:", JSON.stringify(payload));
+
+          const res = await axios.post(
+            `${config.API_URL}/face_recognition/register`,
+            JSON.stringify(payload),
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (res.status != 201) throw new Error("Error al registrar rostro");
+        } catch (e) {
+          console.error(e);
+          toastAlerts.showError("Ocurrió un error al registrar el rostro.");
+          return;
+        }
+      } else {
+        try {
+          const payload = {
             employee_id: id,
             embedding: facialRegister,
           };
+
+          console.log("Modificando:", JSON.stringify(payload));
+
+          const res = await axios.patch(
+            `${config.API_URL}/face_recognition/update`,
+            JSON.stringify(payload),
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (res.status != 200)
+            throw new Error("Error al actualizar el rostro");
+        } catch (e) {
+          console.error(e);
+          toastAlerts.showError("Ocurrió un error al actualizar el rostro.");
+          return;
         }
-
-        console.log("Registrando:", JSON.stringify(payload));
-
-        const res = await axios.post(
-          `${config.API_URL}/face_recognition/register`,
-          JSON.stringify(payload),
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (res.status != 201) throw new Error("Error al registrar rostro");
-      } catch (e) {
-        console.error(e);
-        toastAlerts.showError("Ocurrió un error al registrar el rostro.");
-        return;
-      }
-    } else {
-      try {
-        const payload = {
-          employee_id: id,
-          embedding: facialRegister,
-        };
-
-        console.log("Modificando:", JSON.stringify(payload));
-
-        const res = await axios.patch(
-          `${config.API_URL}/face_recognition/update`,
-          JSON.stringify(payload),
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (res.status != 200) throw new Error("Error al actualizar el rostro");
-      } catch (e) {
-        console.error(e);
-        toastAlerts.showError("Ocurrió un error al actualizar el rostro.");
-        return;
       }
     }
+    onSave();
     toastAlerts.showSuccess("Cambios guardados con éxito");
   }
 
