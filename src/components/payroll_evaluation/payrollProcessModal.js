@@ -4,6 +4,8 @@ import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
 import { useEmployees } from "@/hooks/useEmployees";
+import { toastAlerts } from "@/utils/toastAlerts";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function ProcessPayrollModal({
   open,
@@ -17,6 +19,8 @@ export default function ProcessPayrollModal({
   const [endDate, setEndDate] = useState(defaultEndDate || "");
   const token = Cookies.get("token");
   const { employees } = useEmployees();
+  const [openFormAlert, setOpenFormAlert] = useState(false);
+  const [formAlertMessage, setFormAlertMessage] = useState("");
 
   useEffect(() => {
     setEmployeeId(defaultEmployeeId || "");
@@ -26,25 +30,29 @@ export default function ProcessPayrollModal({
 
   const handleProcess = async () => {
     if (!employeeId || !startDate || !endDate) {
-      alert("Complete todos los campos.");
+      setFormAlertMessage("Complete todos los campos.");
+      setOpenFormAlert(true);
       return;
     }
 
     if (!startDate || !endDate) {
-      alert("Seleccione un rango de fechas.");
+      setFormAlertMessage("Seleccione un rango de fechas.");
+      setOpenFormAlert(true);
       return;
     }
     if (new Date(startDate) > new Date(endDate)) {
-      alert("La fecha inicial no puede ser mayor a la final.");
+      setFormAlertMessage("La fecha inicial no puede ser mayor a la final.");
+      setOpenFormAlert(true);
       return;
     }
-    
+
     const today = new Date().toLocaleDateString("en-CA", {
       timeZone: "America/Argentina/Buenos_Aires",
     });
 
     if (endDate > today) {
-      alert("La fecha final no puede ser futura.");
+      setFormAlertMessage("La fecha final no puede ser futura.");
+      setOpenFormAlert(true);
       return;
     }
 
@@ -63,11 +71,13 @@ export default function ProcessPayrollModal({
           },
         }
       );
-      alert("✅ Procesamiento finalizado");
+      toastAlerts.showSuccess("Horas procesadas correctamente");
       onClose();
     } catch (error) {
       console.error(error);
-      alert("❌ Error al procesar horas.");
+      toastAlerts.showError(
+        "Hubo un error al procesar las horas, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -122,6 +132,12 @@ export default function ProcessPayrollModal({
             Procesar
           </button>
         </div>
+
+        <FormAlert
+          open={openFormAlert}
+          onClose={() => setOpenFormAlert(false)}
+          message={formAlertMessage}
+        />
       </div>
     </div>
   );

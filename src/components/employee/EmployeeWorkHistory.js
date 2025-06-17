@@ -4,6 +4,7 @@ import config from "@/config";
 import Select from "react-select";
 import { useJob } from "@/hooks/useJob";
 import { MdOutlineModeEdit, MdDeleteOutline } from "react-icons/md";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeWorkHistory({ employeeData }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -75,7 +76,9 @@ export default function EmployeeWorkHistory({ employeeData }) {
       }
       setIsOpenModal(false);
     } catch (error) {
-      alert("Error al guardar la historia laboral.");
+      toastAlerts.showError(
+        "Hubo un error al guardar la historia laboral. Por favor, inténtalo de nuevo."
+      );
       console.error(error);
     }
   };
@@ -93,7 +96,9 @@ export default function EmployeeWorkHistory({ employeeData }) {
         prev.filter((item) => item.id !== historyId)
       );
     } catch (error) {
-      alert("Error al eliminar la historia laboral.");
+      toastAlerts.showError(
+        "Hubo un error al eliminar la historia laboral. Por favor, inténtalo de nuevo."
+      );
       console.error(error);
     }
   };
@@ -108,24 +113,24 @@ export default function EmployeeWorkHistory({ employeeData }) {
       </button>
 
       <table className="min-w-full table-auto mt-4">
-        <thead className="bg-gray-100">
+        <thead className="bg-emerald-50">
           <tr>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Título de Trabajo
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Compañía
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Fecha de Inicio
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Fecha de Fin
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Notas
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Acciones
             </th>
           </tr>
@@ -202,7 +207,7 @@ export default function EmployeeWorkHistory({ employeeData }) {
                 placeholder="Compañía"
                 value={formData.company_name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-emerald-300 p-2 rounded"
                 required
               />
               <input
@@ -211,7 +216,7 @@ export default function EmployeeWorkHistory({ employeeData }) {
                 placeholder="Fecha de Inicio"
                 value={formData.from_date}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-emerald-300 p-2 rounded"
                 required
               />
               <input
@@ -220,20 +225,20 @@ export default function EmployeeWorkHistory({ employeeData }) {
                 placeholder="Fecha de Fin"
                 value={formData.to_date}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-emerald-300 p-2 rounded"
               />
               <textarea
                 name="notes"
                 placeholder="Notas"
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-emerald-300 p-2 rounded"
               ></textarea>
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={() => setIsOpenModal(false)}
-                  className="px-4 py-2 bg-gray-300 rounded-full"
+                  className="px-4 py-2 bg-emerald-300 rounded-full"
                 >
                   Cancelar
                 </button>

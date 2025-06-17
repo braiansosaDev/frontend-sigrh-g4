@@ -15,12 +15,14 @@ import {
   FaClock,
   FaFileAlt,
   FaFileContract,
+  FaChartBar,
+  FaChartPie,
 } from "react-icons/fa";
 import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
 import { useUser } from "@/contexts/userContext";
 import { PermissionIds } from "@/enums/permissions";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck, FaPerson } from "react-icons/fa6";
 
 const menuItems = [
   {
@@ -91,7 +93,7 @@ const menuItems = [
         path: "/sigrh/payroll_evaluation",
         requiredPermissions: [PermissionIds.GESTION_NOMINA_APROBACIONES],
       },
-    ]
+    ],
   },
   {
     label: "Licencias",
@@ -114,10 +116,42 @@ const menuItems = [
     ],
   },
   {
+    label: "Reportes",
+    icon: <FaChartBar className="text-2xl" />,
+    path: "/sigrh/reports",
+    submenus: [
+      {
+        label: "Mis reportes",
+        icon: <FaChartPie className="text-2xl" />,
+        path: "/sigrh/reports/my_reports",
+      },
+      {
+        label: "Reportes de empleados",
+        icon: <FaPerson className="text-2xl" />,
+        path: "/sigrh/reports/employees",
+      },
+      {
+        label: "Reportes de asistencia",
+        icon: <FaClock className="text-2xl" />,
+        path: "/sigrh/reports/attendance",
+      },
+      {
+        label: "Reportes de licencias",
+        icon: <FaFileAlt className="text-2xl" />,
+        path: "/sigrh/reports/licenses",
+      },
+      {
+        label: "Reportes de convocatorias",
+        icon: <FaBriefcase className="text-2xl" />,
+        path: "/sigrh/reports/job_opportunities",
+      },
+    ],
+  },
+  {
     label: "Ajustes",
     icon: <MdSettings className="text-2xl" />,
     path: "/sigrh/settings",
-    requiredPermissions: [PermissionIds.PERSONALIZACION_SISTEMA]
+    requiredPermissions: [PermissionIds.PERSONALIZACION_SISTEMA],
   },
 ];
 export default function Sidebar({ isOpen, onClose }) {
@@ -206,7 +240,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <li key={subIdx}>
                               <Link
                                 href={sub.path}
-                                className={`flex items-center space-x-2 p-2 rounded-lg transition w-full ${
+                                className={`flex items-center mt-1 space-x-2 p-2 rounded-lg transition w-full ${
                                   isActive(sub.path)
                                     ? "bg-emerald-500 text-white"
                                     : "hover:bg-emerald-500 hover:text-white"

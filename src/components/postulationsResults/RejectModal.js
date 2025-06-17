@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 const REJECT_REASONS = [
   // Motivos de la empresa
@@ -52,6 +53,9 @@ export default function RejectModal({
       onChange();
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
+      toastAlerts.showError(
+        "Hubo un error al actualizar el estado de la postulación, recargue la página e intente nuevamente"
+      );
     }
   };
 

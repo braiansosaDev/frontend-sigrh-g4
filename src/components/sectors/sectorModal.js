@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import Cookies from "js-cookie";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function SectorModal({ sector, onClose, onSuccess }) {
   const [name, setName] = useState("");
@@ -33,7 +34,13 @@ export default function SectorModal({ sector, onClose, onSuccess }) {
       }
       onSuccess();
     } catch {
-      alert("Error al guardar el sector");
+      toastAlerts.showError(
+        `Hubo un error al ${isEdit ? "editar" : "crear"} el sector, recargue la página e intente nuevamente`
+      );
+      console.error(
+        `Error al ${isEdit ? "editar" : "crear"} el sector:`,
+        error
+      );
     }
   };
 

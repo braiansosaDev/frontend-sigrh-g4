@@ -34,7 +34,6 @@ export default function FaceRecognitionContainer({ type }) {
       setEmpleado(res.data);
     } catch (err) {
       console.error(err);
-      alert("Ocurrió un error al traer los datos del empleado");
       return;
     }
   };

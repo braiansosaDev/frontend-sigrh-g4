@@ -7,6 +7,7 @@ import config from "@/config";
 import axios from "axios";
 import JobOpportunityFormData from "./jobOpportunityFormData";
 import PostulationsContainer from "../postulationsResults/postulationsContainer";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunityContainer({ jobOpportunityId }) {
   const [opportunityData, setOpportunityData] = useState({});
@@ -30,7 +31,9 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
       setOpportunityData(res.data);
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al traer los datos del empleado");
+      toastAlerts.showError(
+        "Hubo un error al obtener la convocatoria, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -88,7 +91,9 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
       setOpportunityData(res.data);
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al modificar la convocatoria");
+      toastAlerts.showError(
+        "Hubo un error al guardar la convocatoria, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -112,8 +117,8 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
               key={index}
               onClick={() => {
                 if (jobOpportunityId == "new" && index != 0) {
-                  alert(
-                    "Debe cargar y guardar datos personales antes de poder cargar datos secundarios."
+                  toastAlerts.showError(
+                    "Debe completar los detalles de la convocatoria antes de ver las postulaciones"
                   );
                   return;
                 }

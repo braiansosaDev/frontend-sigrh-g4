@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import config from "@/config";
 import RoleModal from "./rolesModal";
 import { MdVisibility } from "react-icons/md";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function RolesTable() {
   const [roles, setRoles] = useState([]);
@@ -18,7 +19,10 @@ export default function RolesTable() {
       });
       setRoles(res.data);
     } catch {
-      alert("Error al obtener los roles.");
+      console.error("Error al obtener los roles");
+      toastAlerts.showError(
+        "Hubo un error al obtener los roles, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -28,7 +32,7 @@ export default function RolesTable() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Roles</h1>
+      <h1 className="text-2xl font-semibold mb-4">🛡️ Roles</h1>
       <div className="overflow-x-auto rounded-lg max-h-[70vh] overflow-y-auto">
         <table className="min-w-full bg-white text-xs">
           <thead className="bg-emerald-50 sticky top-0">

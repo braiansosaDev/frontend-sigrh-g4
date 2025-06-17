@@ -6,6 +6,7 @@ import axios from "axios";
 import { useUser } from "@/contexts/userContext";
 import { canAccess } from "@/utils/permissions";
 import { PermissionIds } from "@/enums/permissions";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunityFormData({
   onClose,
@@ -48,7 +49,10 @@ export default function JobOpportunityFormData({
 
       setCountries(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer los países");
+      toastAlerts.showError(
+        "Hubo un error al obtener los países, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener países:", e);
     }
   };
 
@@ -64,7 +68,10 @@ export default function JobOpportunityFormData({
       setStates(groupedStates);
       setStatesAreLoaded(true);
     } catch (e) {
-      alert("Ocurrió un error al traer los estados");
+      toastAlerts.showError(
+        "Hubo un error al obtener los estados, recargue la página e intente nuevamente"
+      );
+      console.error("Error al obtener estados:", e);
     }
   };
 
@@ -161,13 +168,18 @@ export default function JobOpportunityFormData({
     try {
       await onSave(formData, jobOpportunity.id);
 
+      toastAlerts.showSuccess("Convocatoria guardada exitosamente");
+
       setTimeout(() => {
         setIsSaving(false);
         onClose();
       }, 2000);
     } catch (error) {
       console.error("Error al guardar la convocatoria:", error);
-      setIsSaving(false); // Desactivar el estado de guardado en caso de error
+      toastAlerts.showError(
+        "Hubo un error al guardar la convocatoria, recargue la página e intente nuevamente"
+      );
+      setIsSaving(false);
     }
   };
 

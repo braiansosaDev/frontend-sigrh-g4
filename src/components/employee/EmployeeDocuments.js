@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import { MdDeleteOutline, MdOutlineFileDownload } from "react-icons/md";
+import Cookies from "js-cookie";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeDocuments({ employeeData }) {
   const [documents, setDocuments] = useState([]);
@@ -64,7 +66,9 @@ export default function EmployeeDocuments({ employeeData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.file) {
-      alert("Debes seleccionar un archivo");
+      toastAlerts.showError(
+        "Debe seleccionar un archivo para agregar el documento."
+      );
       return;
     }
 
@@ -129,21 +133,21 @@ export default function EmployeeDocuments({ employeeData }) {
       </div>
 
       <table className="min-w-full table-auto">
-        <thead className="bg-gray-100">
+        <thead className="bg-emerald-50">
           <tr>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Nombre del Documento
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Extensión
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Fecha de Creación
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Vigente
             </th>
-            <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">
+            <th className="py-2 px-4 text-left text-sm font-medium text-emerald-700">
               Acción
             </th>
           </tr>
@@ -206,7 +210,7 @@ export default function EmployeeDocuments({ employeeData }) {
             <h2 className="text-lg font-semibold mb-4">Agregar Documento</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-emerald-700">
                   Nombre del Documento
                 </label>
                 <input
@@ -219,7 +223,7 @@ export default function EmployeeDocuments({ employeeData }) {
                 />
               </div>
               <div className="mb-3">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-emerald-700">
                   Archivo
                 </label>
                 <input
@@ -238,13 +242,13 @@ export default function EmployeeDocuments({ employeeData }) {
                   onChange={handleChange}
                   className="mr-2"
                 />
-                <label className="text-sm text-gray-700">¿Vigente?</label>
+                <label className="text-sm text-emerald-700">¿Vigente?</label>
               </div>
               <div className="flex justify-end space-x-2 mt-4">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                  className="px-4 py-2 bg-emerald-300 text-emerald-700 rounded hover:bg-emerald-400"
                 >
                   Cancelar
                 </button>

@@ -9,6 +9,7 @@ import { useCountries } from "@/hooks/useCountries";
 import { useStatesCountry } from "@/hooks/useStatesCountry";
 import * as XLSX from "xlsx";
 import TagsModal from "./TagsModal";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function PostulationsTable({
   jobOpportunityId,
@@ -81,7 +82,10 @@ export default function PostulationsTable({
         throw new Error("Error al traer las postulaciones");
       setPostulations(res.data);
     } catch (e) {
-      alert("Ocurrió un error al traer las postulaciones");
+      console.error(e);
+      toastAlerts.showError(
+        "Hubo un error al obtener las postulaciones, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -131,6 +135,9 @@ export default function PostulationsTable({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error al descargar el CV:", error);
+      toastAlerts.showError(
+        "Hubo un error al descargar el CV, intente nuevamente"
+      );
     }
   };
 
@@ -151,36 +158,36 @@ export default function PostulationsTable({
       {/* Contenedor de la tabla con scroll */}
       <div className="max-h-[70vh] max-w-[90%] rounded-lg">
         <table className="w-full bg-white">
-          <thead className="bg-gray-100 top-0 z-10">
+          <thead className="bg-emerald-50 top-0 z-10">
             <tr>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 ID
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Nombre
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Email
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Teléfono
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Ubicación
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Evaluación
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Habilidades Requeridas
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Habilidades Deseables
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 Estado
               </th>
-              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-gray-600">
+              <th className="py-2 px-2 md:px-4 text-center text-xs md:text-sm font-medium text-emerald-700">
                 CVs
               </th>
             </tr>

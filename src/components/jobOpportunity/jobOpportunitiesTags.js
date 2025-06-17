@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function JobOpportunitiesTags({
   tags,
@@ -27,7 +28,9 @@ export default function JobOpportunitiesTags({
 
       setAvailableTags(res.data);
     } catch (e) {
-      alert("No se pudieron obtener las habilidades");
+      toastAlerts.showError(
+        "Hubo un error al obtener las habilidades, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -48,7 +51,10 @@ export default function JobOpportunitiesTags({
 
       return res.data; // Devuelve el objeto creado
     } catch (e) {
-      alert("No se pudo crear la habilidad");
+      toastAlerts.showError(
+        "Hubo un error al crear la habilidad, recargue la página e intente nuevamente"
+      );
+      console.error("Error al crear la habilidad:", e);
       return null; // Devuelve null en caso de error
     }
   };

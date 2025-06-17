@@ -2,6 +2,8 @@ import React, { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
+import { toastAlerts } from "@/utils/toastAlerts";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function LicenseModal({ open, onClose }) {
   const fileInputRef = useRef(null);
@@ -12,6 +14,8 @@ export default function LicenseModal({ open, onClose }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const token = Cookies.get("token");
+  const [openFormAlert, setOpenFormAlert] = useState(false);
+  const [formAlertMessage, setFormAlertMessage] = useState("");
 
   if (!open) return null;
 
@@ -24,7 +28,9 @@ export default function LicenseModal({ open, onClose }) {
       setLicensesTypes(res.data);
     } catch (error) {
       console.error("Error al traer licenses:", error);
-      alert("No se pudieron obtener las licencias");
+      toastAlerts.showError(
+        "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -35,7 +41,8 @@ export default function LicenseModal({ open, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (typeSelected?.justification_required && !file) {
-      alert("Debe adjuntar un archivo de justificación.");
+      setFormAlertMessage("Debe adjuntar un archivo de justificación.");
+      setOpenFormAlert(true);
       return;
     }
 
@@ -70,10 +77,12 @@ export default function LicenseModal({ open, onClose }) {
         },
       });
       if (res.status !== 201) throw new Error("Error al crear la licencia");
-      alert("Licencia creada exitosamente");
+      toastAlerts.showSuccess("Licencia creada exitosamente");
     } catch (error) {
       console.error("Error al crear licencia:", error);
-      alert("No se pudo crear la licencia");
+      toastAlerts.showError(
+        "No se pudo crear la licencia, intente nuevamente más tarde"
+      );
     }
   };
 
@@ -142,7 +151,8 @@ export default function LicenseModal({ open, onClose }) {
                 const file = e.target.files[0];
                 if (file) {
                   if (file.type !== "application/pdf") {
-                    alert("Solo se permiten archivos PDF.");
+                    setFormAlertMessage("Solo se permiten archivos PDF.");
+                    setOpenFormAlert(true);
                     return;
                   }
                   setFile(file);
@@ -204,6 +214,12 @@ export default function LicenseModal({ open, onClose }) {
               Solicitar ✉️
             </button>
           </div>
+
+          <FormAlert
+            open={openFormAlert}
+            onClose={() => setOpenFormAlert(false)}
+            message={formAlertMessage}
+          />
         </form>
       </div>
     </div>

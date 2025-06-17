@@ -9,6 +9,7 @@ import EmployeeForm from "./EmployeeForm";
 import EmployeeWorkHistory from "./EmployeeWorkHistory";
 import EmployeeDocuments from "./EmployeeDocuments";
 import EmployeeUser from "./EmployeeUser";
+import { toastAlerts } from "@/utils/toastAlerts";
 
 export default function EmployeeContainer({ id }) {
   const [employeeData, setEmployeeData] = useState({});
@@ -34,7 +35,9 @@ export default function EmployeeContainer({ id }) {
       setEmployeeData(res.data);
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error al traer los datos del empleado");
+      toastAlerts.showError(
+        "Hubo un error al obtener el empleado, recargue la página e intente nuevamente"
+      );
     }
   };
 
@@ -63,8 +66,8 @@ export default function EmployeeContainer({ id }) {
               key={index}
               onClick={() => {
                 if (id == "new" && index != 0) {
-                  alert(
-                    "Debe cargar y guardar datos personales antes de poder cargar datos secundarios."
+                  toastAlerts.showError(
+                    "Debe completar los datos personales antes de poder cargar datos secundarios."
                   );
                   return;
                 }
@@ -82,7 +85,11 @@ export default function EmployeeContainer({ id }) {
         </div>
 
         {activeTab === 0 && (
-          <EmployeeForm employeeData={employeeData} id={id} />
+          <EmployeeForm
+            employeeData={employeeData}
+            onSave={() => fetchEmployeeData()}
+            id={id}
+          />
         )}
 
         {/* Historial Laboral */}

@@ -1,8 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import config from "@/config";
-import axios from "axios";
 
 export default function TagsModal({ open, onClose, title, postulation }) {
   const handleClose = () => {
