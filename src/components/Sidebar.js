@@ -121,11 +121,6 @@ const menuItems = [
     path: "/sigrh/reports",
     submenus: [
       {
-        label: "Mis reportes",
-        icon: <FaChartPie className="text-2xl" />,
-        path: "/sigrh/reports/my_reports",
-      },
-      {
         label: "Reportes de empleados",
         icon: <FaPerson className="text-2xl" />,
         path: "/sigrh/reports/employees",
