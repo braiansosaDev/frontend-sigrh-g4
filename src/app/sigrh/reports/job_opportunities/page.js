@@ -1,5 +1,5 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import JobOpportunitiesDashboard from "@/components/reports/job_opportunities/ReportJobOpportunitiesContainer";
 
 export default function MyReportsPage() {
-  return <WorkInProgress />;
+  return <JobOpportunitiesDashboard />;
 }
