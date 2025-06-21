@@ -108,18 +108,23 @@ export default function JobOpportunitiesDashboard() {
         },
       ];
 
-      // Datos principales
-      const excelData = jobOpportunitiesData.map((item) => ({
-        "Tipo de licencia": item.type,
-        "Cantidad solicitada": item.count,
-      }));
+      const excelData = [
+        {
+          Estado: "Convocatorias activas",
+          Cantidad: jobOpportunitiesData.active_count || 0,
+        },
+        {
+          Estado: "Convocatorias inactivas",
+          Cantidad: jobOpportunitiesData.inactive_count || 0,
+        },
+      ];
 
       const dataSheet = [...filteredDate, {}, ...excelData];
 
       const wb = XLSX.utils.book_new();
       const ws1 = XLSX.utils.json_to_sheet(dataSheet, { skipHeader: false });
       XLSX.utils.book_append_sheet(wb, ws1, "Datos Maestros");
-      XLSX.writeFile(wb, "reporte_licencias.xlsx");
+      XLSX.writeFile(wb, "reporte_convocatorias.xlsx");
     } catch (e) {
       toastAlerts.showError("Error al exportar a Excel", e.message);
     }
@@ -171,7 +176,6 @@ export default function JobOpportunitiesDashboard() {
                 onClick={() => {
                   setStartDate("");
                   setEndDate("");
-                  setType("");
                   fetchJobOpportunitiesData();
                 }}
               >
