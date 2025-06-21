@@ -6,12 +6,17 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import config from "@/config";
 import { useSystemConfig } from "@/contexts/sysConfigContext";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const router = useRouter();
   const [usuarioId, setUsuarioId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [resetUserId, setResetUserId] = useState("");
+  const [resetRequested, setResetRequested] = useState(false);
+
   const configSys = useSystemConfig();
 
   const handleSubmit = async (e) => {
@@ -111,9 +116,87 @@ export default function LoginPage() {
             >
               Ingresar
             </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                className="text-sm text-emerald-600 hover:underline mt-2 cursor-pointer"
+                onClick={() => setShowForgotPasswordModal(true)}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
           </form>
         </div>
       </div>
+
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm z-50 relative">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+              Recuperar contraseña
+            </h3>
+
+            {!resetRequested ? (
+              <>
+                <label className="block text-sm mb-2 text-gray-600">
+                  Ingresá tu nombre de usuario
+                </label>
+                <input
+                  type="text"
+                  value={resetUserId}
+                  onChange={(e) => setResetUserId(e.target.value)}
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="px-4 py-2 text-gray-600 hover:underline"
+                    onClick={() => setShowForgotPasswordModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                    onClick={async () => {
+                      try {
+                        await axios.post(
+                          `${config.API_URL}/auth/request-password-reset`,
+                          { username: resetUserId }
+                        );
+                        setResetRequested(true);
+                      } catch (err) {
+                        console.error(err);
+                        toast.error(
+                          "No se pudo solicitar el cambio. Verificá el usuario."
+                        );
+                      }
+                    }}
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-gray-700 mb-4">
+                  Se ha solicitado un restablecimiento de contraseña. Vas a
+                  recibir un correo con una contraseña temporal.
+                </p>
+                <button
+                  className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                  onClick={() => {
+                    setShowForgotPasswordModal(false);
+                    setResetRequested(false);
+                    setResetUserId("");
+                  }}
+                >
+                  Entendido
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
