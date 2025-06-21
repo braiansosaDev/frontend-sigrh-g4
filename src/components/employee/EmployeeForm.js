@@ -491,7 +491,7 @@ export default function EmployeeForm({ employeeData, id, onSave }) {
               <select
                 className="bg-transparent text-black focus:outline-none hover:border-b hover:border-emerald-500 pb-1"
                 name="type_dni"
-                value={formData.type_dni || "du"}
+                value={formData.type_dni}
                 onChange={handleChange}
               >
                 <option value="lc">LC</option>
