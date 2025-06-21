@@ -87,7 +87,7 @@ export default function EmployeeContainer({ id }) {
         {activeTab === 0 && (
           <EmployeeForm
             employeeData={employeeData}
-            onSave={() => fetchEmployeeData()}
+            onSave={() => id === "new" || fetchEmployeeData()}
             id={id}
           />
         )}
