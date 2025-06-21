@@ -20,15 +20,26 @@ export default function LoginPage() {
     try {
       setErrorMessage(""); // Limpiar error anterior
       const res = await axios.postForm(`${config.API_URL}/auth/login`, {
-          username: usuarioId,
-          password: password
+        username: usuarioId,
+        password: password,
       });
 
       if (res.status !== 200) throw new Error("Login fallido");
 
       const data = await res.data;
+
       Cookies.set("token", data.access_token, { expires: 1 });
-      router.push("/sigrh");
+
+      // 👇 Agregá esta línea para registrar el flag de cambio obligatorio
+      Cookies.set("must_change_password", "true", {
+        expires: 1,
+      });
+
+      if (data.must_change_password) {
+        router.push("/change-password");
+      } else {
+        router.push("/sigrh");
+      }
     } catch (error) {
       console.error(error);
       setErrorMessage(
