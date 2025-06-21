@@ -35,10 +35,18 @@ export default function LoginPage() {
 
       Cookies.set("token", data.access_token, { expires: 1 });
 
+      const res_me = await axios.get(`${config.API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        },
+      });
+      const me_data = await res_me.data;
+
       // 👇 Agregá esta línea para registrar el flag de cambio obligatorio
-      Cookies.set("must_change_password", "true", {
+      Cookies.set("must_change_password", me_data.must_change_password, {
         expires: 1,
       });
+
 
       if (data.must_change_password) {
         router.push("/change-password");
