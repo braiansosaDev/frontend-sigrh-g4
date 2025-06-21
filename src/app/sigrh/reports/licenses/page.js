@@ -1,5 +1,5 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import ReportLicensesContainer from "@/components/reports/licenses/ReportLicensesContainer";
 
 export default function MyReportsPage() {
-  return <WorkInProgress />;
+  return <ReportLicensesContainer />;
 }
