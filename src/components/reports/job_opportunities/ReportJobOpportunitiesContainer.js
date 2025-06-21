@@ -4,22 +4,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { toastAlerts } from "@/utils/toastAlerts";
-import LicensesPieChart from "./LicensesPieChart";
+import JobOpporrtunitiesBarChart from "./JobOpportunitiesBarChart";
 import { FaFileExcel } from "react-icons/fa";
 import config from "@/config";
 import Cookies from "js-cookie";
-import Select from "react-select";
 
-export default function LicensesDashboard() {
+export default function JobOpportunitiesDashboard() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [type, setType] = useState("");
   const [loading, setLoading] = useState(false);
-  const [licensesPerType, setLicensesPerType] = useState();
-  const [licensesTypes, setLicensesTypes] = useState([]);
+  const [jobOpportunitiesData, setJobOpportunitiesData] = useState();
   const [filteredStartDate, setFilteredStartDate] = useState("");
   const [filteredEndDate, setFilteredEndDate] = useState("");
-  const [filteredType, setFilteredType] = useState("");
 
   const isValidPeriod = !!startDate && !!endDate && startDate <= endDate;
   const token = Cookies.get("token");
@@ -29,30 +25,32 @@ export default function LicensesDashboard() {
     setLoading(true);
     try {
       const params = {};
-      if (startDate) params.from_start_date = startDate;
+      if (startDate) params.from_date = startDate;
 
-      if (endDate) params.until_start_date = endDate;
+      if (endDate) params.to_date = endDate;
 
-      if (type) params.leave_type_ids = type;
+      console.log("params", params);
 
-      const res = await axios.get(`${config.API_URL}/leaves/report`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await axios.post(
+        `${config.API_URL}/opportunities/count-active-inactive`,
         params,
-      });
-      setLicensesPerType(changeLicenseFormat(res.data));
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setJobOpportunitiesData(res.data);
       setFilteredStartDate(startDate);
       setFilteredEndDate(endDate);
-      setFilteredType(type);
     } catch (e) {
       toastAlerts.showError(
-        "Error al filtrar licencias, recargue la página e intente nuevamente"
+        "Error al filtrar convocatorias, recargue la página e intente nuevamente"
       );
-      console.error("Error al filtrar licencias:", e);
+      console.error("Error al filtrar convocatorias:", e);
     }
     setLoading(false);
   };
 
-  const fetchLicenses = async () => {
+  const fetchJobOpportunitiesData = async () => {
     //Este método es para la primera vez que se carga el componente
     setLoading(true);
     try {
@@ -69,69 +67,35 @@ export default function LicensesDashboard() {
       const fromDate = firstDay;
       const untilDate = lastDayStr;
 
-      console.log("Fetching licenses from:", fromDate, "to:", untilDate);
+      const params = {
+        from_date: fromDate,
+        to_date: untilDate,
+      };
 
-      const res = await axios.get(`${config.API_URL}/leaves/report`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          from_start_date: fromDate,
-          until_start_date: untilDate,
-        },
-      });
-      setLicensesPerType(changeLicenseFormat(res.data));
-      console.log("Licenses fetched:", res.data);
+      console.log("params", params);
+
+      const res = await axios.post(
+        `${config.API_URL}/opportunities/count-active-inactive`,
+        params,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setJobOpportunitiesData(res.data);
       setFilteredStartDate(fromDate);
       setFilteredEndDate(untilDate);
-      setFilteredType("");
     } catch (e) {
       toastAlerts.showError(
-        "Error al traer licencias, recargue la página e intente nuevamente"
+        "Error al traer los datos de las convocatorias, recargue la página e intente nuevamente"
       );
-      console.error("Error al filtrar licencias:", e);
+      console.error("Error al filtrar convocatorias:", e);
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    const fetchLicensesTypes = async () => {
-      try {
-        const res = await axios.get(`${config.API_URL}/leaves/types`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.status !== 200) throw new Error("Error al obtener licencias");
-        setLicensesTypes(res.data);
-      } catch (error) {
-        console.error("Error al traer licenses:", error);
-        toastAlerts.showError(
-          "Hubo un error al obtener los tipos de licencia, recargue la página e intente nuevamente"
-        );
-      }
-    };
-    fetchLicensesTypes();
-  }, []);
-
-  useEffect(() => {
-    if (token && licensesTypes.length > 0) {
-      fetchLicenses();
-    }
-  }, [licensesTypes]); //Esto lo tuve que agregar porque licensesTypes tarda en cargar, entonces hay que esperar que esté listo
-
-  function changeLicenseFormat(response) {
-    // Crea un mapa con id, type y count
-    const reportMap = Object.entries(response.report).reduce(
-      (acc, [id, [type, count]]) => {
-        acc[type] = { id: Number(id), count };
-        return acc;
-      },
-      {}
-    );
-
-    return licensesTypes.map((t) => ({
-      id: t.id,
-      type: t.type,
-      count: reportMap[t.type]?.count || 0,
-    }));
-  }
+    fetchJobOpportunitiesData();
+  }, [token]);
 
   const handleExportExcel = () => {
     setLoading(true);
@@ -145,7 +109,7 @@ export default function LicensesDashboard() {
       ];
 
       // Datos principales
-      const excelData = licensesPerType.map((item) => ({
+      const excelData = jobOpportunitiesData.map((item) => ({
         "Tipo de licencia": item.type,
         "Cantidad solicitada": item.count,
       }));
@@ -162,27 +126,12 @@ export default function LicensesDashboard() {
     setLoading(false);
   };
 
-  const licenseTypeOptions = licensesTypes.map((t) => ({
-    value: t.id,
-    label: t.type,
-  }));
-
-  const customSelectStyles = {
-    control: (base, state) => ({
-      ...base,
-      borderColor:
-        state.isFocused || state.hasValue ? "#10b981" : base.borderColor, // emerald-500
-      boxShadow: state.isFocused ? "0 0 0 1px #10b981" : base.boxShadow,
-      "&:hover": {
-        borderColor: "#10b981",
-      },
-    }),
-  };
-
   return (
     <div className="p-6 background-white">
       <div className="p-6">
-        <h1 className="text-2xl font-semibold mb-6">Reporte de Licencias</h1>
+        <h1 className="text-2xl font-semibold mb-6">
+          Reporte de Convocatorias
+        </h1>
         {/* Filtros */}
         <div className="flex flex-wrap gap-4 items-end mb-6">
           <div>
@@ -207,25 +156,13 @@ export default function LicensesDashboard() {
               className="border border-gray-300 text-gray-500 rounded px-2 py-2 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
-          <div className="w-64">
-            <label className="block text-xs font-semibold mb-1">
-              Tipo de licencia
-            </label>
-            <Select
-              styles={customSelectStyles}
-              options={licenseTypeOptions}
-              isClearable
-              placeholder="Filtrar por tipo"
-              value={licenseTypeOptions.find((o) => o.value === type) || null}
-              onChange={(option) => setType(option ? option.value : "")}
-            />
-          </div>
-          {(isValidPeriod || type) && (
+          <div className="w-64"></div>
+          {isValidPeriod && (
             <>
               <button
                 onClick={handleFilter}
                 className="bg-emerald-600 text-white rounded-full px-4 py-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 cursor-pointer"
-                disabled={(!isValidPeriod && !type) || loading}
+                disabled={!isValidPeriod || loading}
               >
                 Filtrar
               </button>
@@ -235,7 +172,7 @@ export default function LicensesDashboard() {
                   setStartDate("");
                   setEndDate("");
                   setType("");
-                  fetchLicenses();
+                  fetchJobOpportunitiesData();
                 }}
               >
                 Limpiar filtros
@@ -245,7 +182,7 @@ export default function LicensesDashboard() {
 
           <button
             className={`${
-              !isValidPeriod && !type ? "ml-auto" : ""
+              !isValidPeriod ? "ml-auto" : ""
             } flex gap-2 items-center border border-green-600 text-green-700 px-3 py-1 rounded hover:bg-green-100`}
             onClick={handleExportExcel}
             disabled={loading}
@@ -255,19 +192,18 @@ export default function LicensesDashboard() {
           </button>
         </div>
         {/* Gráfico */}
-        {licensesPerType?.length > 0 ? (
-          <LicensesPieChart
-            data={licensesPerType}
-            startDate={filteredStartDate}
-            endDate={filteredEndDate}
-            type={filteredType}
+        {jobOpportunitiesData ? (
+          <JobOpporrtunitiesBarChart
+            data={jobOpportunitiesData}
+            fromDate={filteredStartDate}
+            toDate={filteredEndDate}
           />
         ) : (
           <div className="w-full h-80 bg-white rounded shadow p-10 flex items-center justify-center">
             <div className="text-center text-gray-500">
               {loading
                 ? "Cargando datos..."
-                : "No se encontraron licencias para el período seleccionado."}
+                : "No se encontraron convocatorias para el período seleccionado."}
             </div>
           </div>
         )}
