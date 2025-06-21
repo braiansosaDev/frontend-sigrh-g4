@@ -9,6 +9,7 @@ import LicenseModal from "./LicenseModal";
 import { useUser } from "@/contexts/userContext";
 import { FiInfo } from "react-icons/fi";
 import { toastAlerts } from "@/utils/toastAlerts";
+import LicenseLogsModal from "./LicenseLogsModal";
 
 export default function LicensesTable({ filters = {} }) {
   const token = Cookies.get("token");
@@ -19,6 +20,8 @@ export default function LicensesTable({ filters = {} }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [licensesTypes, setLicensesTypes] = useState([]);
+  const [logsModalOpen, setLogsModalOpen] = useState(false);
+  const [licenseIdToViewLogs, setLicenseIdToViewLogs] = useState(null);
 
   function splitEveryNChars(str, n) {
     //Esto para que el texto quede mejor en la tabla, hago que las palabras largas se dividan en líneas de n caracteres
@@ -297,9 +300,10 @@ export default function LicensesTable({ filters = {} }) {
                 {adaptText(lic.request_status)}
               </td>
               <td
-                className="py-2 px-4 border-b border-gray-300 text-center"
+                className="  py-2 px-4 border-b border-gray-300 text-center"
                 style={{ position: "relative" }}
               >
+                <div className="flex gap-2 items-center justify-end">
                 {user &&
                 lic.employee_id !== user.id &&
                 !["aprobado", "rechazado"].includes(
@@ -371,6 +375,18 @@ export default function LicensesTable({ filters = {} }) {
                     )}
                   </span>
                 )}
+
+                <button
+                  className="ml-1 text-emerald-600 underline text-xs whitespace-nowrap"
+                  onClick={() => {
+                    setLicenseIdToViewLogs(lic.id);
+                    setLogsModalOpen(true);
+                  }}
+                  type="button"
+                >
+                  Ver logs
+                </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -381,6 +397,12 @@ export default function LicensesTable({ filters = {} }) {
         onClose={() => setModalOpen(false)}
         license={selectedLicense}
         onSave={handleSave}
+      />
+
+      <LicenseLogsModal
+        open={logsModalOpen}
+        onClose={() => setLogsModalOpen(false)}
+        licenseId={licenseIdToViewLogs}
       />
     </div>
   );

@@ -8,6 +8,8 @@ import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
 import AttendanceChecksEventsDetailsModal from "../attendance/attendanceChecksEventsDetailsModal";
 import { FiAlertTriangle } from "react-icons/fi";
 import { toastAlerts } from "@/utils/toastAlerts";
+import PayrollLogsModal from "./payrollLogsModal";
+import Cookies from "js-cookie";
 
 const columns = [
   "Día",
@@ -21,6 +23,7 @@ const columns = [
   "Horas",
   "Notas",
   "Estado",
+  "Logs",
 ];
 
 export default function PayrollTable({ data, employee, onUpdateData }) {
@@ -29,6 +32,14 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
   const [openModal, setOpenModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
+  const [logsModalOpen, setLogsModalOpen] = useState(false);
+  const [selectedLogRowId, setSelectedLogRowId] = useState(null);
+  const token = Cookies.get("token");
+
+  const openLogsModal = (rowId) => {
+    setSelectedLogRowId(rowId);
+    setLogsModalOpen(true);
+  };
 
   const openEditModal = (note, id) => {
     setSelectedNote(note);
@@ -53,7 +64,10 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
     try {
       const res = await axios.patch(
         `${config.API_URL}/employee_hours/${payrollRowId}`,
-        { payroll_status: newState }
+        { payroll_status: newState },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       if (res.status === 200) {
@@ -207,22 +221,35 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
                   </div>
                 </td>
 
-                <td className="px-3 py-2 flex gap-2 items-center">
-                  <SelectPayrollStatusChip
-                    value={row.employee_hours.payroll_status}
-                    rowId={row.employee_hours.id}
-                    onChange={handlePayrollStatusChange}
-                  />
-                  {row.employee_hours.payroll_status ===
-                    "pending validation" && (
-                    <FiAlertTriangle className="text-red-500" />
-                  )}
+                <td className="px-3 py-2 items-center">
+                  <div className="flex gap-2">
+                    <SelectPayrollStatusChip
+                      value={row.employee_hours.payroll_status}
+                      rowId={row.employee_hours.id}
+                      onChange={handlePayrollStatusChange}
+                    />
+                    {row.employee_hours.payroll_status ===
+                      "pending validation" && (
+                      <FiAlertTriangle className="text-red-500" />
+                    )}
+                  </div>
+                </td>
+                <td className="px-3 py-2 items-center">
+                  <div className="flex gap-2 items-center">
+                    <button
+                      className="text-emerald-500 underline text-xs ml-2"
+                      onClick={() => openLogsModal(row.employee_hours.id)}
+                    >
+                      Ver logs
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
           )}
         </tbody>
       </table>
+
       <AttendanceChecksEventsDetailsModal
         open={attendanceModalOpen}
         onClose={() => setAttendanceModalOpen(false)}
@@ -238,6 +265,12 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
         onSave={onUpdateData}
         initialNote={selectedNote}
         recordId={selectedRowId}
+      />
+
+      <PayrollLogsModal
+        open={logsModalOpen}
+        onClose={() => setLogsModalOpen(false)}
+        payrollRowId={selectedLogRowId}
       />
     </div>
   );

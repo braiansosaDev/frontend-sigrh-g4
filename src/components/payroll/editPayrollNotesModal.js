@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "@/config";
 import { toastAlerts } from "@/utils/toastAlerts";
+import Cookies from "js-cookie";
 
 export default function EditPayrollNotesModal({
   isOpen,
@@ -12,6 +13,7 @@ export default function EditPayrollNotesModal({
   recordId,
 }) {
   const [note, setNote] = useState("");
+  const token = Cookies.get("token");
 
   const handleSave = async () => {
     try {
@@ -19,6 +21,9 @@ export default function EditPayrollNotesModal({
         `${config.API_URL}/employee_hours/${recordId}`,
         {
           notes: note,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -30,9 +35,14 @@ export default function EditPayrollNotesModal({
       }
     } catch (error) {
       console.error("Error al guardar la nota:", error);
-      toastAlerts.showError(
-        "Hubo un error al guardar la nota, intente nuevamente"
-      );
+
+      const status = error.response?.status;
+      const message =
+        error.response?.data?.detail ||
+        error.message ||
+        "Error desconocido al guardar la nota.";
+
+      toastAlerts.showError(`Error ${status || ""}: ${message}`);
     }
   };
 

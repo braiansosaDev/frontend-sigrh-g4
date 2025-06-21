@@ -8,6 +8,7 @@ import AttendanceChecksEventsDetailsModal from "../attendance/attendanceChecksEv
 import { FiAlertTriangle } from "react-icons/fi";
 import EditPayrollNotesModal from "../payroll/editPayrollNotesModal";
 import { toastAlerts } from "@/utils/toastAlerts";
+import Cookies from "js-cookie";
 
 const columns = [
   "Empleado",
@@ -34,6 +35,7 @@ export default function PayrollEvaluationTable({
   const [openModal, setOpenModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
+  const token = Cookies.get("token");
 
   const openEditModal = (note, id) => {
     setSelectedNote(note);
@@ -58,7 +60,10 @@ export default function PayrollEvaluationTable({
     try {
       const res = await axios.patch(
         `${config.API_URL}/employee_hours/${payrollRowId}`,
-        { payroll_status: newState }
+        { payroll_status: newState },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       if (res.status === 200) {
@@ -71,7 +76,8 @@ export default function PayrollEvaluationTable({
       }
     } catch (e) {
       console.error(
-        `Ha ocurrido un error al actualizar el registro de horas: ${e.message}`
+        "ha ocurrido un error al actualizar el registro de horas",
+        e
       );
       toastAlerts.showError(
         `Ha ocurrido un error al actualizar el registro de horas: ${e.message}`
