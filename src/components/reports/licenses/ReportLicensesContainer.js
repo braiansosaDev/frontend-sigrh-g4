@@ -29,9 +29,9 @@ export default function LicensesDashboard() {
     setLoading(true);
     try {
       const params = {};
-      if (startDate) params.from_creation_date = startDate;
+      if (startDate) params.from_start_date = startDate;
 
-      if (endDate) params.until_creation_date = endDate;
+      if (endDate) params.until_start_date = endDate;
 
       if (type) params.leave_type_ids = type;
 
@@ -74,8 +74,8 @@ export default function LicensesDashboard() {
       const res = await axios.get(`${config.API_URL}/leaves/report`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          from_creation_date: fromDate,
-          until_creation_date: untilDate,
+          from_start_date: fromDate,
+          until_start_date: untilDate,
         },
       });
       setLicensesPerType(changeLicenseFormat(res.data));
