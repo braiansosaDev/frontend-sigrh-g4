@@ -79,7 +79,7 @@ export default function EmployeesTable() {
           <h1 className="text-2xl font-semibold">👥 Empleados</h1>
           <button
             onClick={() => router.push("employees/new")}
-            className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"
+            className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2 cursor-pointer"
           >
             + Agregar
           </button>

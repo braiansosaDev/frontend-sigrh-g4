@@ -76,7 +76,7 @@ export default function EmployeeContainer({ id }) {
               className={`py-2 px-4 text-sm font-semibold rounded-t-md ${
                 activeTab === index
                   ? "border-b-2 border-emerald-500 text-emerald-500"
-                  : "text-gray-500"
+                  : "text-gray-500 cursor-pointer"
               }`}
             >
               {tab}

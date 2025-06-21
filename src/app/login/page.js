@@ -96,7 +96,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full rounded-full bg-emerald-500 p-3 text-white hover:bg-emerald-600 transition-colors"
+              className="w-full rounded-full bg-emerald-500 p-3 text-white hover:bg-emerald-600 transition-colors cursor-pointer"
             >
               Ingresar
             </button>
