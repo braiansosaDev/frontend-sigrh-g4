@@ -144,7 +144,7 @@ const menuItems = [
       {
         label: "Reportes de postulaciones",
         icon: <FaFileArchive className="text-2xl" />,
-        path: "sigrh/reports/postulations",
+        path: "/sigrh/reports/postulations",
       },
     ],
   },

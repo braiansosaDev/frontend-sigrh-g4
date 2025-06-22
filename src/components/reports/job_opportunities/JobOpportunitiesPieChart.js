@@ -136,6 +136,7 @@ export default function JobOpportunitiesPieChart({
                 cx="50%"
                 cy="50%"
                 outerRadius={70}
+                isAnimationActive={true}
               >
                 {motivosData.map((entry, idx) => (
                   <Cell

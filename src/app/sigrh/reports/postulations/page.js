@@ -1,5 +1,5 @@
-import WorkInProgress from "@/components/WorkInProgress";
+import PostulationIndicatorsContainer from "@/components/reports/postulations/PostulationIndicatorsContainer";
 
 export default function postulationsPage() {
-  return <WorkInProgress />;
+  return <PostulationIndicatorsContainer />;
 }
