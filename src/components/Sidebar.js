@@ -127,11 +127,6 @@ const menuItems = [
         path: "/sigrh/reports/employees",
       },
       {
-        label: "Reportes de asistencia",
-        icon: <FaClock className="text-2xl" />,
-        path: "/sigrh/reports/attendance",
-      },
-      {
         label: "Reportes de licencias",
         icon: <FaFileAlt className="text-2xl" />,
         path: "/sigrh/reports/licenses",

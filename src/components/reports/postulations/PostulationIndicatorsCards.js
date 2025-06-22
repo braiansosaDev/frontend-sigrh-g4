@@ -2,12 +2,24 @@ import React from "react";
 
 //Aca estan los indicadores que se van a mostrar en las cards para las stats
 const indicators = [
-  { key: "suitable_average", label: "Promedio Aptos" },
-  { key: "not_suitable_average", label: "Promedio No Aptos" },
-  { key: "accepted_postulation_average", label: "Promedio Aceptados" },
-  { key: "rejected_postulation_average", label: "Promedio Rechazados" },
-  { key: "hired_postulation_average", label: "Promedio Contratados" },
-  { key: "pending_postulation_average", label: "Promedio Pendientes" },
+  { key: "suitable_average", label: "Promedio Aptos Por Convocatoria" },
+  { key: "not_suitable_average", label: "Promedio No Aptos Por Convocatoria" },
+  {
+    key: "accepted_postulation_average",
+    label: "Promedio Aceptados Por Convocatoria",
+  },
+  {
+    key: "rejected_postulation_average",
+    label: "Promedio Rechazados Por Convocatoria",
+  },
+  {
+    key: "hired_postulation_average",
+    label: "Promedio Contratados Por Convocatoria",
+  },
+  {
+    key: "pending_postulation_average",
+    label: "Promedio Pendientes Por Convocatoria",
+  },
   { key: "count_opportunities", label: "Cantidad de Convocatorias" },
   { key: "count_postulations", label: "Cantidad de Postulaciones" },
 ];
