@@ -41,19 +41,19 @@ export default function JobOpportunitiesBarChart({ data, fromDate, toDate }) {
 
   // --- Render ---
   return (
-    <div className="w-full h-[20rem] bg-white rounded shadow p-10 flex flex-col md:flex-row gap-8">
+    <div className="w-full h-[20rem] bg-white rounded shadow p-6 flex flex-col md:flex-row gap-8">
       <div className="flex-1 flex items-center justify-center">
         {total === 0 ? (
           <div className="text-gray-400 text-lg text-center">
             No hay datos que mostrar gráficamente
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={180}>
             <BarChart
               data={chartData}
-              margin={{ left: 40, right: 40, bottom: 20 }}
+              margin={{ left: 10, right: 10, bottom: 10 }}
             >
-              <XAxis dataKey="name" />
+              <XAxis dataKey="name" tick={false} />
               <YAxis allowDecimals={false} />
               <Tooltip
                 formatter={(value, name, props) => [
@@ -87,7 +87,7 @@ export default function JobOpportunitiesBarChart({ data, fromDate, toDate }) {
               className="inline-block w-4 h-4 rounded-full"
               style={{ backgroundColor: COLORS[0] }}
             ></span>
-            <span className="font-medium">
+            <span className="font-medium text-sm">
               Convocatorias activas:{" "}
               <span
                 className="font-semibold border border-gray-200 px-1 rounded"
@@ -102,7 +102,7 @@ export default function JobOpportunitiesBarChart({ data, fromDate, toDate }) {
               className="inline-block w-4 h-4 rounded-full"
               style={{ backgroundColor: COLORS[1] }}
             ></span>
-            <span className="font-medium">
+            <span className="font-medium text-sm">
               Convocatorias inactivas:{" "}
               <span
                 className="font-semibold border border-gray-200 px-1 rounded"

@@ -149,7 +149,7 @@ export default function LicensesPieChart({ data, startDate, endDate, type }) {
                   style={{ backgroundColor: COLORS[item.id % COLORS.length] }}
                 ></span>
                 <span className="font-medium">{item.id}) </span>
-                <span>
+                <span className="text-sm">
                   {item.type}:{" "}
                   <span className="font-semibold border border-gray-200 px-1 rounded">
                     {item.count}

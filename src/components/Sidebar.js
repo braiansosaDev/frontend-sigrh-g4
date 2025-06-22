@@ -17,6 +17,7 @@ import {
   FaFileContract,
   FaChartBar,
   FaChartPie,
+  FaFileArchive,
 } from "react-icons/fa";
 import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
@@ -139,6 +140,11 @@ const menuItems = [
         label: "Reportes de convocatorias",
         icon: <FaBriefcase className="text-2xl" />,
         path: "/sigrh/reports/job_opportunities",
+      },
+      {
+        label: "Reportes de postulaciones",
+        icon: <FaFileArchive className="text-2xl" />,
+        path: "sigrh/reports/postulations",
       },
     ],
   },
