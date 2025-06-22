@@ -680,7 +680,7 @@ export default function JobOpportunitiesDashboard() {
           <div className="flex items-end gap-2">
             <div className="relative" ref={inputRef}>
               <label className="block text-xs font-semibold mb-1">
-                Convocatoria
+                Convocatoria (para IA y rechazos)
               </label>
               <input
                 type="text"
@@ -754,6 +754,13 @@ export default function JobOpportunitiesDashboard() {
             Exportar a Excel
           </button>
         </div>
+        {indicadoresLabel && (
+          <div className="mb-2">
+            <span className="text-xl text-emerald-600 font-semibold">
+              {indicadoresLabel}
+            </span>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div className="col-span-1 flex">
             {jobOpportunitiesData ? (
@@ -794,15 +801,10 @@ export default function JobOpportunitiesDashboard() {
           </div>
         </div>
 
-        {/* Indicadores y gráficos IA */}
-        {indicadoresLabel && (
-          <div className="mb-2">
-            <span className="text-xl text-emerald-600 font-semibold">
-              {indicadoresLabel}
-            </span>
-          </div>
-        )}
         <PostulationIndicatorsCards data={indicators} context={contextLabel} />
+        <h2 className="text-xl font-semibold mt-10 text-emerald-600">
+          Análisis de IA
+        </h2>
         <div className="mt-8">
           <PostulationSuitabilityCharts
             suitabilityData={suitabilityData}
