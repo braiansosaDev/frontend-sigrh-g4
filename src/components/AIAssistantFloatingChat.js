@@ -78,8 +78,8 @@ export default function AIAssistantFloatingChat() {
     <div className="fixed bottom-4 right-4 z-50">
       {open ? (
         <div className="w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="px-4 py-1 flex gap-2 items-center text-sm bg-gradient-to-r from-indigo-500 to-teal-500 hover:from-indigo-600 hover:to-teal-500 transition-all rounded-full text-white">
+          <div className="flex justify-between items-center mb-2 border-b border-gray-300">
+            <h2 className="px-4 py-1 flex gap-2 items-center text-sm text-gray-500 font-semibold">
               <FaWandSparkles /> Asistente SIGRH+
             </h2>
             <button onClick={() => setOpen(false)} className="cursor-pointer">
