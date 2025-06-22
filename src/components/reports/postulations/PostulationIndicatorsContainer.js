@@ -8,12 +8,17 @@ import Cookies from "js-cookie";
 import { toastAlerts } from "@/utils/toastAlerts";
 import { FaFileExcel } from "react-icons/fa";
 import * as XLSX from "xlsx";
+import PostulationSuitabilityCharts from "./PostulationSuitabilityCharts";
 
 export default function PostulationIndicatorsContainer() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [filteredStartDate, setFilteredStartDate] = useState("");
+  const [filteredEndDate, setFilteredEndDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [indicators, setIndicators] = useState(null);
+  const [suitabilityData, setSuitabilityData] = useState(null);
+  const [statusData, setStatusData] = useState(null);
 
   const token = Cookies.get("token");
 
@@ -29,6 +34,8 @@ export default function PostulationIndicatorsContainer() {
     setStartDate(firstDay);
     setEndDate(lastDay);
     fetchIndicators(firstDay, lastDay);
+    fetchSuitabilityData(firstDay, lastDay);
+    fetchStatusData(firstDay, lastDay);
   }, []);
 
   const fetchIndicators = async (from, to) => {
@@ -49,15 +56,70 @@ export default function PostulationIndicatorsContainer() {
     setLoading(false);
   };
 
+  const fetchSuitabilityData = async (from, to) => {
+    const params = { from_date: from, to_date: to };
+    const res = await axios.get(
+      `${config.API_URL}/postulations/stats/suitability`,
+      { headers: { Authorization: `Bearer ${token}` }, params }
+    );
+    let totalAptosIA = 0,
+      totalNoAptosIA = 0;
+    if (Array.isArray(res.data)) {
+      res.data.forEach((item) => {
+        totalAptosIA += item.aptos_ia || 0;
+        totalNoAptosIA += item.no_aptos_ia || 0;
+      });
+    }
+    setSuitabilityData([
+      { name: "Aptos IA", value: totalAptosIA },
+      { name: "No Aptos IA", value: totalNoAptosIA },
+    ]);
+  };
+
+  const fetchStatusData = async (from, to) => {
+    const params = { from_date: from, to_date: to };
+    const res = await axios.get(`${config.API_URL}/postulations/stats/status`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    });
+    let totalAptosIA2 = 0,
+      totalAceptada = 0,
+      totalContratado = 0;
+    if (Array.isArray(res.data)) {
+      res.data.forEach((item) => {
+        totalAptosIA2 += item.aptos_ia || 0;
+        totalAceptada += item.aptos_aceptada || 0;
+        totalContratado += item.aptos_contratado || 0;
+      });
+    }
+    const aptosIANoAceptadosNiContratados = Math.max(
+      totalAptosIA2 - totalAceptada - totalContratado,
+      0
+    );
+    setStatusData([
+      {
+        name: "Aptos IA no aceptados/contratados",
+        value: aptosIANoAceptadosNiContratados,
+      },
+      { name: "Aceptados", value: totalAceptada },
+      { name: "Contratados", value: totalContratado },
+    ]);
+  };
+
   const handleFilter = () => {
     if (!startDate || !endDate || startDate > endDate) return;
     fetchIndicators(startDate, endDate);
+    fetchSuitabilityData(startDate, endDate);
+    fetchStatusData(startDate, endDate);
+    setFilteredStartDate(startDate);
+    setFilteredEndDate(endDate);
   };
 
   const handleExportExcel = async () => {
     if (!indicators) return;
     setLoading(true);
     try {
+      // Hoja 1: Indicadores principales
       const periodInfo = [
         {
           Periodo: `Desde: ${startDate} Hasta: ${endDate}`,
@@ -99,6 +161,7 @@ export default function PostulationIndicatorsContainer() {
       ];
       const sheetData = [...periodInfo, {}, ...indicatorsRows];
 
+      // Hoja 2: Datos crudos postulaciones
       const params = { from_date: startDate, to_date: endDate };
       const resRaw = await axios.get(
         `${config.API_URL}/opportunities/opportunities-postulations`,
@@ -136,6 +199,27 @@ export default function PostulationIndicatorsContainer() {
         });
       }
 
+      // Nueva hoja: Aptos/No Aptos IA
+      const aptosNoAptosSheet = [
+        { Periodo: `Desde: ${startDate} Hasta: ${endDate}` },
+        {},
+        ...(suitabilityData || []).map((item) => ({
+          Tipo: item.name,
+          Cantidad: item.value,
+        })),
+      ];
+
+      // Nueva hoja: Evaluación aptos IA
+      const evalAptosIASheet = [
+        { Periodo: `Desde: ${startDate} Hasta: ${endDate}` },
+        {},
+        ...(statusData || []).map((item) => ({
+          Tipo: item.name,
+          Cantidad: item.value,
+        })),
+      ];
+
+      // Generar el Excel
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(sheetData, { skipHeader: false });
       XLSX.utils.book_append_sheet(wb, ws, "Indicadores postulaciones");
@@ -146,6 +230,18 @@ export default function PostulationIndicatorsContainer() {
         });
         XLSX.utils.book_append_sheet(wb, ws2, "Datos crudos postulaciones");
       }
+
+      // Hoja: Aptos/No Aptos IA
+      const ws3 = XLSX.utils.json_to_sheet(aptosNoAptosSheet, {
+        skipHeader: false,
+      });
+      XLSX.utils.book_append_sheet(wb, ws3, "Aptos y No Aptos");
+
+      // Hoja: Evaluación aptos IA
+      const ws4 = XLSX.utils.json_to_sheet(evalAptosIASheet, {
+        skipHeader: false,
+      });
+      XLSX.utils.book_append_sheet(wb, ws4, "Evaluación aptos IA");
 
       XLSX.writeFile(wb, "indicadores_postulaciones.xlsx");
     } catch (e) {
@@ -205,6 +301,10 @@ export default function PostulationIndicatorsContainer() {
           </button>
         </div>
         <PostulationIndicatorsCards data={indicators} />
+        <PostulationSuitabilityCharts
+          suitabilityData={suitabilityData}
+          statusData={statusData}
+        ></PostulationSuitabilityCharts>
       </div>
     </div>
   );
