@@ -61,7 +61,7 @@ export default function AttendanceEmployeeChecksFilter({
     <div className="relative z-50 inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"
+        className="attendance-filter px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"
       >
         <FaFilter />
         Filtros

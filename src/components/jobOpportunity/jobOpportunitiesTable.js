@@ -9,6 +9,128 @@ import config from "@/config";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toastAlerts } from "@/utils/toastAlerts";
+import AppTourProvider from "@/utils/AppTourProvider";
+import { useTour } from "@reactour/tour";
+
+function JobOpportunityTableContent(props) {
+  const { setIsOpen, setCurrentStep, isOpen } = useTour();
+
+  // Mostrar el tour automáticamente la primera vez
+  React.useEffect(() => {
+    const alreadySeen = localStorage.getItem("seenJobOpportunitiesTour");
+    if (!alreadySeen) {
+      setCurrentStep(0);
+      setIsOpen(true);
+      localStorage.setItem("seenJobOpportunitiesTour", "true");
+    }
+  }, [setIsOpen, setCurrentStep]);
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-4 mt-6">
+        <div className="flex gap-2 items-center">
+          <h1 className="text-2xl text-gray-800 font-bold cursor-default">
+            Convocatorias 💼
+          </h1>
+          <button
+            className="px-4 py-2 bg-emerald-500 rounded-full font-semibold text-white mt-2 hover:bg-emerald-600"
+            onClick={props.onAdd}
+          >
+            + Agregar
+          </button>
+          <button
+            className="help-tour-btn ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors"
+            onClick={() => {
+              setCurrentStep(0); // Siempre empieza en el primer paso
+              setIsOpen(true);
+            }}
+            title="Ver guía"
+            style={{ minWidth: 40, minHeight: 40 }}
+            disabled={isOpen}
+          >
+            <span className="text-white text-xl font-bold">?</span>
+          </button>
+        </div>
+
+        <input
+          type="text"
+          value={props.searchTerm}
+          onChange={props.handleSearchChange}
+          className="px-6 py-3 border border-gray-300 rounded-full w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="🔍︎ Buscar por nombre..."
+        />
+
+        {/* Botón Filtros */}
+        <button
+          className="filters-btn flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 border-2 border-emerald-500 font-semibold"
+          onClick={() => props.setIsFiltering(true)}
+        >
+          <FaFilter />
+          Filtros
+        </button>
+      </div>
+
+      {/* Para mostrar todas las convocatorias en pantalla */}
+      <div className="h-[70vh] overflow-y-auto grid grid-cols-1 gap-4">
+        {props.currentjobOportunity.map((jobOpportunity, index) => (
+          <JobOpportunityCard
+            key={index}
+            jobOpportunity={jobOpportunity}
+            onModify={() => props.onModifyjobOpportunity(jobOpportunity)} // Envolver en una función anónima
+          />
+        ))}
+      </div>
+
+      {props.filteredjobOportunity.length === 0 && (
+        <div className="flex justify-center items-center mt-8 text-gray-500 text-lg">
+          No se encontraron convocatorias que coincidan con tu búsqueda.
+        </div>
+      )}
+
+      {/* Botones para elegir la pagina actual */}
+      <div className="flex justify-center items-center mt-4 gap-4">
+        {/* Botón Anterior */}
+        <button
+          className="prev-page-btn px-4 py-2 rounded-full bg-white border border-emerald-500 text-emerald-600 font-semibold hover:bg-emerald-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={props.handlePreviousPage}
+          disabled={props.currentPage === 0}
+        >
+          Anterior
+        </button>
+        <span className="text-sm text-gray-600">
+          Página{" "}
+          {props.totalPages != 0 ? props.currentPage + 1 : props.currentPage} de{" "}
+          {props.totalPages}
+        </span>
+        {/* Botón Siguiente */}
+        <button
+          className="next-page-btn px-4 py-2 rounded-full bg-white border border-emerald-500 text-emerald-600 font-semibold hover:bg-emerald-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={props.handleNextPage}
+          disabled={props.currentPage === props.totalPages - 1}
+        >
+          Siguiente
+        </button>
+
+        {props.isAdding && (
+          <JobOpportunityOptions
+            isAdding={props.isAdding}
+            onClose={() => props.setIsAdding(false)}
+            onSave={props.handleCreateJobOpportunityForm}
+          />
+        )}
+
+        {props.isFiltering && (
+          <div className="mb-4">
+            <JobOpportunitiesFilter
+              onFilter={props.handleFilter}
+              showStatusFilter={true}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function JobOpportunityTable() {
   const [searchTerm, setSearchTerm] = useState(""); // Para guardar lo que se escribe en el buscador
@@ -194,103 +316,72 @@ export default function JobOpportunityTable() {
     fetchJobOpportunities(); // Refresca la lista de convocatorias después de crear una nueva
   };
 
+  const steps = [
+    {
+      selector: "body",
+      content:
+        "¡Bienvenido a la sección de convocatorias! Aquí puedes ver y gestionar todas las convocatorias laborales.",
+    },
+    {
+      selector: "button.bg-emerald-500", // Botón agregar
+      content:
+        "Haz clic aquí cunado quieras agregar una nueva convocatoria, se abrirá un modal donde debes ingresar los datos y luego solo debes pulsar en el botón crear.",
+    },
+    {
+      selector: "input[type='text'][placeholder*='Buscar']",
+      content:
+        "Utiliza este campo para buscar convocatorias por el título que le hayas asignado a la convocatoria.",
+    },
+    {
+      selector: ".filters-btn",
+      content:
+        "Haz clic aquí para aplicar filtros a las convocatorias y facilitar tu busqueda.",
+    },
+    {
+      selector: ".h-\\[70vh\\]",
+      content:
+        "Aquí se muestran las convocatorias disponibles, cada convocatoria tendrá un botón de detalles donde podrás modificar dicha convocatoria y consultar sus postulados.",
+    },
+    {
+      selector: ".prev-page-btn",
+      content: "Aquí tienes un botón para ir a páginas anteriores.",
+    },
+    {
+      selector: ".next-page-btn",
+      content: "Y aquí uno para ir a posteriores.",
+    },
+    {
+      selector: ".help-tour-btn",
+      content:
+        "Si necesitas ayuda, no dudes en apretar este botón para volver a consultar la guía.",
+    },
+    {
+      selector: "body",
+      content: "¡Listo! Ahora ya puedes utilizar la sección de convocatorias.",
+      position: "center",
+    },
+  ];
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4 mt-6">
-        <div className="flex gap-2 items-center">
-          <h1 className="text-2xl text-gray-800 font-bold cursor-default">
-            Convocatorias 💼
-          </h1>
-          <button
-            className="px-4 py-2 bg-emerald-500 rounded-full font-semibold text-white mt-2 hover:bg-emerald-600"
-            onClick={() => {
-              setIsAdding(true);
-            }}
-          >
-            + Agregar
-          </button>
-        </div>
-
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="px-6 py-3 border border-gray-300 rounded-full w-80 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="🔍︎ Buscar por nombre..."
-        />
-
-        <button
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 border-2 border-emerald-500 font-semibold"
-          onClick={() => setIsFiltering(true)}
-        >
-          <FaFilter />
-          Filtros
-        </button>
-      </div>
-
-      {/* Para mostrar todas las convocatorias en pantalla */}
-      <div className="h-[70vh] overflow-y-auto grid grid-cols-1 gap-4">
-        {currentjobOportunity.map((jobOpportunity, index) => (
-          <JobOpportunityCard
-            key={index}
-            jobOpportunity={jobOpportunity}
-            onModify={() => onModifyjobOpportunity(jobOpportunity)} // Envolver en una función anónima
-          />
-        ))}
-      </div>
-
-      {filteredjobOportunity.length === 0 && (
-        <div className="flex justify-center items-center mt-8 text-gray-500 text-lg">
-          No se encontraron convocatorias que coincidan con tu búsqueda.
-        </div>
-      )}
-
-      {/* Botones para elegir la pagina actual */}
-      <div className="flex justify-center items-center mt-4 gap-4">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === 0
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-emerald-500 text-white hover:bg-emerald-600"
-          }`}
-        >
-          Anterior
-        </button>
-        <span className="text-sm text-gray-600">
-          Página {totalPages != 0 ? currentPage + 1 : currentPage} de{" "}
-          {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages - 1}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === totalPages - 1 || totalPages === 0
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-emerald-500 text-white hover:bg-emerald-600"
-          }`}
-        >
-          Siguiente
-        </button>
-
-        {isAdding && (
-          <JobOpportunityOptions
-            isAdding={isAdding}
-            onClose={() => setIsAdding(false)}
-            onSave={handleCreateJobOpportunityForm}
-          />
-        )}
-
-        {isFiltering && (
-          <div className="mb-4">
-            <JobOpportunitiesFilter
-              onFilter={handleFilter}
-              showStatusFilter={true}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+    <AppTourProvider steps={steps}>
+      <JobOpportunityTableContent
+        onAdd={() => setIsAdding(true)}
+        onModifyjobOpportunity={onModifyjobOpportunity}
+        searchTerm={searchTerm}
+        handleSearchChange={handleSearchChange}
+        currentjobOportunity={currentjobOportunity}
+        filteredjobOportunity={filteredjobOportunity}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        handleNextPage={handleNextPage}
+        handlePreviousPage={handlePreviousPage}
+        isAdding={isAdding}
+        setIsAdding={setIsAdding}
+        isFiltering={isFiltering}
+        setIsFiltering={setIsFiltering}
+        handleCreateJobOpportunityForm={handleCreateJobOpportunityForm}
+        handleFilter={handleFilter}
+      />
+    </AppTourProvider>
   );
 }
