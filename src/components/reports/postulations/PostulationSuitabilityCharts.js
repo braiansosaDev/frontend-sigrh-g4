@@ -4,12 +4,13 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import config from "@/config";
 import Cookies from "js-cookie";
 
+// Colores para el primer gráfico
 const COLORS = [
   "#10b981", // verde
   "#f43f5e", // rojo
-  "#fbbf24", // amarillo
 ];
 
+//Colores para el segundo gráfico
 const COLORS2 = [
   "#f97316", // naranja
   "#fbbf24", // amarillo
