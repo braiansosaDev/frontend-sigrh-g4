@@ -136,11 +136,6 @@ const menuItems = [
         icon: <FaBriefcase className="text-2xl" />,
         path: "/sigrh/reports/job_opportunities",
       },
-      {
-        label: "Reportes de postulaciones",
-        icon: <FaFileArchive className="text-2xl" />,
-        path: "/sigrh/reports/postulations",
-      },
     ],
   },
   {
