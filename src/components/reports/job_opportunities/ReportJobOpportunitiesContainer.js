@@ -167,6 +167,12 @@ export default function JobOpportunitiesDashboard() {
   };
 
   useEffect(() => {
+    const now = new Date();
+    const firstDay = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const lastDayStr = `${lastDay.getFullYear()}-${String(lastDay.getMonth() + 1).padStart(2, "0")}-${String(lastDay.getDate()).padStart(2, "0")}`;
+    setStartDate(firstDay);
+    setEndDate(lastDayStr);
     fetchJobOpportunitiesData();
     fetchOpportunities();
   }, [token]);
@@ -176,20 +182,20 @@ export default function JobOpportunitiesDashboard() {
     try {
       const periodInfo = [
         {
-          Period: `From: ${
+          Periodo: `Desde: ${
             filteredStartDate || startDate
-          } To: ${filteredEndDate || endDate}`,
+          } Hasta: ${filteredEndDate || endDate}`,
         },
       ];
 
       const statusData = [
         {
-          Status: "Active opportunities",
-          Count: jobOpportunitiesData.active_count || 0,
+          Estado: "Convocatorias activas",
+          Cantidad: jobOpportunitiesData.active_count || 0,
         },
         {
-          Status: "Inactive opportunities",
-          Count: jobOpportunitiesData.inactive_count || 0,
+          Estado: "Convocatorias inactivas",
+          Cantidad: jobOpportunitiesData.inactive_count || 0,
         },
       ];
 
@@ -198,9 +204,9 @@ export default function JobOpportunitiesDashboard() {
       let motives = {};
       let motivesHeader = [
         {
-          Period: `From: ${
+          Periodo: `Desde: ${
             filteredStartDate || startDate
-          } To: ${filteredEndDate || endDate}`,
+          } Hasta: ${filteredEndDate || endDate}`,
         },
       ];
       if (
@@ -209,7 +215,7 @@ export default function JobOpportunitiesDashboard() {
         Array.isArray(rejectedData)
       ) {
         motivesHeader.push({
-          Opportunity: `${filteredOpportunity[1]} #${filteredOpportunity[0]}`,
+          Convocatoria: `${filteredOpportunity[1]} #${filteredOpportunity[0]}`,
         });
         const selected = rejectedData.find(
           (item) =>
@@ -225,8 +231,8 @@ export default function JobOpportunitiesDashboard() {
       }
 
       const motivesRows = Object.entries(motives).map(([motive, count]) => ({
-        Motive: motive,
-        Count: count,
+        Motivo: motive,
+        Cantidad: count,
       }));
 
       const params = {
@@ -253,14 +259,14 @@ export default function JobOpportunitiesDashboard() {
           if (Array.isArray(op.postulations)) {
             op.postulations.forEach((post) => {
               rawMotivesRows.push({
-                Opportunity: `${op.title} #${op.id}`,
-                Name: post.name,
-                Surname: post.surname,
+                Convocatoria: `${op.title} #${op.id}`,
+                Nombre: post.name,
+                Apellido: post.surname,
                 Email: post.email,
-                "Application status": post.status,
-                Motive: post.motive,
-                "Evaluated at": post.evaluated_at,
-                "Created at": post.created_at,
+                "Estado postulación": post.status,
+                Motivo: post.motive,
+                Evaluado: post.evaluated_at,
+                Creado: post.created_at,
               });
             });
           }

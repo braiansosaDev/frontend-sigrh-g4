@@ -112,6 +112,12 @@ export default function LicensesDashboard() {
 
   useEffect(() => {
     if (token && licensesTypes.length > 0) {
+      const now = new Date();
+      const firstDay = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const lastDayStr = `${lastDay.getFullYear()}-${String(lastDay.getMonth() + 1).padStart(2, "0")}-${String(lastDay.getDate()).padStart(2, "0")}`;
+      setStartDate(firstDay);
+      setEndDate(lastDayStr);
       fetchLicenses();
     }
   }, [licensesTypes]); //Esto lo tuve que agregar porque licensesTypes tarda en cargar, entonces hay que esperar que esté listo
