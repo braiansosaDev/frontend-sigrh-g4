@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import PostulationIndicatorsCards from "./PostulationIndicatorsCards";
 import config from "@/config";
@@ -20,28 +20,63 @@ export default function PostulationIndicatorsContainer() {
   const [suitabilityData, setSuitabilityData] = useState(null);
   const [statusData, setStatusData] = useState(null);
 
+  const [opportunities, setOpportunities] = useState([]);
+  const [jobOpportunitySearch, setJobOpportunitySearch] = useState("");
+  const [showJobOpportunityOptions, setShowJobOpportunityOptions] =
+    useState(false);
+  const [selectedJobOpportunity, setSelectedJobOpportunity] = useState(null);
+  const jobOpportunityInputRef = useRef(null);
+
   const token = Cookies.get("token");
 
   useEffect(() => {
-    const now = new Date();
-    const firstDay = `${now.getFullYear()}-${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}-01`;
-    const lastDayDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const lastDay = `${lastDayDate.getFullYear()}-${String(
-      lastDayDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(lastDayDate.getDate()).padStart(2, "0")}`;
-    setStartDate(firstDay);
-    setEndDate(lastDay);
-    fetchIndicators(firstDay, lastDay);
-    fetchSuitabilityData(firstDay, lastDay);
-    fetchStatusData(firstDay, lastDay);
+    const fetchOpportunities = async () => {
+      try {
+        const res = await axios.get(`${config.API_URL}/opportunities`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOpportunities(res.data);
+      } catch (e) {
+        toastAlerts.showError(
+          "Error al traer las convocatorias, recargue la página e intente nuevamente"
+        );
+      }
+    };
+    fetchOpportunities();
+  }, [token]);
+
+  // Filtros de opciones para el buscador
+  const opportunityOptions = opportunities.map((o) => ({
+    label: `${o.title} #${o.id}`,
+    value: o.id,
+  }));
+  const filteredJobOpportunityOptions = jobOpportunitySearch
+    ? opportunityOptions.filter((opt) =>
+        opt.label.toLowerCase().includes(jobOpportunitySearch.toLowerCase())
+      )
+    : opportunityOptions;
+
+  // Cerrar menú de opciones al hacer click fuera
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        jobOpportunityInputRef.current &&
+        !jobOpportunityInputRef.current.contains(event.target)
+      ) {
+        setShowJobOpportunityOptions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchIndicators = async (from, to) => {
+  const fetchIndicators = async (from, to, jobOpportunityId) => {
     setLoading(true);
     try {
-      const params = { from_date: from, to_date: to };
+      const params = {};
+      if (from) params.from_date = from;
+      if (to) params.to_date = to;
+      if (jobOpportunityId) params.job_opportunity_id = jobOpportunityId;
       const res = await axios.get(
         `${config.API_URL}/opportunitiesopportunities/indicators-by-date-range`,
         {
@@ -56,61 +91,103 @@ export default function PostulationIndicatorsContainer() {
     setLoading(false);
   };
 
-  const fetchSuitabilityData = async (from, to) => {
-    const params = { from_date: from, to_date: to };
-    const res = await axios.get(
-      `${config.API_URL}/postulations/stats/suitability`,
-      { headers: { Authorization: `Bearer ${token}` }, params }
-    );
-    let totalAptosIA = 0,
-      totalNoAptosIA = 0;
-    if (Array.isArray(res.data)) {
-      res.data.forEach((item) => {
-        totalAptosIA += item.aptos_ia || 0;
-        totalNoAptosIA += item.no_aptos_ia || 0;
-      });
+  const fetchSuitabilityData = async (from, to, jobOpportunityId) => {
+    try {
+      const params = {};
+      if (from) params.from_date = from;
+      if (to) params.to_date = to;
+      if (jobOpportunityId) params.job_opportunity_id = jobOpportunityId;
+      const res = await axios.get(
+        `${config.API_URL}/postulations/stats/suitability`,
+        { headers: { Authorization: `Bearer ${token}` }, params }
+      );
+      let totalAptosIA = 0,
+        totalNoAptosIA = 0;
+      if (Array.isArray(res.data)) {
+        res.data.forEach((item) => {
+          totalAptosIA += item.aptos_ia || 0;
+          totalNoAptosIA += item.no_aptos_ia || 0;
+        });
+      }
+      setSuitabilityData([
+        { name: "Aptos IA", value: totalAptosIA },
+        { name: "No Aptos IA", value: totalNoAptosIA },
+      ]);
+    } catch (e) {
+      toastAlerts.showError("Error al obtener datos de aptitud IA");
     }
-    setSuitabilityData([
-      { name: "Aptos IA", value: totalAptosIA },
-      { name: "No Aptos IA", value: totalNoAptosIA },
-    ]);
   };
 
-  const fetchStatusData = async (from, to) => {
-    const params = { from_date: from, to_date: to };
-    const res = await axios.get(`${config.API_URL}/postulations/stats/status`, {
-      headers: { Authorization: `Bearer ${token}` },
-      params,
-    });
-    let totalAptosIA2 = 0,
-      totalAceptada = 0,
-      totalContratado = 0;
-    if (Array.isArray(res.data)) {
-      res.data.forEach((item) => {
-        totalAptosIA2 += item.aptos_ia || 0;
-        totalAceptada += item.aptos_aceptada || 0;
-        totalContratado += item.aptos_contratado || 0;
-      });
+  const fetchStatusData = async (from, to, jobOpportunityId) => {
+    try {
+      const params = {};
+      if (from) params.from_date = from;
+      if (to) params.to_date = to;
+      if (jobOpportunityId) params.job_opportunity_id = jobOpportunityId;
+      const res = await axios.get(
+        `${config.API_URL}/postulations/stats/status`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        }
+      );
+      let totalAptosIA2 = 0,
+        totalAceptada = 0,
+        totalContratado = 0;
+      if (Array.isArray(res.data)) {
+        res.data.forEach((item) => {
+          totalAptosIA2 += item.aptos_ia || 0;
+          totalAceptada += item.aptos_aceptada || 0;
+          totalContratado += item.aptos_contratado || 0;
+        });
+      }
+      const aptosIANoAceptadosNiContratados = Math.max(
+        totalAptosIA2 - totalAceptada - totalContratado,
+        0
+      );
+      setStatusData([
+        {
+          name: "Aptos IA no aceptados/contratados",
+          value: aptosIANoAceptadosNiContratados,
+        },
+        { name: "Aceptados", value: totalAceptada },
+        { name: "Contratados", value: totalContratado },
+      ]);
+    } catch (e) {
+      toastAlerts.showError("Error al obtener datos de estado IA");
     }
-    const aptosIANoAceptadosNiContratados = Math.max(
-      totalAptosIA2 - totalAceptada - totalContratado,
-      0
-    );
-    setStatusData([
-      {
-        name: "Aptos IA no aceptados/contratados",
-        value: aptosIANoAceptadosNiContratados,
-      },
-      { name: "Aceptados", value: totalAceptada },
-      { name: "Contratados", value: totalContratado },
-    ]);
   };
+
+  // Primer carga
+  useEffect(() => {
+    const now = new Date();
+    const firstDay = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-01`;
+    const lastDayDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const lastDay = `${lastDayDate.getFullYear()}-${String(
+      lastDayDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(lastDayDate.getDate()).padStart(2, "0")}`;
+    setStartDate(firstDay);
+    setEndDate(lastDay);
+    fetchIndicators(firstDay, lastDay, null);
+    fetchSuitabilityData(firstDay, lastDay, null);
+    fetchStatusData(firstDay, lastDay, null);
+  }, []);
 
   const handleFilter = () => {
-    if (!startDate || !endDate || startDate > endDate) return;
-    fetchIndicators(startDate, endDate);
-    fetchSuitabilityData(startDate, endDate);
-    fetchStatusData(startDate, endDate);
+    if (
+      (!startDate || !endDate || startDate > endDate) &&
+      !selectedJobOpportunity
+    ) {
+      return;
+    }
+    const jobOpportunityId = selectedJobOpportunity
+      ? selectedJobOpportunity.value
+      : null;
+    fetchIndicators(startDate, endDate, jobOpportunityId);
+    fetchSuitabilityData(startDate, endDate, jobOpportunityId);
+    fetchStatusData(startDate, endDate, jobOpportunityId);
     setFilteredStartDate(startDate);
     setFilteredEndDate(endDate);
   };
@@ -125,6 +202,11 @@ export default function PostulationIndicatorsContainer() {
           Periodo: `Desde: ${startDate} Hasta: ${endDate}`,
         },
       ];
+      if (selectedJobOpportunity) {
+        periodInfo.push({
+          "Convocatoria filtrada": `${selectedJobOpportunity.label}`,
+        });
+      }
       const indicatorsRows = [
         {
           Indicador: "Promedio Aptos",
@@ -162,7 +244,11 @@ export default function PostulationIndicatorsContainer() {
       const sheetData = [...periodInfo, {}, ...indicatorsRows];
 
       // Hoja 2: Datos crudos postulaciones
-      const params = { from_date: startDate, to_date: endDate };
+      const params = {};
+      if (startDate) params.from_date = startDate;
+      if (endDate) params.to_date = endDate;
+      if (selectedJobOpportunity)
+        params.job_opportunity_id = selectedJobOpportunity.value;
       const resRaw = await axios.get(
         `${config.API_URL}/opportunities/opportunities-postulations`,
         {
@@ -173,6 +259,12 @@ export default function PostulationIndicatorsContainer() {
       let rawPostulationsRows = [];
       if (Array.isArray(resRaw.data)) {
         resRaw.data.forEach((op) => {
+          if (
+            selectedJobOpportunity &&
+            String(op.id) !== String(selectedJobOpportunity.value)
+          ) {
+            return;
+          }
           if (Array.isArray(op.postulations)) {
             op.postulations.forEach((post) => {
               rawPostulationsRows.push({
@@ -193,6 +285,8 @@ export default function PostulationIndicatorsContainer() {
                 Motivo: post.motive,
                 "Creado en": post.created_at,
                 "Actualizado en": post.updated_at,
+                "Convocatoria filtrada":
+                  selectedJobOpportunity?.label || "Sin filtro",
               });
             });
           }
@@ -202,20 +296,30 @@ export default function PostulationIndicatorsContainer() {
       // Nueva hoja: Aptos/No Aptos IA
       const aptosNoAptosSheet = [
         { Periodo: `Desde: ${startDate} Hasta: ${endDate}` },
+        selectedJobOpportunity
+          ? { "Convocatoria filtrada": selectedJobOpportunity.label }
+          : {},
         {},
         ...(suitabilityData || []).map((item) => ({
           Tipo: item.name,
           Cantidad: item.value,
+          "Convocatoria filtrada":
+            selectedJobOpportunity?.label || "Sin filtro",
         })),
       ];
 
       // Nueva hoja: Evaluación aptos IA
       const evalAptosIASheet = [
         { Periodo: `Desde: ${startDate} Hasta: ${endDate}` },
+        selectedJobOpportunity
+          ? { "Convocatoria filtrada": selectedJobOpportunity.label }
+          : {},
         {},
         ...(statusData || []).map((item) => ({
           Tipo: item.name,
           Cantidad: item.value,
+          "Convocatoria filtrada":
+            selectedJobOpportunity?.label || "Sin filtro",
         })),
       ];
 
@@ -281,11 +385,66 @@ export default function PostulationIndicatorsContainer() {
                 className="border border-gray-300 text-gray-500 rounded px-2 py-2 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
             </div>
-            {startDate && endDate && (
+            <div className="relative" ref={jobOpportunityInputRef}>
+              <label className="block text-xs font-semibold mb-1">
+                Convocatoria
+              </label>
+              <input
+                type="text"
+                placeholder="Buscar convocatoria"
+                className="border border-gray-300 text-gray-500 rounded-full px-2 py-2 w-56 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                value={jobOpportunitySearch}
+                onChange={(e) => {
+                  setJobOpportunitySearch(e.target.value);
+                  setShowJobOpportunityOptions(true);
+                }}
+                onFocus={() => setShowJobOpportunityOptions(true)}
+                autoComplete="off"
+              />
+              {showJobOpportunityOptions &&
+                filteredJobOpportunityOptions.length > 0 && (
+                  <ul
+                    className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow max-h-48 overflow-auto"
+                    style={{ minWidth: "14rem" }}
+                  >
+                    {filteredJobOpportunityOptions.map((opt) => (
+                      <li
+                        key={opt.value}
+                        className={`px-3 py-2 cursor-pointer hover:bg-emerald-100 ${
+                          selectedJobOpportunity?.value === opt.value
+                            ? "bg-emerald-50"
+                            : ""
+                        }`}
+                        onMouseDown={() => {
+                          setSelectedJobOpportunity(opt);
+                          setJobOpportunitySearch(opt.label);
+                          setShowJobOpportunityOptions(false);
+                        }}
+                      >
+                        {opt.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              {selectedJobOpportunity && (
+                <button
+                  className="absolute right-2 top-8 text-gray-400 hover:text-red-500"
+                  title="Quitar filtro"
+                  onClick={() => {
+                    setSelectedJobOpportunity(null);
+                    setJobOpportunitySearch("");
+                  }}
+                  type="button"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            {((startDate && endDate && startDate <= endDate) ||
+              selectedJobOpportunity) && (
               <button
                 onClick={handleFilter}
                 className="bg-emerald-600 text-white rounded-full px-4 py-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 cursor-pointer"
-                disabled={loading || startDate > endDate}
               >
                 Filtrar
               </button>
@@ -304,7 +463,7 @@ export default function PostulationIndicatorsContainer() {
         <PostulationSuitabilityCharts
           suitabilityData={suitabilityData}
           statusData={statusData}
-        ></PostulationSuitabilityCharts>
+        />
       </div>
     </div>
   );
