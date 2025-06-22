@@ -37,75 +37,10 @@ function Guide({ data, labels, colors = COLORS }) {
   );
 }
 
-export default function PostulationSuitabilityCharts({ fromDate, toDate }) {
-  const [suitabilityData, setSuitabilityData] = useState(null);
-  const [statusData, setStatusData] = useState(null);
-  const token = Cookies.get("token");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const params = {};
-        if (fromDate) params.from_date = fromDate;
-        if (toDate) params.to_date = toDate;
-
-        const resSuit = await axios.get(
-          `${config.API_URL}/postulations/stats/suitability`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params,
-          }
-        );
-        let totalAptosIA = 0;
-        let totalNoAptosIA = 0;
-        if (Array.isArray(resSuit.data)) {
-          resSuit.data.forEach((item) => {
-            totalAptosIA += item.aptos_ia || 0;
-            totalNoAptosIA += item.no_aptos_ia || 0;
-          });
-        }
-        setSuitabilityData([
-          { name: "Aptos IA", value: totalAptosIA },
-          { name: "No Aptos IA", value: totalNoAptosIA },
-        ]);
-
-        const resStatus = await axios.get(
-          `${config.API_URL}/postulations/stats/status`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params,
-          }
-        );
-        let totalAptosIA2 = 0;
-        let totalAceptada = 0;
-        let totalContratado = 0;
-        console.log("Response from status:", resStatus.data);
-        if (Array.isArray(resStatus.data)) {
-          resStatus.data.forEach((item) => {
-            totalAptosIA2 += item.aptos_ia || 0;
-            totalAceptada += item.aptos_aceptada || 0;
-            totalContratado += item.aptos_contratado || 0;
-          });
-        }
-        const aptosIANoAceptadosNiContratados = Math.max(
-          totalAptosIA2 - totalAceptada - totalContratado,
-          0
-        );
-        setStatusData([
-          {
-            name: "Aptos IA no aceptados/contratados",
-            value: aptosIANoAceptadosNiContratados,
-          },
-          { name: "Aptos IA Aceptados", value: totalAceptada },
-          { name: "Aptos IA Contratados", value: totalContratado },
-        ]);
-      } catch (e) {
-        console.log("Error fetching postulation suitability data:", e);
-      }
-    };
-    fetchData();
-  }, [fromDate, toDate, token]);
-
+export default function PostulationSuitabilityCharts({
+  suitabilityData,
+  statusData,
+}) {
   return (
     <div className="w-full flex flex-col md:flex-row gap-8 mt-8">
       {/* Gráfico 1 */}
