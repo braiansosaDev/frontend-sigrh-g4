@@ -41,6 +41,7 @@ function Guide({ data, labels, colors = COLORS }) {
 export default function PostulationSuitabilityCharts({
   suitabilityData,
   statusData,
+  context,
 }) {
   return (
     <div className="w-full flex flex-col md:flex-row gap-8 mt-8">
@@ -48,7 +49,12 @@ export default function PostulationSuitabilityCharts({
       <div className="flex-1 bg-white rounded shadow p-6 flex flex-col md:flex-row items-center">
         <div className="flex-1 flex flex-col items-center">
           <h3 className="text-lg font-semibold mb-4 text-emerald-700 text-center">
-            Aptos IA / No Aptos IA
+            Aptos IA / No Aptos IA{" "}
+            {context && (
+              <div className="mb-2 text-xs text-emerald-700 font-semibold text-center">
+                {context}
+              </div>
+            )}
           </h3>
           <ResponsiveContainer width={220} height={220}>
             <PieChart>
@@ -88,7 +94,12 @@ export default function PostulationSuitabilityCharts({
       <div className="flex-1 bg-white rounded shadow p-6 flex flex-col md:flex-row items-center">
         <div className="flex-1 flex flex-col items-center">
           <h3 className="text-lg font-semibold mb-4 text-emerald-700 text-center">
-            Ánalisis de Aceptación y Contratación
+            Ánalisis de Aceptación y Contratación{" "}
+            {context && (
+              <div className="mb-2 text-xs text-emerald-700 font-semibold text-center">
+                {context}
+              </div>
+            )}
           </h3>
           <ResponsiveContainer width={220} height={220}>
             <PieChart>
