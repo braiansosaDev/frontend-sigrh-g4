@@ -10,6 +10,7 @@ import HasPermission from "../HasPermission";
 import { PermissionIds } from "@/enums/permissions";
 import EmployeeChangePasswordModal from "./EmployeeChangePasswordModal";
 import { toastAlerts } from "@/utils/toastAlerts";
+import Cookies from "js-cookie";
 
 export default function EmployeeUser({ employeeData, id }) {
   const [formData, setFormData] = useState({
@@ -40,6 +41,26 @@ export default function EmployeeUser({ employeeData, id }) {
   const handleOpenChangePassword = () => {
     setModalOpen(true);
   };
+
+  async function handleResetPassword() {
+    const token = Cookies.get("token")
+    const res = await axios.post(
+      `${config.API_URL}/employees/reset_password/`,
+      {
+        employee_id: id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    if (res.status === 204) {
+      toastAlerts.showSuccess("Contraseña reseteada correctamente")
+    } else {
+      toastAlerts.showError("Error inesperado al resetear la contraseña")
+    }
+  }
 
   async function handleSave() {
     const dataToSend = { ...formData };
@@ -107,12 +128,20 @@ export default function EmployeeUser({ employeeData, id }) {
             </div>
             <div className="flex flex-col w-full">
               <label className="text-sm text-gray-500">Password</label>
-              <button
-                className="cursor-pointer bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                onClick={handleOpenChangePassword}
-              >
-                Cambiar contraseña
-              </button>
+              <div className="flex flex-col w-full gap-2">
+                <button
+                  className="cursor-pointer bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                  onClick={handleOpenChangePassword}
+                >
+                  Cambiar contraseña
+                </button>
+                <button
+                  className="cursor-pointer bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                  onClick={handleResetPassword}
+                >
+                  Resetear contraseña
+                </button>
+              </div>
             </div>
           </div>
 
