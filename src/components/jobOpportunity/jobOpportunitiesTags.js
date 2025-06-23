@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import config from "@/config";
 import { toastAlerts } from "@/utils/toastAlerts";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function JobOpportunitiesTags({
   tags,
@@ -15,6 +16,8 @@ export default function JobOpportunitiesTags({
   const [availableTags, setAvailableTags] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [formAlertOpen, setFormAlertOpen] = useState(false);
+  const [formAlertMsg, setFormAlertMsg] = useState("");
   const token = Cookies.get("token");
   const maxSuggestions = 1; // Número máximo de sugerencias a mostrar
 
@@ -93,7 +96,8 @@ export default function JobOpportunitiesTags({
 
   const handleAddTag = (tag) => {
     if (tags.length >= 15) {
-      alert("No puedes agregar más de 15 etiquetas.");
+      setFormAlertMsg("No puedes agregar más de 15 etiquetas.");
+      setFormAlertOpen(true);
       return;
     }
 
@@ -131,7 +135,8 @@ export default function JobOpportunitiesTags({
 
     // Mostrar el mensaje de alerta solo si la etiqueta ya existía
     if (alreadyExists) {
-      alert("La etiqueta ya existe en alguna de las listas.");
+      setFormAlertMsg("La etiqueta ya existe en alguna de las listas.");
+      setFormAlertOpen(true);
     } else {
       setInputValue(""); // Limpiar el valor del input
       setSuggestions([]); // Limpiar las sugerencias
@@ -140,11 +145,13 @@ export default function JobOpportunitiesTags({
 
   const handleCreateTag = async () => {
     if (tags.length >= 15) {
-      alert("No puedes agregar más de 15 etiquetas.");
+      setFormAlertMsg("No puedes agregar más de 15 etiquetas.");
+      setFormAlertOpen(true);
       return;
     }
     if (inputValue.length >= 50) {
-      alert("La etiqueta no puede tener más de 50 caracteres.");
+      setFormAlertMsg("La etiqueta no puede tener más de 50 caracteres.");
+      setFormAlertOpen(true);
       return;
     }
     if (
@@ -153,7 +160,8 @@ export default function JobOpportunitiesTags({
           existingTag.name.toLowerCase() === inputValue.toLowerCase()
       )
     ) {
-      alert("La etiqueta " + inputValue + " ya existe.");
+      setFormAlertMsg("La etiqueta " + inputValue + " ya existe.");
+      setFormAlertOpen(true);
       return;
     }
 
@@ -312,6 +320,11 @@ export default function JobOpportunitiesTags({
           }
         </div>
       </div>
+      <FormAlert
+        open={formAlertOpen}
+        message={formAlertMsg}
+        onClose={() => setFormAlertOpen(false)}
+      />
     </div>
   );
 }

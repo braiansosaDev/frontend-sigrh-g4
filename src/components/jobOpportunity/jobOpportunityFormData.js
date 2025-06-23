@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/userContext";
 import { canAccess } from "@/utils/permissions";
 import { PermissionIds } from "@/enums/permissions";
 import { toastAlerts } from "@/utils/toastAlerts";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function JobOpportunityFormData({
   onClose,
@@ -33,6 +34,8 @@ export default function JobOpportunityFormData({
   const [statesAreLoaded, setStatesAreLoaded] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [formAlertOpen, setFormAlertOpen] = useState(false);
+  const [formAlertMsg, setFormAlertMsg] = useState("");
 
   const REQUIRED_PERMISSION = PermissionIds.ABM_POSTULACIONES_APROBACIONES;
   const { role } = useUser();
@@ -151,16 +154,24 @@ export default function JobOpportunityFormData({
     }
 
     if (formData.required_abilities.length === 0) {
-      return alert("Debes agregar al menos una etiqueta excluyente.");
+      setFormAlertMsg("Debes agregar al menos una etiqueta excluyente.");
+      setFormAlertOpen(true);
+      return;
     }
     if (formData.desirable_abilities.length === 0) {
-      return alert("Debes agregar al menos una etiqueta deseable.");
+      setFormAlertMsg("Debes agregar al menos una etiqueta deseable.");
+      setFormAlertOpen(true);
+      return;
     }
     if (formData.title.length > 75) {
-      return alert("El título no puede tener más de 75 caracteres.");
+      setFormAlertMsg("El título no puede tener más de 75 caracteres.");
+      setFormAlertOpen(true);
+      return;
     }
     if (formData.description.length > 1000) {
-      return alert("La descripción no puede tener más de 1000 caracteres.");
+      setFormAlertMsg("La descripción no puede tener más de 1000 caracteres.");
+      setFormAlertOpen(true);
+      return;
     }
 
     setIsSaving(true);
@@ -374,6 +385,11 @@ export default function JobOpportunityFormData({
             </button>
           </div>
         </form>
+        <FormAlert
+          open={formAlertOpen}
+          message={formAlertMsg}
+          onClose={() => setFormAlertOpen(false)}
+        />
       </div>
     </div>
   );

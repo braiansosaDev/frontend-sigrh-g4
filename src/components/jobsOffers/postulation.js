@@ -8,6 +8,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { toastAlerts } from "@/utils/toastAlerts";
 import { toast } from "react-toastify";
+import FormAlert from "../customsAlerts/formAlert";
 
 export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const token = Cookies.get("token"); // Token de autenticación
@@ -24,6 +25,8 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
   const [canCreate, setCanCreate] = useState(false); // Verifica si se puede crear una postulación
   const [cvFile, setCvFile] = useState(null); // Almacena el archivo del CV
   const [postulations, setPostulations] = useState([]); // Almacena las postulaciones
+  const [formAlertOpen, setFormAlertOpen] = useState(false);
+  const [formAlertMsg, setFormAlertMsg] = useState("");
 
   const fetchCountries = async () => {
     try {
@@ -120,31 +123,36 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
 
   const validateStep1 = () => {
     if (!email || !name || !surname || !phone || !countryId || !stateId) {
-      alert("Por favor, completa todos los campos.");
+      setFormAlertMsg("Por favor, completa todos los campos.");
+      setFormAlertOpen(true);
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      alert("Por favor, ingresa un email válido.");
+      setFormAlertMsg("Por favor, ingresa un email válido.");
+      setFormAlertOpen(true);
       return false;
     }
 
     if (name.length > 50) {
-      alert("El nombre no puede tener más de 50 caracteres.");
+      setFormAlertMsg("El nombre no puede tener más de 50 caracteres.");
+      setFormAlertOpen(true);
       return false;
     }
 
     if (surname.length > 50) {
-      alert("El apellido no puede tener más de 50 caracteres.");
+      setFormAlertMsg("El apellido no puede tener más de 50 caracteres.");
+      setFormAlertOpen(true);
       return false;
     }
 
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
     if (!phoneRegex.test(phone)) {
-      alert(
+      setFormAlertMsg(
         "Por favor, ingresa un número de teléfono válido en formato internacional (ejemplo: +541112345678)."
       );
+      setFormAlertOpen(true);
       return false;
     }
 
@@ -152,13 +160,15 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       (country) => country.id === parseInt(countryId)
     );
     if (!countryExists) {
-      alert("El país seleccionado no es válido.");
+      setFormAlertMsg("El país seleccionado no es válido.");
+      setFormAlertOpen(true);
       return false;
     }
 
     const stateExists = states.some((state) => state.id === parseInt(stateId));
     if (!stateExists) {
-      alert("La provincia seleccionada no es válida.");
+      setFormAlertMsg("La provincia seleccionada no es válida.");
+      setFormAlertOpen(true);
       return false;
     }
 
@@ -166,9 +176,10 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       (postulation) => postulation.email.toLowerCase() === email.toLowerCase()
     );
     if (emailExists) {
-      alert(
+      setFormAlertMsg(
         "Ya existe una postulación con este email para esta oferta de trabajo."
       );
+      setFormAlertOpen(true);
       return false;
     }
 
@@ -176,28 +187,29 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
   };
 
   const validateCV = (file) => {
-    // Validar que el archivo sea un PDF, dsp agregaremos word (por eso está comentado)
     const allowedExtensions = [
       "application/pdf",
       /*"application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",*/
     ];
     if (!allowedExtensions.includes(file.type)) {
-      alert("El archivo debe ser un documento PDF.");
+      setFormAlertMsg("El archivo debe ser un documento PDF.");
+      setFormAlertOpen(true);
       return false;
     }
 
-    // Validar que el archivo no pese más de 5 MB
     const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
     if (file.size > maxSizeInBytes) {
-      alert("El archivo no puede pesar más de 5 MB.");
+      setFormAlertMsg("El archivo no puede pesar más de 5 MB.");
+      setFormAlertOpen(true);
       return false;
     }
 
     if (!canCreate) {
-      alert(
+      setFormAlertMsg(
         "Lo sentimos, la capacidad máxima de postulaciones ha sido alcanzada."
       );
+      setFormAlertOpen(true);
       return false;
     }
 
@@ -212,10 +224,12 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
       setStep(2);
     } else if (step === 2) {
       if (!cvFile) {
-        alert("Por favor, sube tu CV antes de continuar.");
+        setFormAlertMsg("Por favor, sube tu CV antes de continuar.");
+        setFormAlertOpen(true);
         return;
         /*} else if (!language) {
-        alert("Por favor, selecciona el idioma de tu CV.");
+        setFormAlertMsg("Por favor, selecciona el idioma de tu CV.");
+        setFormAlertOpen(true);
         return;*/
       } else if (!validateCV(cvFile)) {
         return;
@@ -482,6 +496,12 @@ export default function PostulationModal({ onClose, jobTitle, jobId }) {
             Volver
           </button>
         </div>
+
+        <FormAlert
+          open={formAlertOpen}
+          message={formAlertMsg}
+          onClose={() => setFormAlertOpen(false)}
+        />
       </div>
     </div>
   );
