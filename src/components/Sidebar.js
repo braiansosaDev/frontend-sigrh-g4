@@ -120,21 +120,25 @@ const menuItems = [
     label: "Reportes",
     icon: <FaChartBar className="text-2xl" />,
     path: "/sigrh/reports",
+    requiredPermissions: [PermissionIds.ACCESO_REPORTES],
     submenus: [
       {
         label: "Reportes de empleados",
         icon: <FaPerson className="text-2xl" />,
         path: "/sigrh/reports/employees",
+        requiredPermissions: [PermissionIds.REPORTES_EMPLEADOS],
       },
       {
         label: "Reportes de licencias",
         icon: <FaFileAlt className="text-2xl" />,
         path: "/sigrh/reports/licenses",
+        requiredPermissions: [PermissionIds.REPORTES_LICENCIAS],
       },
       {
         label: "Reportes de convocatorias",
         icon: <FaBriefcase className="text-2xl" />,
         path: "/sigrh/reports/job_opportunities",
+        requiredPermissions: [PermissionIds.REPORTES_CONVOCATORIAS],
       },
     ],
   },
