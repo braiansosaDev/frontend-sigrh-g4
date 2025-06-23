@@ -431,7 +431,7 @@ export default function JobOpportunitiesDashboard() {
           params,
         }
       );
-      let rawMotivesRows = [];
+      let datosPostulacionesRows = [];
       if (Array.isArray(resRaw.data)) {
         resRaw.data.forEach((op) => {
           if (
@@ -443,23 +443,68 @@ export default function JobOpportunitiesDashboard() {
           }
           if (Array.isArray(op.postulations)) {
             op.postulations.forEach((post) => {
-              rawMotivesRows.push({
+              datosPostulacionesRows.push({
+                "ID Postulación": post.id,
+                "ID Convocatoria": post.job_opportunity_id,
                 Convocatoria: `${op.title} #${op.id}`,
                 Nombre: post.name,
                 Apellido: post.surname,
                 Email: post.email,
+                Teléfono: post.phone_number,
+                País: post.address_country_id,
+                Provincia: post.address_state_id,
+                Evaluado: post.evaluated_at,
+                "Apto IA": post.suitable ? "Sí" : "No",
                 "Estado postulación": post.status,
                 Motivo: post.motive,
-                Evaluado: post.evaluated_at,
                 Creado: post.created_at,
+                Actualizado: post.updated_at,
               });
             });
           }
         });
       }
 
-      // --- Hojas IA ---
-      // Indicadores principales
+      let convocatoriasRows = [];
+      if (Array.isArray(resRaw.data)) {
+        convocatoriasRows = resRaw.data.map((op) => {
+          const {
+            id,
+            owner_employee_id,
+            status,
+            work_mode,
+            title,
+            description,
+            state_id,
+            required_abilities,
+            desirable_abilities,
+            required_skill_percentage,
+            desirable_skill_percentage,
+            created_at,
+            updated_at,
+          } = op;
+          return {
+            "ID Convocatoria": id,
+            "ID Empleado dueño": owner_employee_id,
+            Estado: status,
+            Modalidad: work_mode,
+            Título: title,
+            Descripción: description,
+            "ID Provincia": state_id,
+            "Habilidades excluyentes": required_abilities
+              ?.map((a) => a.name)
+              .join(", "),
+            "Habilidades deseables": desirable_abilities
+              ?.map((a) => a.name)
+              .join(", "),
+            "% Habilidades excluyentes": required_skill_percentage,
+            "% Habilidades deseables": desirable_skill_percentage,
+            Creado: created_at,
+            Actualizado: updated_at,
+          };
+        });
+      }
+
       const indicatorsRows = [
         {
           Indicador: "Promedio Aptos",
@@ -529,31 +574,38 @@ export default function JobOpportunitiesDashboard() {
         XLSX.utils.book_append_sheet(wb, ws2, "Motivos rechazo");
       }
 
-      if (rawMotivesRows.length > 0) {
-        const ws3 = XLSX.utils.json_to_sheet(rawMotivesRows, {
+      if (datosPostulacionesRows.length > 0) {
+        const ws3 = XLSX.utils.json_to_sheet(datosPostulacionesRows, {
           skipHeader: false,
         });
-        XLSX.utils.book_append_sheet(wb, ws3, "Motivos en crudo");
+        XLSX.utils.book_append_sheet(wb, ws3, "Datos postulaciones");
+      }
+
+      if (convocatoriasRows.length > 0) {
+        const ws4 = XLSX.utils.json_to_sheet(convocatoriasRows, {
+          skipHeader: false,
+        });
+        XLSX.utils.book_append_sheet(wb, ws4, "Convocatorias");
       }
 
       // Hojas IA
       if (indicatorsRows.length > 0) {
-        const ws4 = XLSX.utils.json_to_sheet(indicatorsSheet, {
+        const ws5 = XLSX.utils.json_to_sheet(indicatorsSheet, {
           skipHeader: false,
         });
-        XLSX.utils.book_append_sheet(wb, ws4, "Indicadores postulaciones");
+        XLSX.utils.book_append_sheet(wb, ws5, "Indicadores postulaciones");
       }
       if (aptosNoAptosSheet.length > 3) {
-        const ws5 = XLSX.utils.json_to_sheet(aptosNoAptosSheet, {
+        const ws6 = XLSX.utils.json_to_sheet(aptosNoAptosSheet, {
           skipHeader: false,
         });
-        XLSX.utils.book_append_sheet(wb, ws5, "Aptos y No Aptos");
+        XLSX.utils.book_append_sheet(wb, ws6, "Aptos y No Aptos");
       }
       if (evalAptosIASheet.length > 3) {
-        const ws6 = XLSX.utils.json_to_sheet(evalAptosIASheet, {
+        const ws7 = XLSX.utils.json_to_sheet(evalAptosIASheet, {
           skipHeader: false,
         });
-        XLSX.utils.book_append_sheet(wb, ws6, "Evaluación aptos IA");
+        XLSX.utils.book_append_sheet(wb, ws7, "Evaluación aptos IA");
       }
 
       XLSX.writeFile(wb, "reporte_convocatorias.xlsx");
