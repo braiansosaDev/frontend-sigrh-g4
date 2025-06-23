@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { FaWandSparkles } from "react-icons/fa6";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import config from "@/config";
 
 export default function AIAssistantFloatingChat() {
   const [open, setOpen] = useState(false);
@@ -25,7 +26,7 @@ export default function AIAssistantFloatingChat() {
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/assistant/chat-stream",
+      `${config.API_URL}/assistant/chat-stream`,
       {
         method: "POST",
         headers: {
