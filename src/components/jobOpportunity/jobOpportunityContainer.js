@@ -8,11 +8,12 @@ import axios from "axios";
 import JobOpportunityFormData from "./jobOpportunityFormData";
 import PostulationsContainer from "../postulationsResults/postulationsContainer";
 import { toastAlerts } from "@/utils/toastAlerts";
+import JobOpportunityLogs from "./jobOpportunitiesLogs";
 
 export default function JobOpportunityContainer({ jobOpportunityId }) {
   const [opportunityData, setOpportunityData] = useState({});
   const [activeTab, setActiveTab] = useState(0);
-  const tabs = ["Detalles", "Postulaciones"];
+  const tabs = ["Detalles", "Postulaciones", "Logs"];
 
   const token = Cookies.get("token");
   const router = useRouter();
@@ -148,6 +149,12 @@ export default function JobOpportunityContainer({ jobOpportunityId }) {
         {activeTab === 1 && (
           <div className="h-[70vh] overflow-y-auto">
             <PostulationsContainer jobOpportunityId={opportunityData.id} />
+          </div>
+        )}
+
+        {activeTab === 2 && (
+          <div className="h-[70vh] overflow-y-auto">
+            <JobOpportunityLogs jobOpportunityId={opportunityData.id} />
           </div>
         )}
       </div>
