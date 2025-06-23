@@ -55,7 +55,7 @@ export default function EmployeeFilters({ employees, onApplyFilters }) {
     <div className="relative z-100 inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2"
+        className="px-4 py-2 bg-emerald-500 rounded-full text-white text-sm font-semibold flex items-center gap-2 cursor-pointer"
       >
         <FaFilter />
         Filtros
@@ -115,13 +115,13 @@ export default function EmployeeFilters({ employees, onApplyFilters }) {
           <div className="flex justify-between gap-2">
             <button
               onClick={handleClearFilters}
-              className="w-1/2 px-4 py-2 bg-gray-200 rounded text-gray-700 text-sm font-semibold hover:bg-gray-300"
+              className="w-1/2 px-4 py-2 bg-gray-200 rounded text-gray-700 text-sm font-semibold hover:bg-gray-300 cursor-pointer"
             >
               Limpiar
             </button>
             <button
               onClick={handleApplyFilters}
-              className="w-1/2 px-4 py-2 bg-emerald-500 rounded text-white text-sm font-semibold hover:bg-emerald-600"
+              className="w-1/2 px-4 py-2 bg-emerald-500 rounded text-white text-sm font-semibold hover:bg-emerald-600 cursor-pointer"
             >
               Aplicar
             </button>

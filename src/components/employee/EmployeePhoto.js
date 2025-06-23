@@ -57,7 +57,7 @@ export default function EmployeePhoto({ photoBase64, onPhotoChange }) {
       <button
         type="button"
         onClick={() => fileInputRef.current.click()}
-        className="mt-2 px-3 py-1 text-sm bg-emerald-500 text-white rounded hover:bg-emerald-600"
+        className="mt-2 px-3 py-1 text-sm bg-emerald-500 text-white rounded hover:bg-emerald-600 cursor-pointer"
       >
         Cambiar foto
       </button>
