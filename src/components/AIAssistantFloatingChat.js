@@ -130,6 +130,15 @@ export default function AIAssistantFloatingChat() {
               rows={1}
               value={pregunta}
               onChange={(e) => setPregunta(e.target.value)}
+              onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    if (!isLoading) {
+                      handleEnviar()
+                    }
+                  }
+                }
+              }
               className="w-full p-2 border border-gray-200 rounded text-sm"
               placeholder="¿Cómo te puedo ayudar?"
             />
