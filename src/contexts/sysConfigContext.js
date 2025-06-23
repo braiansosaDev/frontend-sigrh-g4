@@ -13,30 +13,30 @@ export function SystemConfigProvider({ children }) {
     loadBackendConfig();
   }, []);
 
-  async function loadMockConfig() {
-    const logoBase64 = await getBase64FromPublic("/gottert-navbar.png");
-    const faviconBase64 = await getBase64FromPublic("/favicon_test.ico");
+  // async function loadMockConfig() {
+  //   const logoBase64 = await getBase64FromPublic("/gottert-navbar.png");
+  //   const faviconBase64 = await getBase64FromPublic("/favicon_test.ico");
 
-    const mockConfig = {
-      company_name: "Gottert S.A.",
-      logo_base64: logoBase64,
-      favicon_base64: faviconBase64,
-      primary_color: "#1d4ed8",
-      secondary_color: "#93c5fd",
-      language: "es",
-      date_format: "DD/MM/YYYY",
-      features: {
-        showPayroll: true,
-        showDashboard: true,
-      },
-    };
+  //   const mockConfig = {
+  //     company_name: "Gottert S.A.",
+  //     logo_base64: logoBase64,
+  //     favicon_base64: faviconBase64,
+  //     primary_color: "#1d4ed8",
+  //     secondary_color: "#93c5fd",
+  //     language: "es",
+  //     date_format: "DD/MM/YYYY",
+  //     features: {
+  //       showPayroll: true,
+  //       showDashboard: true,
+  //     },
+  //   };
 
-    // Convertir a data URLs
-    mockConfig.logo_url = `data:image/png;base64,${logoBase64}`;
-    mockConfig.favicon_url = `data:image/x-icon;base64,${faviconBase64}`;
+  //   // Convertir a data URLs
+  //   mockConfig.logo_url = `data:image/png;base64,${logoBase64}`;
+  //   mockConfig.favicon_url = `data:image/x-icon;base64,${faviconBase64}`;
 
-    setSysconfig(mockConfig);
-  }
+  //   setSysconfig(mockConfig);
+  // }
 
   async function loadBackendConfig() {
     let sysConfigFetched;
