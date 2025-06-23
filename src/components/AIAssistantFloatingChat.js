@@ -31,7 +31,10 @@ export default function AIAssistantFloatingChat() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ pregunta }),
+        body: JSON.stringify({
+          pregunta,
+          historial: messages.map(({ role, content }) => ({ role, content })),
+        }),
       }
     );
 

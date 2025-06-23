@@ -125,7 +125,7 @@ export default function LoginPage() {
               Ingresar
             </button>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <button
                 type="button"
                 className="text-sm text-emerald-600 hover:underline mt-2 cursor-pointer"
@@ -133,7 +133,7 @@ export default function LoginPage() {
               >
                 ¿Olvidaste tu contraseña?
               </button>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>
