@@ -199,7 +199,7 @@ export default function SettingsContainer() {
             <button
               type="button"
               onClick={() => logoInputRef.current?.click()}
-              className="inline-flex items-center gap-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition"
+              className="inline-flex items-center gap-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition cursor-pointer"
             >
               <FaFileUpload />
               Subir logo
@@ -223,7 +223,7 @@ export default function SettingsContainer() {
               <button
                 type="button"
                 onClick={handleClearLogo}
-                className="text-sm text-red-600 underline mt-1"
+                className="text-sm text-red-600 underline mt-1 cursor-pointer"
               >
                 Eliminar logo
               </button>
@@ -238,7 +238,7 @@ export default function SettingsContainer() {
             <button
               type="button"
               onClick={() => faviconInputRef.current?.click()}
-              className="inline-flex items-center gap-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition"
+              className="inline-flex items-center gap-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition cursor-pointer"
             >
               <FaFileUpload />
               Subir favicon
@@ -262,7 +262,7 @@ export default function SettingsContainer() {
               <button
                 type="button"
                 onClick={handleClearFavicon}
-                className="text-sm text-red-600 underline mt-1"
+                className="text-sm text-red-600 underline mt-1 cursor-pointer"
               >
                 Eliminar favicon
               </button>
@@ -273,7 +273,7 @@ export default function SettingsContainer() {
 
       <button
         onClick={handleSubmit}
-        className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+        className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 cursor-pointer"
       >
         Guardar configuración
       </button>

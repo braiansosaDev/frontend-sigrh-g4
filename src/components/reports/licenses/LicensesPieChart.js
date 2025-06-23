@@ -116,9 +116,11 @@ export default function LicensesPieChart({ data, startDate, endDate, type }) {
         <h3 className="text-lg font-semibold mb-4 text-emerald-700">
           {isFullMonth
             ? `Cantidad de licencias de ${mounthText.charAt(0).toUpperCase() + mounthText.slice(1)}`
-            : startDate === endDate
+            : startDate === endDate && startDate && endDate
               ? `Cantidad de licencias del ${startDate}`
-              : `Cantidad de licencias desde el ${startDate} hasta el ${endDate}`}
+              : startDate && endDate
+                ? `Cantidad de licencias desde el ${startDate} hasta el ${endDate}`
+                : "Cantidad de licencias"}
           {type ? ` del tipo ${type}` : ""}
         </h3>
         <div className="grid grid-cols-2 gap-x-8">
@@ -129,8 +131,13 @@ export default function LicensesPieChart({ data, startDate, endDate, type }) {
                   className="inline-block w-4 h-4 rounded-full"
                   style={{ backgroundColor: COLORS[item.id % COLORS.length] }}
                 ></span>
-                <span className="font-medium">{item.type}:</span>
-                <span className="ml-2 text-gray-700">{item.count}</span>
+                <span className="font-medium">{item.id}) </span>
+                <span>
+                  {item.type}:{" "}
+                  <span className="font-semibold border border-gray-200 px-1 rounded">
+                    {item.count}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>
@@ -141,8 +148,13 @@ export default function LicensesPieChart({ data, startDate, endDate, type }) {
                   className="inline-block w-4 h-4 rounded-full"
                   style={{ backgroundColor: COLORS[item.id % COLORS.length] }}
                 ></span>
-                <span className="font-medium">{item.type}:</span>
-                <span className="ml-2 text-gray-700">{item.count}</span>
+                <span className="font-medium">{item.id}) </span>
+                <span className="text-sm">
+                  {item.type}:{" "}
+                  <span className="font-semibold border border-gray-200 px-1 rounded">
+                    {item.count}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>

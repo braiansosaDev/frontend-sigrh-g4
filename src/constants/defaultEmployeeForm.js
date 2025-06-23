@@ -32,7 +32,7 @@ export const defaultEmployeeDataForm = {
   first_name: "",
   last_name: "",
   dni: "",
-  type_dni: "", // Tipo de documento (DU, DNI, etc.)
+  type_dni: "du", // Tipo de documento (DU, DNI, etc.)
   personal_email: "",
   active: true, // Por defecto, activo
   phone: "",

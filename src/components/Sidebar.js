@@ -17,6 +17,7 @@ import {
   FaFileContract,
   FaChartBar,
   FaChartPie,
+  FaFileArchive,
 } from "react-icons/fa";
 import { MdSecurity, MdSettings } from "react-icons/md";
 import { canAccess } from "@/utils/permissions";
@@ -126,11 +127,6 @@ const menuItems = [
         path: "/sigrh/reports/employees",
       },
       {
-        label: "Reportes de asistencia",
-        icon: <FaClock className="text-2xl" />,
-        path: "/sigrh/reports/attendance",
-      },
-      {
         label: "Reportes de licencias",
         icon: <FaFileAlt className="text-2xl" />,
         path: "/sigrh/reports/licenses",
@@ -212,7 +208,7 @@ export default function Sidebar({ isOpen, onClose }) {
                       onClick={() =>
                         setActiveSubMenu(activeSubMenu === idx ? null : idx)
                       }
-                      className={`w-full flex items-center justify-between p-2 rounded-lg transition-all ${
+                      className={`w-full flex items-center justify-between p-2 rounded-lg transition-all cursor-pointer ${
                         isParentActive
                           ? "bg-emerald-500 text-white"
                           : "hover:bg-emerald-500 hover:text-white"
@@ -258,7 +254,7 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="p-4">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-all"
+            className="w-full flex items-center justify-center space-x-2 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-all cursor-pointer"
           >
             <FaSignOutAlt className="text-2xl" />
             <span>Cerrar Sesión</span>

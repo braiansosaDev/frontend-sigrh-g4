@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TourProvider, useTour } from "@reactour/tour";
+import AppTourProvider from "@/utils/AppTourProvider";
 import LicenseModal from "./LicenseModal";
 import LicensesTable from "./LicensesTable";
 import FiltersModal from "./FiltersModal";
 import { FaFilter } from "react-icons/fa";
+import { useTour } from "@reactour/tour";
 
 export default function LicensesContainer() {
   const [openModal, setOpenModal] = useState(false);
@@ -47,54 +48,7 @@ export default function LicensesContainer() {
   ];
 
   return (
-    <TourProvider
-      steps={steps}
-      styles={{
-        popover: (base) => ({
-          ...base,
-          borderRadius: 12,
-          color: "#047857",
-          boxShadow: "0 4px 24px 0 rgba(0,0,0,0.15)",
-          padding: "3rem",
-        }),
-        badge: (base) => ({
-          ...base,
-          background: "#10b981",
-          color: "#fff",
-          fontWeight: "bold",
-        }),
-        dot: (base) => ({
-          ...base,
-          background: "#10b981",
-          border: "1px solid #047857",
-        }),
-        close: (base) => ({
-          ...base,
-          padding: 5,
-          width: 20,
-          height: 20,
-          color: "#047857",
-        }),
-        controls: (base) => ({
-          ...base,
-          marginTop: 16,
-        }),
-        arrow: (base) => ({
-          ...base,
-          padding: 0,
-          margin: 10,
-          color: "#047857",
-        }),
-        button: (base) => ({
-          ...base,
-          background: "#fff",
-          color: "#10b981",
-          borderRadius: 10,
-          fontWeight: "bold",
-          border: "2px solid #10b981",
-        }),
-      }}
-    >
+    <AppTourProvider steps={steps}>
       <InnerLicensesContainer
         openModal={openModal}
         setOpenModal={setOpenModal}
@@ -105,7 +59,7 @@ export default function LicensesContainer() {
         updateLicenses={updateLicenses}
         setUpdateLicenses={setUpdateLicenses}
       />
-    </TourProvider>
+    </AppTourProvider>
   );
 }
 
@@ -124,10 +78,11 @@ function InnerLicensesContainer({
   useEffect(() => {
     const alreadySeen = localStorage.getItem("seenLicensesTour");
     if (!alreadySeen) {
+      setCurrentStep(0);
       setIsOpen(true);
       localStorage.setItem("seenLicensesTour", "true");
     }
-  }, [setIsOpen]);
+  }, [setIsOpen, setCurrentStep]);
 
   return (
     <div className="w-full min-h-screen p-6 flex flex-col">
@@ -139,7 +94,7 @@ function InnerLicensesContainer({
           {/* Botón de guía */}
           <button
             onClick={() => {
-              setCurrentStep(0);
+              setCurrentStep(0); // <-- Siempre empieza en el primer paso
               setIsOpen(true);
             }}
             className="interrogation-button ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors"

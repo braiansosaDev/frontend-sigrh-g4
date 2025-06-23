@@ -72,7 +72,7 @@ export default function Navbar({ onToggleSidebar }) {
             </span>
           </div>
           <img
-            src={ user.photo || null}
+            src={ user.photo || "/default-avatar.svg"}
             alt="Foto de perfil"
             className="w-10 h-10 rounded-full object-cover border border-gray-200"
           />

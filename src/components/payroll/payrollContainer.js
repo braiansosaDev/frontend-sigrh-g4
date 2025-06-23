@@ -11,6 +11,8 @@ import ProcessPayrollModal from "./payrollProcessModal";
 import { FiAlertTriangle } from "react-icons/fi";
 import { CONCEPTS_ALARM } from "@/constants/conceptsAlarms";
 import { toastAlerts } from "@/utils/toastAlerts";
+import AppTourProvider from "@/utils/AppTourProvider";
+import { useTour } from "@reactour/tour";
 
 function stringSimilarity(a, b) {
   if (a.toLowerCase() === b.toLowerCase()) return 1;
@@ -26,7 +28,60 @@ function stringSimilarity(a, b) {
   return (matches / Math.max(a.length, 1)) * 0.5;
 }
 
-export default function PayrollContainer() {
+const steps = [
+  {
+    selector: "body",
+    content:
+      "Bienvenido a la sección de nómina. Aquí puedes gestionar las horas trabajadas de los empleados.",
+  },
+  {
+    selector: ".payroll-table",
+    content:
+      "En esta tabla podras consultar los datos relacionados con las funcionalidades de la sección de nómina.",
+  },
+  {
+    selector: "input[placeholder='🔍︎ Buscar empleado...']",
+    content:
+      "Aquí debes filtrar a un empleado por nombre, apellido o ID. Escribe y selecciona de la lista el correspondiente.",
+  },
+  {
+    selector: "input[type='date']:first-of-type",
+    content:
+      "Aquí debes seleccionar la fecha de inicio de consulta de tu interés.",
+  },
+  {
+    selector: "input[type='date']:nth-of-type(2)",
+    content: "Y aquí la fecha de fin.",
+  },
+  {
+    selector: ".search-payroll-btn",
+    content: "Una vez seleccionado los otros campos, clickea aquí para buscar.",
+  },
+  {
+    selector: "button[title='Mostrar/ocultar archivados']",
+    content:
+      "En caso de querer ver datos archivados, clickea en este botón para consultarlos. En caso contrario, se ocultarán.",
+  },
+  {
+    selector: "button.bg-blue-600",
+    content:
+      "Clickeando este botón, podrás procesar horas de un empleado en un rango de fechas. Recuerda procesar antes de consultar para poder visualizar los datos ya procesados.",
+  },
+  {
+    selector: "button.bg-emerald-400",
+    content:
+      "Por último, con este botón podrás exportar los datos a un excel para mayor comodidad.",
+  },
+  {
+    selector: "body",
+    content:
+      "¡Eso es todo! Ya puedes gestionar y exportar planillas de empleados.",
+    position: "center",
+  },
+];
+
+function PayrollContainerContent(props) {
+  const { setIsOpen, setCurrentStep, isOpen } = useTour();
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -314,11 +369,21 @@ export default function PayrollContainer() {
     setTimeout(() => setShowSuggestions(false), 100);
   };
 
+  // Mostrar el tour automáticamente la primera vez
+  useEffect(() => {
+    const alreadySeen = localStorage.getItem("seenPayrollTour");
+    if (!alreadySeen) {
+      setCurrentStep(0);
+      setIsOpen(true);
+      localStorage.setItem("seenPayrollTour", "true");
+    }
+  }, [setIsOpen, setCurrentStep]);
+
   return (
     <div className="flex flex-col h-screen p-6">
-      <div className="flex  items-center justify-between gap-4 bg-white py-4">
-        <div className="flex  items-center gap-4 relative">
-          <div className="relative">
+      <div className="flex items-center justify-between gap-4 bg-white py-4">
+        <div className="flex items-center gap-4 relative">
+          <div className="relative flex items-center gap-2">
             <input
               ref={inputRef}
               type="text"
@@ -367,9 +432,22 @@ export default function PayrollContainer() {
 
           <button
             onClick={handleSincronizar}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold"
+            className="search-payroll-btn bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold"
           >
             Buscar
+          </button>
+          {/* Botón de guía justo al lado derecho del botón Buscar */}
+          <button
+            className="help-tour-btn ml-2 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors"
+            onClick={() => {
+              setCurrentStep(0);
+              setIsOpen(true);
+            }}
+            title="Ver guía"
+            type="button"
+            disabled={isOpen}
+          >
+            <span className="text-white text-xl font-bold">?</span>
           </button>
 
           <button
@@ -430,6 +508,7 @@ export default function PayrollContainer() {
 
       <div className="flex-grow overflow-auto">
         <PayrollTable
+          className="payroll-table"
           data={filteredPayroll}
           employee={selectedEmployee}
           onUpdateData={() => {
@@ -446,5 +525,13 @@ export default function PayrollContainer() {
         defaultEndDate={endDate}
       />
     </div>
+  );
+}
+
+export default function PayrollContainer() {
+  return (
+    <AppTourProvider steps={steps}>
+      <PayrollContainerContent />
+    </AppTourProvider>
   );
 }

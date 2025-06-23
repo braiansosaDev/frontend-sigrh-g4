@@ -114,7 +114,7 @@ export default function PayrollTable({ data, employee, onUpdateData }) {
 
   return (
     <div className="overflow-auto h-[70vh]">
-      <table className="min-w-full table-fixed bg-white rounded-lg shadow">
+      <table className="payroll-table min-w-full table-fixed bg-white rounded-lg shadow">
         <thead className="sticky top-0">
           <tr>
             {columns.map((col) => (
