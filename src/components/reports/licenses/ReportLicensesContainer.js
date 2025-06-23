@@ -142,9 +142,34 @@ export default function LicensesDashboard() {
     }));
   }
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     setLoading(true);
     try {
+      const params = {};
+      if (filteredStartDate) params.from_start_date = filteredStartDate;
+      if (filteredEndDate) params.until_start_date = filteredEndDate;
+      if (filteredType) params.leave_type_ids = filteredType;
+      params.request_statuses = "aprobado";
+
+      const res = await axios.get(`${config.API_URL}/leaves`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+      });
+
+      const leavesDetails = (res.data || []).map((item) => ({
+        "ID Licencia": item.id,
+        "ID Empleado": item.employee_id,
+        "Fecha de solicitud": item.request_date,
+        "Fecha desde": item.start_date,
+        "Fecha hasta": item.end_date,
+        "Tipo de licencia ID": item.leave_type_id,
+        Motivo: item.reason,
+        "Estado documento": item.document_status,
+        "Estado solicitud": item.request_status,
+        Creado: item.created_at,
+        Actualizado: item.updated_at,
+      }));
+
       const filteredDate = [
         {
           "Período consultado": `Desde: ${
@@ -153,17 +178,27 @@ export default function LicensesDashboard() {
         },
       ];
 
-      // Datos principales
       const excelData = licensesPerType.map((item) => ({
         "Tipo de licencia": item.type,
         "Cantidad solicitada": item.count,
       }));
 
-      const dataSheet = [...filteredDate, {}, ...excelData];
-
       const wb = XLSX.utils.book_new();
-      const ws1 = XLSX.utils.json_to_sheet(dataSheet, { skipHeader: false });
-      XLSX.utils.book_append_sheet(wb, ws1, "Datos Maestros");
+      const ws1 = XLSX.utils.json_to_sheet(
+        [...filteredDate, {}, ...excelData],
+        {
+          skipHeader: false,
+        }
+      );
+      XLSX.utils.book_append_sheet(wb, ws1, "Resumen");
+
+      if (leavesDetails.length > 0) {
+        const ws2 = XLSX.utils.json_to_sheet(leavesDetails, {
+          skipHeader: false,
+        });
+        XLSX.utils.book_append_sheet(wb, ws2, "Detalle de licencias");
+      }
+
       XLSX.writeFile(wb, "reporte_licencias.xlsx");
     } catch (e) {
       toastAlerts.showError("Error al exportar a Excel", e.message);
