@@ -35,6 +35,8 @@ export default function LicensesDashboard() {
 
       if (type) params.leave_type_ids = type;
 
+      params.request_statuses = "aprobado";
+
       const res = await axios.get(`${config.API_URL}/leaves/report`, {
         headers: { Authorization: `Bearer ${token}` },
         params,
@@ -76,6 +78,7 @@ export default function LicensesDashboard() {
         params: {
           from_start_date: fromDate,
           until_start_date: untilDate,
+          request_statuses: "aprobado",
         },
       });
       setLicensesPerType(changeLicenseFormat(res.data));
