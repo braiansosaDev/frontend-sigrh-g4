@@ -81,7 +81,6 @@ export default function FaceScan({ onFoundFace, onError, type }) {
 
   const sendToBackend = async (embedding) => {
     setStatus("Enviando al backend...");
-    console.log("Embedding:", embedding);
     if (type === "in") {
       try {
         const res = await axios.post(

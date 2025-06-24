@@ -194,8 +194,6 @@ export default function EmployeeForm({ employeeData, id, onSave }) {
       );
     }
 
-    console.log("Data:", employeeData);
-
     if (formData.photo) {
       if (!employeeData || !employeeData.photo) {
         try {
@@ -211,8 +209,6 @@ export default function EmployeeForm({ employeeData, id, onSave }) {
               embedding: facialRegister,
             };
           }
-
-          console.log("Registrando:", JSON.stringify(payload));
 
           const res = await axios.post(
             `${config.API_URL}/face_recognition/register`,
@@ -237,8 +233,6 @@ export default function EmployeeForm({ employeeData, id, onSave }) {
             employee_id: id,
             embedding: facialRegister,
           };
-
-          console.log("Modificando:", JSON.stringify(payload));
 
           const res = await axios.patch(
             `${config.API_URL}/face_recognition/update`,
@@ -299,10 +293,6 @@ export default function EmployeeForm({ employeeData, id, onSave }) {
           .withFaceDescriptor();
         if (detection && detection.descriptor) {
           setFacialRegister(Array.from(detection.descriptor));
-          console.log(
-            "Facial register updated:",
-            Array.from(detection.descriptor)
-          );
         } else {
           setFacialRegister(Array.from(detection.descriptor));
         }

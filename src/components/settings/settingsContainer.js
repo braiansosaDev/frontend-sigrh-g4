@@ -116,9 +116,6 @@ export default function SettingsContainer() {
       favicon: faviconPreview,
     };
 
-    console.log("Payload listo para guardar:", payload);
-    // axios.post('/api/settings', payload)...
-
     try {
       const res = await axios.post(
         `${config.API_URL}/configurations/setConfigurations`,

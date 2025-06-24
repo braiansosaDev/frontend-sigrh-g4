@@ -39,7 +39,6 @@ export default function FaceRecognitionContainer({ type }) {
   };
 
   const onFoundFace = (employee_id) => {
-    console.log("employee_id", employee_id);
     findEmployee(employee_id);
     setStep("succesful");
   };
